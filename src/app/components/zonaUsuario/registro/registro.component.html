@@ -1,1 +1,78 @@
-<p>registro works!</p>
+<div class="min-h-screen w-full bg-[#020d12] flex flex-col justify-center items-center text-center px-6">
+  <div class="bg-[#1a1a1a] p-6 rounded-lg shadow-md w-full max-w-xs sm:max-w-sm lg:max-w-md">
+    
+    <h2 class="text-white text-2xl font-semibold mb-6">Registro</h2>
+
+    <!-- Formulario de registro -->
+    <form class="flex flex-col gap-4">
+      
+      <!-- Nickname -->
+      <div>
+        <label for="nickname" class="block text-sm text-gray-300 text-left mb-1">Nombre de usuario</label>
+        <input 
+          type="text" 
+          id="nickname" 
+          formControlName="nickname" 
+          placeholder="Tu apodo o alias"
+          class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+        />
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm text-gray-300 text-left mb-1">Correo electrónico</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          placeholder="ejemplo@correo.com"
+          class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+        />
+      </div>
+
+      <!-- Contraseña -->
+      <div>
+        <label for="password" class="block text-sm text-gray-300 text-left mb-1">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password" 
+          placeholder="••••••••"
+          class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+        />
+      </div>
+
+      <!-- Botón de registro -->
+      <button 
+        type="submit"
+        class="bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium transition"
+      >
+        Crear cuenta
+      </button>
+    </form>
+
+    <!-- Separador -->
+    <div class="my-6 border-t border-gray-700 relative">
+      <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#1a1a1a] px-2 text-gray-400 text-sm">o</span>
+    </div>
+
+    <!-- Registro con Google -->
+    <button 
+      class="bg-gray-700 hover:bg-gray-800 text-white py-2 rounded-md w-full font-medium shadow transition"
+    >
+      Registrarse con Google
+    </button>
+
+    <!-- Enlace a iniciar sesión -->
+    <p class="text-gray-400 mt-6 text-sm">
+      ¿Ya tienes una cuenta?
+      <a routerLink="/login" class="text-white font-semibold hover:underline">Inicia sesión</a>
+    </p>
+
+    <!-- Footer -->
+    <div class="flex items-center mt-12">
+      <img src="images/logoDarkBlueLetras2.png" alt="logoDarkBlue" class="w-18 ms-2">
+      <span class="text-gray-400 text-sm lg:text-base ms-8">aLbEaNy SOFTWARE © 2025</span>
+    </div>
+  </div>
+</div>
