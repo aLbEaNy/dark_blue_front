@@ -1,0 +1,52 @@
+<div class="min-h-screen w-full bg-[#020d12] flex flex-col justify-center items-center text-center px-6">
+  <div class="bg-[#1a1a1a] p-6 rounded-lg shadow-md w-full max-w-xs sm:max-w-sm lg:max-w-md">
+    
+    <h2 class="text-white text-2xl font-semibold mb-6">Verifica tu cuenta</h2>
+
+    <p class="text-gray-400 text-sm mb-6">
+      Ingresa el código de 6 dígitos que te hemos enviado por correo.
+    </p>
+
+    <!-- Código input tipo cuadraditos -->
+    <form class="flex flex-col gap-6" (submit)="verificarCodigo()">
+      <div class="flex justify-between gap-2">
+        <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric"
+          class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          (input)="moverAlSiguiente($event, 0)" #codigo0>
+        <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric"
+          class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          (input)="moverAlSiguiente($event, 1)" #codigo1>
+        <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric"
+          class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          (input)="moverAlSiguiente($event, 2)" #codigo2>
+        <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric"
+          class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          (input)="moverAlSiguiente($event, 3)" #codigo3>
+        <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric"
+          class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          (input)="moverAlSiguiente($event, 4)" #codigo4>
+        <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric"
+          class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          (input)="moverAlSiguiente($event, 5)" #codigo5>
+      </div>
+
+      <!-- Botón de verificar -->
+      <button type="submit"
+        class="bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium transition w-full">
+        Verificar cuenta
+      </button>
+    </form>
+
+    <!-- Reenviar código -->
+    <div class="text-sm text-gray-400 mt-4">
+      ¿No recibiste el código?
+      <button type="button" class="text-red-400 hover:text-red-300 font-medium ml-1">Reenviar</button>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center mt-12">
+      <img src="images/logoDarkBlueLetras2.png" alt="logoDarkBlue" class="w-18 ms-2">
+      <span class="text-gray-400 text-sm lg:text-base ms-8">aLbEaNy SOFTWARE © 2025</span>
+    </div>
+  </div>
+</div>
