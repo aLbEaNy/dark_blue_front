@@ -8,7 +8,7 @@
     </p>
 
     <!-- Código input tipo cuadraditos -->
-    <form class="flex flex-col gap-6" (submit)="verificarCodigo()">
+    <div class="flex flex-col gap-6">
       <div class="flex justify-between gap-2">
         <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric"
           class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -29,18 +29,23 @@
           class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
           (input)="moverAlSiguiente($event, 5)" #codigo5>
       </div>
+      @if(errorMsg()){<span class="text-red-500 text-sm">{{errorMsg()}}</span>}
+      {{activationDataComputed()?.code}}
 
       <!-- Botón de verificar -->
-      <button type="submit"
-        class="bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium transition w-full">
+      <button
+        (click)="checkCodeActivation()"
+        [disabled]="!codigo0.value || !codigo1.value || !codigo2.value || !codigo3.value || !codigo4.value || !codigo5.value"
+
+        class="bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium transition w-full disabled:opacity-50 disabled:cursor-not-allowed">
         Verificar cuenta
       </button>
-    </form>
+    </div>
 
     <!-- Reenviar código -->
     <div class="text-sm text-gray-400 mt-4">
       ¿No recibiste el código?
-      <button type="button" class="text-red-400 hover:text-red-300 font-medium ml-1">Reenviar</button>
+      <button (click)="resendCodeActivation()" class="text-red-400 hover:text-red-300 font-medium ml-1">Reenviar</button>
     </div>
 
     <!-- Footer -->

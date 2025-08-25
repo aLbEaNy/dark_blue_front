@@ -1,52 +1,137 @@
 <div class="min-h-screen w-full bg-[#020d12] flex flex-col justify-center items-center text-center px-6">
   <div class="bg-[#1a1a1a] p-6 rounded-lg shadow-md w-full max-w-xs sm:max-w-sm lg:max-w-md">
-    
+
     <h2 class="text-white text-2xl font-semibold mb-6">Registro</h2>
 
     <!-- Formulario de registro -->
     <form class="flex flex-col gap-4">
-      
+      @if(messageError()){
+         <small class="text-red-500 text-left ms-4">{{ messageError() }}</small>
+      }
+
       <!-- Nickname -->
       <div>
         <label for="nickname" class="block text-sm text-gray-300 text-left mb-1">Nombre de usuario</label>
-        <input 
-          type="text" 
-          id="nickname" 
-          formControlName="nickname" 
-          placeholder="Tu apodo o alias"
+        <input type="text" id="nickname" name="nickname" placeholder="Tu apodo o alias"
           class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
-        />
+          [value]="nickname()"
+          (input)="nickname.set($any($event.target).value)"
+          (blur)="nicknameTouched.set(true)"
+          />
       </div>
+      <!-- Mostrar errores de nickname -->
+      @if (nicknameError()) {
+        <small class="text-red-500 text-left ms-4">{{ nicknameError() }}</small>
+      }
+      @if (existeNick()) {
+        <small class="text-red-500 text-left ms-4">* El nickname ya está en uso</small>
+      }
 
       <!-- Email -->
       <div>
         <label for="email" class="block text-sm text-gray-300 text-left mb-1">Correo electrónico</label>
-        <input 
-          type="email" 
-          id="email" 
-          formControlName="email" 
-          placeholder="ejemplo@correo.com"
+        <input type="email" id="email" name="email" placeholder="ejemplo@correo.com"
           class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
-        />
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          (blur)="emailTouched.set(true)" 
+          />
       </div>
-
+      <!-- Mostrar errores de email -->
+      @if (emailError()) {
+        <small class="text-red-500 text-left ms-4">{{ emailError() }}</small>
+      }
+      @if (existeEmail()) {
+        <small class="text-red-500 text-left ms-4">* El email ya está en uso</small>
+      }
+     
       <!-- Contraseña -->
       <div>
         <label for="password" class="block text-sm text-gray-300 text-left mb-1">Contraseña</label>
-        <input 
-          type="password" 
-          id="password" 
-          formControlName="password" 
-          placeholder="••••••••"
-          class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
-        />
-      </div>
+        <div class="relative">
 
+          <input [type]="showPassword() ? 'text' : 'password'" id="password" name="password"
+            class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+            [value]="password()"
+            (input)="password.set($any($event.target).value)"
+            (blur)="passwordTouched.set(true)"
+            />
+          <i (click)="showPassword.set(!showPassword())" class="absolute top-2 right-3 cursor-pointer">
+
+            @if(showPassword()){
+            <svg xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-gray-300 transition-colors duration-300 hover:text-red-500" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+
+            } @else{
+
+            <svg xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5 text-gray-300 transition-colors duration-300 hover:text-red-500" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.957 9.957 0 012.182-3.284M6.1 6.1A9.978 9.978 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.955 9.955 0 01-4.293 5.036M6.1 6.1l12.02 12.02" />
+            </svg>
+            }
+          </i>
+        </div>
+      </div>
+     
+      <!-- Mostrar errores de contraseña -->
+       @if (passwordErrors() && passwordErrors()!.length > 0) {
+        @for (error of passwordErrors(); track error) {
+          <small class="text-red-500 text-left ms-4 block">{{ error }}</small>
+        }
+      }
+      <!-- Repite Contraseña -->
+      <div>
+        <label for="rePassword" class="block text-sm text-gray-300 text-left mb-1">Confirma la contraseña</label>
+        <div class="relative">
+          <input [type]="showRePassword() ? 'text' : 'password'" id="rePassword" name="rePassword"
+            class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+            [value]="rePassword()"
+            (input)="rePassword.set($any($event.target).value)"
+            (blur)="rePasswordTouched.set(true)"
+            />
+          <i (click)="showRePassword.set(!showRePassword())"
+            class="absolute top-2 right-3 cursor-pointer transition-colors duration-300 hover:text-red-500">
+
+
+            @if(showRePassword()){
+            <svg xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-gray-300 transition-colors duration-300 hover:text-red-500" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+
+            } @else{
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-300 duration-300 hover:text-red-500"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.957 9.957 0 012.182-3.284M6.1 6.1A9.978 9.978 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.955 9.955 0 01-4.293 5.036M6.1 6.1l12.02 12.02" />
+            </svg>
+            }
+          </i>
+        </div>
+      </div>
+      <!-- Mostrar errores de rePassword -->
+      @if (rePasswordError()) {
+        <small class="text-red-500 text-left ms-4">{{ rePasswordError() }}</small>
+      }
+      @if(!passwordsMatch() && !rePasswordError() && password().length > 0 && rePassword().length > 0){
+        <small class="text-red-500 text-left ms-4">* Las contraseñas no coinciden</small>
+      }   
+     
       <!-- Botón de registro -->
-      <button 
-        type="submit"
-        class="bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium transition"
-      >
+      <button (click)="handleSubmit()" [disabled]="disableSubmitButton()"
+        type="button"
+        class="bg-red-500 hover:bg-red-600 opacity-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed px-4 text-white py-2 rounded-md font-medium transition">
         Crear cuenta
       </button>
     </form>
@@ -57,16 +142,15 @@
     </div>
 
     <!-- Registro con Google -->
-    <button 
-      class="bg-gray-700 hover:bg-gray-800 text-white py-2 rounded-md w-full font-medium shadow transition"
-    >
+    <button
+      class="bg-gray-700 hover:bg-gray-800 text-white py-2 rounded-md w-full cursor-pointer font-medium shadow transition">
       Registrarse con Google
     </button>
 
     <!-- Enlace a iniciar sesión -->
     <p class="text-gray-400 mt-6 text-sm">
       ¿Ya tienes una cuenta?
-      <a routerLink="/login" class="text-white font-semibold hover:underline">Inicia sesión</a>
+      <a routerLink="/login" class="text-white font-semibold hover:underline cursor-pointer">Inicia sesión</a>
     </p>
 
     <!-- Footer -->
@@ -75,4 +159,3 @@
       <span class="text-gray-400 text-sm lg:text-base ms-8">aLbEaNy SOFTWARE © 2025</span>
     </div>
   </div>
-</div>
