@@ -1,45 +1,32 @@
 <div class="min-h-screen w-full bg-[#020d12] flex flex-col justify-center items-center text-center px-6">
-   
+
   <div class="bg-[#1a1a1a] p-6 rounded-lg shadow-md w-full max-w-xs sm:max-w-sm lg:max-w-md">
-    
+
     <h2 class="text-white text-2xl font-semibold mb-6">Iniciar Sesión</h2>
 
     <!-- Formulario -->
     <div class="flex flex-col gap-4">
-      
+
       <!-- Correo -->
       <div>
         <label for="email" class="block text-sm text-gray-300 text-left mb-1">Correo electrónico</label>
-        <input 
-          type="email"
-          id="email"
-          mame="email" 
-          [value]="email()"
-          (input)="email.set($any($event.target).value)"
-          (blur)="emailTouched.set(true)" 
-          placeholder="ejemplo@correo.com"
-          class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
-        />
+        <input type="email" id="email" mame="email" [value]="email()" (input)="email.set($any($event.target).value)"
+          (blur)="emailTouched.set(true)" placeholder="ejemplo@correo.com"
+          class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500" />
       </div>
       <!-- Mostrar errores de email -->
       @if (emailError()) {
-        <small class="text-red-500 text-left ms-4">{{ emailError() }}</small>
+      <small class="text-red-500 text-left ms-4">{{ emailError() }}</small>
       }
 
       <!-- Contraseña -->
       <div>
         <label for="password" class="block text-sm text-gray-300 text-left mb-1">Contraseña</label>
         <div class="relative">
-        <input 
-          [type]="showPassword() ? 'text' : 'password'" 
-          id="password" 
-          [value]="password()"
-          (input)="password.set($any($event.target).value)"
-          (blur)="passwordTouched.set(true)" 
-          placeholder="••••••••"
-          class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
-        />
-        <i (click)="showPassword.set(!showPassword())" class="absolute top-2 right-3 cursor-pointer">
+          <input [type]="showPassword() ? 'text' : 'password'" id="password" [value]="password()"
+            (input)="password.set($any($event.target).value)" (blur)="passwordTouched.set(true)" placeholder="••••••••"
+            class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500" />
+          <i (click)="showPassword.set(!showPassword())" class="absolute top-2 right-3 cursor-pointer">
 
             @if(showPassword()){
             <svg xmlns="http://www.w3.org/2000/svg"
@@ -60,13 +47,13 @@
             </svg>
             }
           </i>
-          </div>
+        </div>
       </div>
       <!-- Mostrar errores de contraseña -->
-       @if (passwordErrors() && passwordErrors()!.length > 0) {
-        @for (error of passwordErrors(); track error) {
-          <small class="text-red-500 text-left ms-4 block">{{ error }}</small>
-        }
+      @if (passwordErrors() && passwordErrors()!.length > 0) {
+      @for (error of passwordErrors(); track error) {
+      <small class="text-red-500 text-left ms-4 block">{{ error }}</small>
+      }
       }
       <!-- ¿Olvidaste tu contraseña? -->
       <div class="text-right text-sm">
@@ -74,8 +61,7 @@
       </div>
 
       <!-- Botón de login -->
-      <button 
-        (click)="handleSubmit()" [disabled]="disableSubmitButton()"
+      <button (click)="handleSubmit()" [disabled]="disableSubmitButton()"
         class="bg-red-500 hover:bg-red-600 opacity-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed px-4 text-white py-2 rounded-md font-medium transition">
         Iniciar Sesión
       </button>
@@ -87,18 +73,21 @@
     </div>
 
     <!-- Login con Google -->
-    <button 
-      class="bg-gray-700 hover:bg-gray-800 text-white py-2 rounded-md w-full font-medium shadow transition"
-    >
-      Continuar con Google
+
+    <button (click)="loginWithGoogle()" id="google-custom-button"
+      class="w-full bg-white text-gray-700 py-2 rounded-md font-medium transition flex items-center justify-center space-x-2 hover:cursor-pointer">
+      <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo" class="h-5 w-5" />
+      <span>Iniciar sesión con Google</span>
     </button>
+
 
     <!-- Registro -->
     <p class="text-gray-400 mt-6 text-sm">
       ¿No tienes una cuenta?
       <a routerLink="/register" class="text-white font-semibold hover:underline">Regístrate</a>
-      <div class="flex items-center mt-12">
+    <div class="flex items-center mt-12">
 
-          
-          <img src="images/logoDarkBlueLetras2.png" alt="logoDarkBlue"  class="w-18 ms-2"> <span class="text-gray-400 text-sm lg:text-base ms-8">aLbEaNy SOFTWARE © 2025 </span>
-      </div> 
+
+      <img src="images/logoDarkBlueLetras2.png" alt="logoDarkBlue" class="w-18 ms-2"> <span
+        class="text-gray-400 text-sm lg:text-base ms-8">aLbEaNy SOFTWARE © 2025 </span>
+    </div>

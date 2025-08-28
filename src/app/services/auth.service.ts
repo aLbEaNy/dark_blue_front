@@ -69,23 +69,25 @@ export class AuthService {
   }
 
   login(email: string, password: string): Signal<IRestMessage> {
-     return toSignal(
-      this.http
-        .post<IRestMessage>('http://localhost:8080/auth/login',
-            {
-                username:email, password
-            },
-            { headers: { 'Content-Type': 'application/json' } }
-        )
-        .pipe( 
-            startWith({
-              codigo: 2,
-              mensaje: '...esperando respuesta del server desde auth.service...',
-              datos: null,
-            }
+       return toSignal(
+        this.http
+          .post<IRestMessage>('http://localhost:8080/auth/login',
+              {
+                  username:email, password
+              },
+              { headers: { 'Content-Type': 'application/json' } }
           )
-        ),
-      { injector: this._injector, requireSync: true }
-    );
-  }
+          .pipe( 
+              startWith({
+                codigo: 2,
+                mensaje: '...esperando respuesta del server desde auth.service...',
+                datos: null,
+              }
+            )
+          ),
+        { injector: this._injector, requireSync: true }
+      );
+    }
+
 }
+

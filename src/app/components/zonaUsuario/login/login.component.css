@@ -1,0 +1,11 @@
+/* styles.css o en tu componente */
+#google-button-container {
+  width: 100%;
+}
+
+#google-button-container > div {
+  width: 100% !important;
+}
+
+
+
