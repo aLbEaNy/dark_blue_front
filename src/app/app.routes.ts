@@ -3,6 +3,8 @@ import { HomeComponent } from './components/zonaPortal/home/home.component';
 import { RegistroComponent } from './components/zonaUsuario/registro/registro.component';
 import { LoginComponent } from './components/zonaUsuario/login/login.component';
 import { ValidarCuentaComponent } from './components/zonaUsuario/validar-cuenta/validar-cuenta.component';
+import { authGuard } from './guards/auth.guard';
+import { MenuComponent } from './components/zonaPortal/menu/menu.component';
 
 export const routes: Routes = [
      {path: '', redirectTo: '/home', pathMatch: 'full'},
@@ -11,4 +13,15 @@ export const routes: Routes = [
     { path: 'registro', component: RegistroComponent },
     { path: 'login', component: LoginComponent },
     { path: 'validar-cuenta', component: ValidarCuentaComponent },
+    
+    // 🔒 todas las de paginas que cuelgan de /darkblue
+  {
+    path: 'darkblue',
+    canActivate: [authGuard], 
+    children: [
+      { path: 'menu', component: MenuComponent },
+      
+    ]
+  }
+
 ];

@@ -1,4 +1,4 @@
-import { AuthGoogleService } from './../../../services/auth-google.service';
+import { AuthGoogleService } from '../../../services/auth/auth-google.service';
 
 import {
   Component,
@@ -6,13 +6,14 @@ import {
   effect,
   inject,
   Injector,
+  linkedSignal,
   OnInit,
   signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
-import { StorageService } from '../../../services/storage.service';
-import { ValidatorService } from '../../../services/validator.service';
+import { AuthService } from '../../../services/auth/auth.service';
+import { StorageService } from '../../../services/store/storage.service';
+import { ValidatorService } from '../../../validators/validator.service';
 import IRestMessage from '../../../models/IRestMessage';
 
 
@@ -52,7 +53,7 @@ export class LoginComponent implements OnInit {
     return this._valid.passwordValidation(this.password());
   });
 
-  disableSubmitButton = computed(() => {
+  disableSubmitButton = linkedSignal(() => {
     return (
       !this.emailTouched() ||
       !this.passwordTouched() ||
@@ -87,6 +88,7 @@ export class LoginComponent implements OnInit {
   
 
   handleSubmit() {
+    this.disableSubmitButton.set(true);
 
     const _resp = this._authService.login(this.email(), this.password());
 
@@ -108,7 +110,7 @@ loginResponse(_resp: IRestMessage) {
         this._storage.set('perfil', _resp.datos.perfil);
         this._storage.set('token', _resp.datos.token);
         sessionStorage.setItem('isLogin', "true");
-        this._router.navigate(['/home']);
+        this._router.navigate(['/darkblue/menu']);
       } else {
           this.messageError.set(_resp.mensaje);
       }

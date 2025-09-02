@@ -1,7 +1,7 @@
 import { computed, effect, inject, Injectable, Injector, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
-import IRestMessage from '../models/IRestMessage';
+import IRestMessage from '../../models/IRestMessage';
 import { startWith } from 'rxjs';
 
 declare const google: any;

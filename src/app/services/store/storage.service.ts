@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import IActivationData from '../models/IActivationData';
+import IActivationData from '../../models/IActivationData';
 
 @Injectable({
   providedIn: 'root',

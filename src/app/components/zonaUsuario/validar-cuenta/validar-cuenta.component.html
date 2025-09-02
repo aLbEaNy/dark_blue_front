@@ -35,9 +35,11 @@
       <!-- Botón de verificar -->
       <button
         (click)="checkCodeActivation()"
-        [disabled]="!codigo0.value || !codigo1.value || !codigo2.value || !codigo3.value || !codigo4.value || !codigo5.value"
+        [disabled]="!codigo0.value || 
+                    !codigo1.value || 
+                    !codigo2.value || !codigo3.value || !codigo4.value || !codigo5.value || disableSubmit()"
 
-        class="bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium transition w-full disabled:opacity-50 disabled:cursor-not-allowed">
+        class="bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium transition w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
         Verificar cuenta
       </button>
     </div>
@@ -45,7 +47,11 @@
     <!-- Reenviar código -->
     <div class="text-sm text-gray-400 mt-4">
       ¿No recibiste el código?
-      <button (click)="resendCodeActivation()" class="text-red-400 hover:text-red-300 font-medium ml-1">Reenviar</button>
+      <button (click)="resendCodeActivation()" 
+              class="text-red-400 hover:text-red-300 font-medium ml-1 cursor-pointer 
+                      disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="disableResend()"
+      >Reenviar</button>
     </div>
 
     <!-- Footer -->

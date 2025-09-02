@@ -1,0 +1,52 @@
+@keyframes vibrate {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+@keyframes heat {
+  0% { background-color: rgba(107, 48, 37, 0.85); } /* tu bg-principal inicial */
+  50% { background-color: rgba(255, 100, 50, 0.85); } 
+  100% { background-color: rgba(255, 0, 0, 0.85); } 
+}
+
+@keyframes torpedo {
+  0% {
+    transform: translateX(0) rotate(0deg) scale(1.3);
+    filter: blur(0);
+  }
+  20% {
+    transform: translateX(50px) scale(1.2);
+    filter: blur(0.5px);
+  }
+  60% {
+    transform: translateX(400px) scale(1.1);
+    filter: blur(1px);
+  }
+  100% {
+    transform: translateX(900px) scale(1);
+   
+    filter: blur(1.5px);
+  }
+}
+
+.btn-vibrate {
+  background-blend-mode: overlay;
+  transition: background-color 2s ease;
+}
+
+.btn-vibrate:hover {
+  background-color: rgba(255,0,0,0.5);
+  animation: vibrate 0.2s infinite;
+}
+
+.btn-torpedo {
+  cursor: pointer;
+}
+
+/* Clase para disparar el torpedo */
+.torpedo-active {
+  animation: torpedo 1.2s ease-out forwards;
+}

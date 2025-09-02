@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, Injector, signal, Signal } from '@angular/core';
+import { inject, Injectable, Injector, Signal } from '@angular/core';
 import { startWith } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import IRegister from '../models/IRegister';
-import IRestMessage from '../models/IRestMessage';
+import IRegister from '../../models/IRegister';
+import IRestMessage from '../../models/IRestMessage';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,9 @@ import IRestMessage from '../models/IRestMessage';
 export class AuthService {
   private http = inject(HttpClient);
   private _injector = inject(Injector);
+
+  private router = inject(Router);
+
 
   /**
    * Registro de usuario. Devuelve una señal con la respuesta.
@@ -88,6 +92,13 @@ export class AuthService {
         { injector: this._injector, requireSync: true }
       );
     }
+  isLogin():Boolean {
+    return !!sessionStorage.getItem('isLogin');// (!!) Para evitar problema con null y sea false
+  }
+  logout(){
+    sessionStorage.removeItem('isLogin');
+    this.router.navigate(['/login']);
+  }
 
 }
 
