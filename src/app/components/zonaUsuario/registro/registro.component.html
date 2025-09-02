@@ -142,9 +142,10 @@
     </div>
 
     <!-- Registro con Google -->
-    <button
-      class="bg-gray-700 hover:bg-gray-800 text-white py-2 rounded-md w-full cursor-pointer font-medium shadow transition">
-      Registrarse con Google
+    <button (click)="loginWithGoogle()" id="google-custom-button"
+      class="w-full bg-white text-gray-700 py-2 rounded-md font-medium transition flex items-center justify-center space-x-2 hover:cursor-pointer">
+      <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo" class="h-5 w-5" />
+      <span>Iniciar sesión con Google</span>
     </button>
 
     <!-- Enlace a iniciar sesión -->
@@ -156,6 +157,6 @@
     <!-- Footer -->
     <div class="flex items-center mt-12">
       <img src="images/logoDarkBlueLetras2.png" alt="logoDarkBlue" class="w-18 ms-2">
-      <span class="text-gray-400 text-sm lg:text-base ms-8">aLbEaNy SOFTWARE © 2025</span>
+      <span class="text-acero text-sm lg:text-base ms-8">aLbEaNy SOFTWARE © 2025</span>
     </div>
   </div>

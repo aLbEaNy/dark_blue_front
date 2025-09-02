@@ -11,9 +11,9 @@ import {
   untracked,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { StorageService } from '../../../services/storage.service';
+import { StorageService } from '../../../services/store/storage.service';
 import Swal from 'sweetalert2';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-validar-cuenta',
@@ -26,6 +26,11 @@ export class ValidarCuentaComponent {
   _router = inject(Router);
   _authService = inject(AuthService);
   private _injector = inject(Injector);
+
+  disableSubmit = signal<boolean>(false);
+  disableResend = signal<boolean>(false);
+
+
 
   @ViewChildren('codigo0, codigo1, codigo2, codigo3, codigo4, codigo5')
   inputs!: QueryList<ElementRef>;
@@ -51,6 +56,7 @@ export class ValidarCuentaComponent {
   }
 
   checkCodeActivation(): void {
+  this.disableSubmit.set(true);  
   const _token = this.activationDataComputed()?.token;
   const _code = this.inputs.toArray().map(i => i.nativeElement.value).join('');
   const _email = this.activationDataComputed()?.email;
@@ -65,6 +71,8 @@ export class ValidarCuentaComponent {
           //No crea dependencia del effect
           untracked(() => {
           this.errorMsg.set('* El código ingresado es incorrecto.');
+          this.disableSubmit.set(false);
+          this.disableResend.set(false);
           });
           return;
         }        
@@ -85,6 +93,7 @@ export class ValidarCuentaComponent {
 }
 
   resendCodeActivation(): void {
+    this.disableResend.set(true);
     
     const _resp = this._authService.resendTokenOrTokenAndCode(
       this.activationDataComputed()?.email!,

@@ -4,6 +4,8 @@ import {
   effect,
   inject,
   Injector,
+  linkedSignal,
+  OnInit,
   resource,
   ResourceRef,
   signal,
@@ -12,10 +14,11 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import IRestMessage from '../../../models/IRestMessage';
 import IRegister from '../../../models/IRegister';
-import { ValidatorService } from '../../../services/validator.service';
-import { StorageService } from '../../../services/storage.service';
-import { AuthService } from '../../../services/auth.service';
+import { ValidatorService } from '../../../validators/validator.service';
+import { StorageService } from '../../../services/store/storage.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import Swal from 'sweetalert2';
+import { AuthGoogleService } from '../../../services/auth/auth-google.service';
 
 @Component({
   selector: 'app-registro',
@@ -23,14 +26,15 @@ import Swal from 'sweetalert2';
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css',
 })
-export class RegistroComponent {
+export class RegistroComponent implements OnInit {
   private _injector = inject(Injector);
   private _router = inject(Router);
   private _valid = inject(ValidatorService);
   private _storage = inject(StorageService);
   private _authService = inject(AuthService);
-
-
+  private authGoogleService = inject(AuthGoogleService);
+    
+  
   //#region Señales
   nickname = signal('');
   nicknameTouched = signal(false);
@@ -44,9 +48,11 @@ export class RegistroComponent {
   showPassword = signal(false);
   showRePassword = signal(false);
   messageError = signal('');
+  cursorSubmit = signal(false);
 
+  
   //#endregion
-
+  
   //#region Validaciones de los campos
   nicknameError = computed(() => {
     if (!this.nicknameTouched()) return null;
@@ -61,17 +67,17 @@ export class RegistroComponent {
     if (!this.rePasswordTouched()) return null;
     return this._valid.basicValidation('rePassword', this.rePassword());
   });
-
+  
   passwordErrors = computed(() => {
     if (!this.passwordTouched()) return null;
     return this._valid.passwordValidation(this.password());
   });
-
+  
   passwordsMatch = computed(() => {
     return this.password() === this.rePassword() && this.password() !== '';
   });
-
-  disableSubmitButton = computed(() => {
+  
+  disableSubmitButton = linkedSignal(() => {
     return (
       !this.nicknameTouched() ||
       !this.emailTouched() ||
@@ -85,7 +91,7 @@ export class RegistroComponent {
       this.existeEmail()
     );
   });
-
+  
   //#endregion
 
   //#region verificar disponibilidad de nickname
@@ -108,13 +114,13 @@ export class RegistroComponent {
     },
     injector: this._injector,
   });
-
+  
   public existeNick = computed<boolean>(() => {
     const value = this.nicknameResource?.value();
     return value?.codigo === 0;
   });
   //#endregion
-
+  
   //#region verificar disponibilidad de email
   public emailResource: ResourceRef<IRestMessage> = resource({
     request: this.email,
@@ -135,22 +141,25 @@ export class RegistroComponent {
     },
     injector: this._injector,
   });
-
+  
   public existeEmail = computed<boolean>(() => {
     const value = this.emailResource?.value();
     return value?.codigo === 0;
   });
   //#endregion
-
+  
   //#region Envío de formulario
   handleSubmit() {
+    this.disableSubmitButton.set(true);
+    this.cursorSubmit.set(true); // loading
+    
     const formData: IRegister = {
       nickname: this.nickname(),
       username: this.email(),
       password: this.password(),
     };
     const _resp = this._authService.register(formData);
-
+    
     effect(() => {
       if (_resp() === null) return; // Evita null al inicio
       
@@ -159,9 +168,9 @@ export class RegistroComponent {
         console.log(_resp().datos);
         // Guardar datos en localStorage con el StorageService
         this._storage.set('activationData',{
-            token: _resp().datos.token,
-            code: _resp().datos.codeActivation,
-            email: this.email()
+          token: _resp().datos.token,
+          code: _resp().datos.codeActivation,
+          email: this.email()
         });
         Swal.fire({
           title: 'Envío de código de activación',
@@ -172,14 +181,44 @@ export class RegistroComponent {
         // Navegar a validar cuenta
         this._router.navigate(['/validar-cuenta']);
       } else if (_resp().codigo !== 2) {
-      // Para evitar mostrar mensaje en estado inicial (codigo 2)
-      this.messageError.set(_resp().mensaje);
+        // Para evitar mostrar mensaje en estado inicial (codigo 2)
+        this.messageError.set(_resp().mensaje);
       }
     },{ injector: this._injector });
   }
- 
   
+  ngOnInit(): void {
+    this.authGoogleService.initialize();
+  }
+  
+  loginWithGoogle() {
+    this.authGoogleService.login();
 
+    effect(() => {
+      const _resp = this.authGoogleService.datos
+      this.loginResponse(_resp());
+    }, {
+      injector: this._injector
+
+    });
+
+  }
+  
+  loginResponse(_resp: IRestMessage) {
+    if (_resp.datos === null) return;
+  
+        if (_resp.codigo === 0 && _resp.datos) {
+          console.log('token:-----------> ',_resp.datos.token);
+          this.messageError.set('');
+          //Navegar a home y almacenar datos de usuario... Cambiar flag de isLogin en store (session)
+          this._storage.set('perfil', _resp.datos.perfil);
+          this._storage.set('token', _resp.datos.token);
+          sessionStorage.setItem('isLogin', "true");
+          this._router.navigate(['/darkblue/principal']);
+        } else {
+            this.messageError.set(_resp.mensaje);
+        }
+  }
   //#endregion
-
+  
 }
