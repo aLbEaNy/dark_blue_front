@@ -1,6 +1,3 @@
-<div class="bg-[url('/images/menu.png')] bg-cover bg-center h-screen overflow-hidden">
-
-    <app-header></app-header>
 
     <div class="flex justify-center">   
         <div class="flex-col items-center justify-center mt-20 mb-20">
@@ -8,7 +5,7 @@
                 <button
                     (mouseenter)="disableHover() ? '' : reproducirHover()"
                     (mouseleave)="stopHover()"
-                    (click)="disableHover() ? '' : dispararTorpedo($event, '/historia')" 
+                    (click)="disableHover() ? '' : dispararTorpedo($event, 'newGame')" 
                     class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo"
                 >NUEVA PARTIDA</button>
             </div>
@@ -16,18 +13,14 @@
                 <button 
                     (mouseenter)="disableHover() ? '' : reproducirHover()"
                     (mouseleave)="stopHover()"
-                    (click)="disableHover() ? '' : dispararTorpedo($event, '/online')" class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo">ONLINE</button>
+                    (click)="disableHover() ? '' : dispararTorpedo($event, 'online')" class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo">ONLINE</button>
             </div>
             <div>
                 <button 
                     (mouseenter)="disableHover() ? '' : reproducirHover()"
                     (mouseleave)="stopHover()"
-                    (click)="disableHover() ? '' : dispararTorpedo($event, '/opciones')" class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo">OPCIONES</button>
+                    (click)="disableHover() ? '' : dispararTorpedo($event, 'options')" class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo">OPCIONES</button>
             </div>
             
-           
         </div>    
     </div>
-
-        <app-footer class="fixed bottom-0 left-0 w-full"></app-footer>
-</div>

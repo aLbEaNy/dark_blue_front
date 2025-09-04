@@ -4,7 +4,8 @@ import { RegistroComponent } from './components/zonaUsuario/registro/registro.co
 import { LoginComponent } from './components/zonaUsuario/login/login.component';
 import { ValidarCuentaComponent } from './components/zonaUsuario/validar-cuenta/validar-cuenta.component';
 import { authGuard } from './guards/auth.guard';
-import { MenuComponent } from './components/zonaPortal/menu/menu.component';
+import { MenuComponent } from './components/zonaPortal/game/menu/menu.component';
+import { MainGameComponent } from './components/zonaPortal/game/main-game/main-game.component';
 
 export const routes: Routes = [
      {path: '', redirectTo: '/home', pathMatch: 'full'},
@@ -20,6 +21,7 @@ export const routes: Routes = [
     canActivate: [authGuard], 
     children: [
       { path: 'menu', component: MenuComponent },
+      { path: 'main-game', component: MainGameComponent }
       
     ]
   }

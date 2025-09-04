@@ -110,7 +110,7 @@ loginResponse(_resp: IRestMessage) {
         this._storage.set('perfil', _resp.datos.perfil);
         this._storage.set('token', _resp.datos.token);
         sessionStorage.setItem('isLogin', "true");
-        this._router.navigate(['/darkblue/menu']);
+        this._router.navigate(['/darkblue/main-game']);
       } else {
           this.messageError.set(_resp.mensaje);
       }

@@ -1,0 +1,23 @@
+<div class=" flex justify-center align-self-center py-4 mt-4 bg-[#444] w-60 rounded-full">
+  <h1 class=" text-white px-2">PLAYER 1</h1>
+  <img src="images/user.png" alt="avatar" class="w-8 h-8 rounded-full">
+</div>
+
+<div class="flex justify-center mt-5">
+  <div class="board justify-center align-items-center">
+
+    @for (row of board(); track row) {
+    <div class="row">
+      @for (cell of row; track cell.coord) {
+      <div class="cell bg-blue-950 text-white" [attr.data-coord]="cell.coord" draggable="true"
+        (dragstart)="onDragStart($event, cell)" (dragover)="onDragOver($event)" (drop)="onDrop($event, cell)"
+        (click)="onCellClick(cell)">
+
+      </div>
+      }
+    </div>
+    }
+
+  </div>
+</div>
+<h3 class="text-center mt-5 text-white">Drag and Drop</h3>
