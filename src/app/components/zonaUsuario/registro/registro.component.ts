@@ -214,7 +214,7 @@ export class RegistroComponent implements OnInit {
           this._storage.set('perfil', _resp.datos.perfil);
           this._storage.set('token', _resp.datos.token);
           sessionStorage.setItem('isLogin', "true");
-          this._router.navigate(['/darkblue/principal']);
+          this._router.navigate(['/darkblue/main-game']);
         } else {
             this.messageError.set(_resp.mensaje);
         }

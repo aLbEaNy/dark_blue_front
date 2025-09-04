@@ -13,9 +13,4 @@
   .text-fluor{
     @apply text-[#1187d6]
   }
-
-  .spinner{
-    @apply animate-spin;
-  
-  }
 }

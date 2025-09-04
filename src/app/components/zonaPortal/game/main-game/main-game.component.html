@@ -1,0 +1,19 @@
+<div class="bg-[url('/images/menu.png')] bg-cover bg-center h-screen overflow-hidden">
+
+    <app-header></app-header>
+    <div class="flex-col">
+
+            @switch (page()) {
+        
+              @case ('newGame') {    
+                  <app-board></app-board>
+              }
+              @default {
+                  <app-menu (pageChange)="page.set($event)"></app-menu>
+              }
+            }
+
+    </div>
+
+    <app-footer class="fixed bottom-0 left-0 w-full"></app-footer>
+</div>

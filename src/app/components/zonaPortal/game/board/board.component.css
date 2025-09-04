@@ -1,0 +1,24 @@
+.board {
+  display: grid;
+  grid-template-rows: repeat(10, 34px);
+  
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(10, 34px);
+  
+}
+
+.cell {
+  border: 1.3px solid #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: crosshair;
+}
+
+.cell.water { background: rgb(50, 247, 237); }
+.cell.ship { background: rgb(89, 87, 87); }
+.cell.touched { background: rgb(216, 0, 0); }
+.cell.miss { background: lightblue; }

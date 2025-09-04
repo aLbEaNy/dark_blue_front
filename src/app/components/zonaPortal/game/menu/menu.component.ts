@@ -1,31 +1,21 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { HeaderComponent } from "../header/header.component";
-import { FooterComponent } from "../footer/footer.component";
+import { Component, inject, output, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AudioService } from '../../../services/audio/audio.service';
 
 @Component({
   selector: 'app-menu',
-  imports: [HeaderComponent, FooterComponent],
+  imports: [],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.css'
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent {
+ pageChange = output<string>();
 
   router = inject(Router);
-  audioService = inject(AudioService);
 
   hoverSound = new Audio('/audio/hoverTorpedo.mp3');
   torpedoSound = new Audio('/audio/torpedo.mp3');
   
   public disableHover = signal(false);
-  
-  
-  
-  ngOnInit() {
-    // Reproduce el audio al cargar el componente
-    this.audioService.play('http://localhost:8080/media/audio/menu2.mp3', true); 
-  }
 
   reproducirHover() {
     this.hoverSound.currentTime = 0; // reinicia el sonido si ya está sonando
@@ -38,7 +28,7 @@ export class MenuComponent implements OnInit {
   }
 
 
-dispararTorpedo(event: MouseEvent, ruta: string) {
+dispararTorpedo(event: MouseEvent, page: string) {
     const button = event.currentTarget as HTMLElement;
 
     // Agregar la clase que activa la animación
@@ -56,8 +46,7 @@ dispararTorpedo(event: MouseEvent, ruta: string) {
 
     // Cambiar de vista después de 1 segundo
     setTimeout(() => {
-      
-      this.router.navigate(['/home']);
+      this.pageChange.emit(page);
     }, 1200);
   }
 }
