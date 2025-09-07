@@ -1,23 +1,26 @@
-<div class=" flex justify-center align-self-center py-4 mt-4 bg-[#444] w-60 rounded-full">
-  <h1 class=" text-white px-2">PLAYER 1</h1>
-  <img src="images/user.png" alt="avatar" class="w-8 h-8 rounded-full">
-</div>
+<!-- Contenedor del tablero -->
+<div class=" justify-self-center mt-3 relative shadow-black shadow-2xl"
+     [style.width.px]="cellSize * 10"
+     [style.height.px]="cellSize * 10">
 
-<div class="flex justify-center mt-5">
-  <div class="board justify-center align-items-center">
+  <!-- Grid de 10x10 -->
+  <div class="grid w-full h-full bg-blue-900"
+       [style.gridTemplateColumns]="'repeat(10,' + cellSize + 'px)'"
+       [style.gridTemplateRows]="'repeat(10,' + cellSize + 'px)'">
 
-    @for (row of board(); track row) {
-    <div class="row">
-      @for (cell of row; track cell.coord) {
-      <div class="cell bg-blue-950 text-white" [attr.data-coord]="cell.coord" draggable="true"
-        (dragstart)="onDragStart($event, cell)" (dragover)="onDragOver($event)" (drop)="onDrop($event, cell)"
-        (click)="onCellClick(cell)">
-
-      </div>
-      }
-    </div>
+    @for (i of cells; track i) {
+      <div class="border border-gray-500"></div>
     }
-
   </div>
+
+  <!-- Submarinos -->
+  @for (sub of board()?.submarines; track sub.id) {
+    <img
+      [src]="sub.isHorizontal ? 'images/submarine-H.png' : 'images/submarine-V.png'"
+      class="absolute"
+      [style.left.px]="getX(sub.positions[0])"
+      [style.top.px]="getY(sub.positions[0])"
+      [style.width.px]="sub.isHorizontal ? sub.sizeSub * cellSize : cellSize"
+      [style.height.px]="sub.isHorizontal ? cellSize : sub.sizeSub * cellSize">
+  }
 </div>
-<h3 class="text-center mt-5 text-white">Drag and Drop</h3>

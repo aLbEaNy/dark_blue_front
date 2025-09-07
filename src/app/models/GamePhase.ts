@@ -1,1 +1,0 @@
-export type GamePhase = 'PLACEMENT' | 'IN_PROGRESS' | 'FINISHED';

@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
-import { StorageService } from '../../../services/store/storage.service';
+import { StorageService } from '../../../services/store/storageLocal.service';
 import { ValidatorService } from '../../../validators/validator.service';
 import IRestMessage from '../../../models/IRestMessage';
 

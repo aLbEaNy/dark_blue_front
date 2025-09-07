@@ -11,7 +11,7 @@ import {
   untracked,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { StorageService } from '../../../services/store/storage.service';
+import { StorageService } from '../../../services/store/storageLocal.service';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../services/auth/auth.service';
 

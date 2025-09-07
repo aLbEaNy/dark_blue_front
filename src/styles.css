@@ -13,4 +13,13 @@
   .text-fluor{
     @apply text-[#1187d6]
   }
+  .bg-acero{
+    @apply bg-[#999696];
+  }
+  .bg-btn{
+    @apply bg-[#bfb71b];
+  }
+  .border-btn{
+    @apply border-[#0d1d2b];
+  }
 }
