@@ -15,7 +15,7 @@ import { Router, RouterLink } from '@angular/router';
 import IRestMessage from '../../../models/IRestMessage';
 import IRegister from '../../../models/IRegister';
 import { ValidatorService } from '../../../validators/validator.service';
-import { StorageService } from '../../../services/store/storage.service';
+import { StorageService } from '../../../services/store/storageLocal.service';
 import { AuthService } from '../../../services/auth/auth.service';
 import Swal from 'sweetalert2';
 import { AuthGoogleService } from '../../../services/auth/auth-google.service';

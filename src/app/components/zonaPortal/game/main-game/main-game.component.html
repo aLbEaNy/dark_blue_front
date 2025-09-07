@@ -5,11 +5,20 @@
 
             @switch (page()) {
         
-              @case ('newGame') {    
+              @case ('newGame') {  
+            
+                <app-mini-display-user></app-mini-display-user>
+                <div class="relative">
                   <app-board></app-board>
+                </div>
+                <app-mini-placement></app-mini-placement>
+              }
+              @case ('inProgress') {
+                <app-mini-display-user></app-mini-display-user>
+                <app-board gameDTO() = gameDTO></app-board>
               }
               @default {
-                  <app-menu (pageChange)="page.set($event)"></app-menu>
+                <app-menu (pageChange)="page.set($event)"></app-menu>
               }
             }
 

@@ -1,29 +1,26 @@
 import {
   Component,
-  computed,
   effect,
   inject,
   Injector,
   OnInit,
-  resource,
-  ResourceRef,
   signal,
-  untracked,
 } from '@angular/core';
 import { BoardComponent } from '../board/board.component';
 import { MenuComponent } from '../menu/menu.component';
 import { HeaderComponent } from '../../header/header.component';
 import { FooterComponent } from '../../footer/footer.component';
 import { AudioService } from '../../../../services/audio/audio.service';
-import { GamePhase } from '../../../../models/GamePhase';
-import IGameDTO from '../../../../models/IGAmeDTO';
-import { StorageService } from '../../../../services/store/storage.service';
+import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
 import IRestMessage from '../../../../models/IRestMessage';
+import { firstValueFrom } from 'rxjs';
+import { MiniDisplayUserComponent } from "../mini-display-user/mini-display-user.component";
+import { MiniPlacementComponent } from "../mini-placement/mini-placement.component";
 
 @Component({
   selector: 'app-main-game',
-  imports: [MenuComponent, BoardComponent, HeaderComponent, FooterComponent],
+  imports: [MenuComponent, BoardComponent, HeaderComponent, FooterComponent, MiniDisplayUserComponent, MiniPlacementComponent],
   templateUrl: './main-game.component.html',
   styleUrl: './main-game.component.css',
 })
@@ -33,13 +30,10 @@ export class MainGameComponent implements OnInit {
   gameService = inject(GameService);
   private _injector = inject(Injector);
 
-  nickname = signal(this.storage.get<string>('nickname') || '');
-
-  page = signal('main-game');
-
-  gameDTO = signal<IGameDTO | null>(this.storage.get<IGameDTO>('gameDTO'));
-
-  phase = signal<GamePhase>('PLACEMENT');
+  perfil = signal(this.storage.get<any>('perfil'));
+  nickname = signal<string>(this.perfil().nickname);
+  page = signal('');
+  gameResponse = signal<IRestMessage | null>(null);
 
   isReady = signal(false);
 
@@ -48,47 +42,29 @@ export class MainGameComponent implements OnInit {
     this.audioService.play('http://localhost:8080/media/audio/menu2.mp3', true);
   }
   constructor() {
-
+    //Según el valor de page dispara la nueva partida
     effect(() => {
-      const data = this.newGameResource.value();
-
-      if (data) {
-        untracked(() => {
-                console.log(' gameDTO desde storage vale: -----------------------> ', this.gameDTO());
-
-          this.gameDTO.set(data.datos);
-          this.phase.set(data.datos.phase);
-
-          console.log(' gameDTO vale: -----------------------> ', data.datos);
-          // Guardo en local
-          this.storage.set('gameDTO', data.datos);
-        });
+      const _page = this.page();
+      console.log('page vale: ', _page);
+      if (_page === 'newGame') {
+        this.newGame();
       }
     });
   }
+  async newGame() {
+  try {
+    const resp = await firstValueFrom( // Promise solo se es pera un valor
+      this.gameService.newGame(this.nickname(), false)
+    );
 
-  // Crear nueva partida
-  public newGameResource: ResourceRef<IRestMessage> = resource({
-    request: () => ({
-      nickname: this.nickname(),
-      online: this.page() === 'online' ? true : false,
-    }),
-    loader: async ({ request, abortSignal }) => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/game/new?nickname=${request.nickname}&online=${request.online}`,
-          { method: 'GET', signal: abortSignal }
-        );
-        if (!response.ok) throw new Error('Error de red o servidor');
-        const body = await response.json();
-        console.log(body);
+    console.log("Respuesta:", resp);
 
-        return body ?? { codigo: 2, mensaje: ' sin datos...' };
-      } catch (error) {
-        console.error('Error al crear nueva partida: ', error);
-        return { codigo: 1, mensaje: 'Error al crear nueva partida' };
-      }
-    },
-    injector: this._injector,
-  });
+    if (resp.codigo === 0) {
+      this.gameService.gameDTO.set(resp.datos);
+      this.storage.set("gameDTO", resp.datos);
+    }
+  } catch (err) {
+    console.error("Error en newGame:", err);
+  }
+}
 }

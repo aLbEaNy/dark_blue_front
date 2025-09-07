@@ -1,8 +1,9 @@
-import { inject, Injectable, Injector, Signal } from '@angular/core';
+import { inject, Injectable, Injector, signal, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import IRestMessage from '../../models/IRestMessage';
 import { startWith } from 'rxjs/operators';
+import IGameDTO from '../../models/Game';
 
 @Injectable({
   providedIn: 'root'
@@ -12,25 +13,15 @@ export class GameService {
   private http = inject(HttpClient);
   private _injector = inject(Injector);
 
-  newGame(nickname: string, online: boolean): Signal<IRestMessage> {
-    return toSignal(
-      this.http
-        .get<IRestMessage>(`http://localhost:8080/game/new?nickname=${nickname}&online=${online}`)
-        .pipe(
-          startWith({
-            codigo: 2,
-            mensaje: '...esperando respuesta del server desde game.service...',
-            datos: null,
-          })
-        ),
-      { injector: this._injector, requireSync: true }
-    );
-            
-  } 
-
-  }
-
   
+  newGame(nickname: string, online: boolean) {
+  return this.http.get<IRestMessage>(
+    `http://localhost:8080/game/new?nickname=${nickname}&online=${online}`
+  );
+}
+  gameDTO = signal<IGameDTO | null>(null);
+
+}
   
   
   

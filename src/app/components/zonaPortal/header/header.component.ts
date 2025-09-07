@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { StorageService } from '../../../services/store/storage.service';
+import { StorageService } from '../../../services/store/storageLocal.service';
 
 @Component({
   selector: 'app-header',
@@ -12,8 +12,7 @@ export class HeaderComponent {
   private _storage = inject(StorageService);
 
   perfil = signal<any>(this._storage.get('perfil'));
-  
-
-  
 
 }
+
+
