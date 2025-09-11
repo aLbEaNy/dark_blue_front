@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 
 @Component({
   selector: 'app-mini-placement',
@@ -7,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrl: './mini-placement.component.css'
 })
 export class MiniPlacementComponent {
+  pageChange = output<string>();
+
+  startBattle(event: MouseEvent, page: string) {
+    this.pageChange.emit(page);
+  }
+
 
 }

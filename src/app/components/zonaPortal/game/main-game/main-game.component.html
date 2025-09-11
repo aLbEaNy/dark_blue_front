@@ -1,28 +1,35 @@
 <div class="bg-[url('/images/menu.png')] bg-cover bg-center h-screen overflow-hidden">
 
-    <app-header></app-header>
-    <div class="flex-col">
+  <app-header></app-header>
+  <div class="flex-col">
 
-            @switch (page()) {
-        
-              @case ('newGame') {  
-            
-                <app-mini-display-user></app-mini-display-user>
-                <div class="relative">
-                  <app-board></app-board>
-                </div>
-                <app-mini-placement></app-mini-placement>
-              }
-              @case ('inProgress') {
-                <app-mini-display-user></app-mini-display-user>
-                <app-board gameDTO() = gameDTO></app-board>
-              }
-              @default {
-                <app-menu (pageChange)="page.set($event)"></app-menu>
-              }
-            }
+    @switch (page()) {
 
+    @case ('NEWGAME') {
+
+    <app-mini-display-user></app-mini-display-user>
+    <div class="relative">
+      <app-board></app-board>
     </div>
+    <app-mini-placement (pageChange)="page.set($event)"></app-mini-placement>
+    }
+    @case ('BATTLE') {
+    <div
+      class="justify-self-center px-13 py-2 mt-6 mb-5 bg-principal text-yellow-500 font-bold shadow-black shadow-2xl">
+      Está atacando!
+      <app-mini-board></app-mini-board>
 
-    <app-footer class="fixed bottom-0 left-0 w-full"></app-footer>
+      <app-mini-display-user></app-mini-display-user>
+    </div>
+    <app-board-atack></app-board-atack>
+
+    }
+    @default {
+    <app-menu (pageChange)="page.set($event)"></app-menu>
+    }
+    }
+
+  </div>
+
+  <app-footer class="fixed bottom-0 left-0 w-full"></app-footer>
 </div>
