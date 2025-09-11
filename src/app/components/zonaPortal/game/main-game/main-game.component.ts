@@ -15,12 +15,23 @@ import { StorageService } from '../../../../services/store/storageLocal.service'
 import { GameService } from '../../../../services/game/game.service';
 import IRestMessage from '../../../../models/IRestMessage';
 import { firstValueFrom } from 'rxjs';
-import { MiniDisplayUserComponent } from "../mini-display-user/mini-display-user.component";
-import { MiniPlacementComponent } from "../mini-placement/mini-placement.component";
+import { MiniDisplayUserComponent } from '../mini-display-user/mini-display-user.component';
+import { MiniPlacementComponent } from '../mini-placement/mini-placement.component';
+import { MiniBoardComponent } from '../mini-board/mini-board.component';
+import { BoardAtackComponent } from '../board-atack/board-atack.component';
 
 @Component({
   selector: 'app-main-game',
-  imports: [MenuComponent, BoardComponent, HeaderComponent, FooterComponent, MiniDisplayUserComponent, MiniPlacementComponent],
+  imports: [
+    MenuComponent,
+    BoardComponent,
+    HeaderComponent,
+    FooterComponent,
+    MiniDisplayUserComponent,
+    MiniPlacementComponent,
+    MiniBoardComponent,
+    BoardAtackComponent,
+  ],
   templateUrl: './main-game.component.html',
   styleUrl: './main-game.component.css',
 })
@@ -31,7 +42,6 @@ export class MainGameComponent implements OnInit {
   private _injector = inject(Injector);
 
   perfil = signal(this.storage.get<any>('perfil'));
-  nickname = signal<string>(this.perfil().nickname);
   page = signal('');
   gameResponse = signal<IRestMessage | null>(null);
 
@@ -46,25 +56,50 @@ export class MainGameComponent implements OnInit {
     effect(() => {
       const _page = this.page();
       console.log('page vale: ', _page);
-      if (_page === 'newGame') {
+
+      if (_page === 'NEWGAME') {
         this.newGame();
+      }
+      if (_page === 'BATTLE') {
+        this.startBattle();
+      }
+      if (_page === 'OPTIONS') {
       }
     });
   }
   async newGame() {
-  try {
-    const resp = await firstValueFrom( // Promise solo se es pera un valor
-      this.gameService.newGame(this.nickname(), false)
-    );
+    try {
+      const resp = await firstValueFrom(
+        // Promise solo se es pera un valor
+        this.gameService.newGame(this.perfil().nickname, false)
+      );
 
-    console.log("Respuesta:", resp);
+      console.log('Respuesta:', resp);
 
-    if (resp.codigo === 0) {
-      this.gameService.gameDTO.set(resp.datos);
-      this.storage.set("gameDTO", resp.datos);
+      if (resp.codigo === 0) {
+        this.gameService.setGame(resp.datos);
+      }
+    } catch (err) {
+      console.error('Error en newGame:', err);
     }
-  } catch (err) {
-    console.error("Error en newGame:", err);
   }
-}
+  async startBattle() {
+    console.log('startBattle desde main-game.component.ts ----------------->');
+    let _game = this.gameService.gameDTO()!;
+    this.perfil().nickname === _game.player1
+      ? (_game.readyPlayer1 = true)
+      : (_game.readyPlayer2 = true);
+
+    if (!_game.online) {
+      //MODO HISTORIA
+      _game.phase = 'BATTLE';
+      console.log('nickname-------------------> ',_game.player1);
+      
+
+    } else {
+      //MODO ONLINE
+      //TODO ONLINE
+    }
+   
+  }
 }

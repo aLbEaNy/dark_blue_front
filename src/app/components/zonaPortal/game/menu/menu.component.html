@@ -5,21 +5,21 @@
                 <button
                     (mouseenter)="disableHover() ? '' : reproducirHover()"
                     (mouseleave)="stopHover()"
-                    (click)="disableHover() ? '' : dispararTorpedo($event, 'newGame')" 
-                    class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo"
+                    (click)="disableHover() ? '' : dispararTorpedo($event, 'NEWGAME')" 
+                    class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo shadow-black transform transition duration-300 hover:scale-105 hover:shadow-lg"
                 >NUEVA PARTIDA</button>
             </div>
             <div class="mb-6">
                 <button 
                     (mouseenter)="disableHover() ? '' : reproducirHover()"
                     (mouseleave)="stopHover()"
-                    (click)="disableHover() ? '' : dispararTorpedo($event, 'online')" class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo">ONLINE</button>
+                    (click)="disableHover() ? '' : dispararTorpedo($event, 'ONLINE')" class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo shadow-black transform transition duration-300 hover:scale-105 hover:shadow-lg">ONLINE</button>
             </div>
             <div>
                 <button 
                     (mouseenter)="disableHover() ? '' : reproducirHover()"
                     (mouseleave)="stopHover()"
-                    (click)="disableHover() ? '' : dispararTorpedo($event, 'options')" class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo">OPCIONES</button>
+                    (click)="disableHover() ? '' : dispararTorpedo($event, 'OPTIONS')" class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-vibrate btn-torpedo shadow-black transform transition duration-300 hover:scale-105 hover:shadow-lg">OPCIONES</button>
             </div>
             
         </div>    
