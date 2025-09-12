@@ -17,7 +17,7 @@ export class MiniDisplayUserComponent {
     if (!dto) return ''; // <-- prevenir null
     console.log('FASE.......... ', dto.phase)
     if (dto.phase === 'BATTLE'){
-      return dto.turn == 'player1' ? dto.player1 : dto.player2;
+      return this.gameService.me() === 'player1' && this.gameService.isMyTurn() ? dto.player1 : dto.player2;
     } else {
       return this.gameService.me() === 'player1' ? dto.player1 : dto.player2;
     }
@@ -26,7 +26,7 @@ export class MiniDisplayUserComponent {
     const dto = this.gameService.gameDTO();
     if (!dto) return ''; // <-- prevenir null
      if (dto.phase === 'BATTLE'){
-      return dto.turn == 'player1' ? dto.avatarPlayer1 : dto.avatarPlayer2;
+      return this.gameService.me() === 'player1' && this.gameService.isMyTurn() ? dto.avatarPlayer1 : dto.avatarPlayer2;
     } else {
       return this.gameService.me() === 'player1' ? dto.avatarPlayer1 : dto.avatarPlayer2;
     }

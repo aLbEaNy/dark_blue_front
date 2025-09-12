@@ -8,3 +8,8 @@ export function formatPosition(row: number, col: number): string {
   const number = col + 1; // 0 -> 1, 9 -> 10
   return `${letter}${number}`;
 }
+
+export const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+// nextFrame() es útil para ceder al browser y que pinte antes del siguiente disparo.
+export const nextFrame = () => new Promise<void>(res => requestAnimationFrame(() => res()));

@@ -1,40 +1,32 @@
 <div #boardRef id="board"
     class="relative w-[340px] h-[340px] border border-gray-600 mt-3 shadow-2xl shadow-black justify-self-center">
-
     <!-- Grid 10x10 -->
     <div class="grid w-full h-full bg-blue-900" [style.gridTemplateColumns]="'repeat(10, ' + cellSize + 'px)'"
         [style.gridTemplateRows]="'repeat(10, ' + cellSize + 'px)'">
         @for (i of cells; track i) {
-            @if (isMyTurn()) {
-                <div class="border border-gray-500 cursor-crosshair z-1 hover:bg-red-800 shadow-2xl shadow-black transform transition duration-300 hover:scale-105 hover:shadow-lg"
-                    (click)="fire(i)"></div>
-            }@else{
-                <div class="border border-gray-500 cursor-no-drop">
-                </div>
-            }
+        @if (isMyTurn()) {
+        <div class="border border-gray-500 cursor-crosshair z-1 hover:bg-red-800 shadow-2xl shadow-black transform transition duration-300 hover:scale-105 hover:shadow-lg"
+            [class.cursor-crosshair]="!shotMap()[i]" [class.cursor-not-allowed]="shotMap()[i]"
+            [class.bg-red-800]="shotMap()[i] === 'HIT'" [class.bg-blue-400]="shotMap()[i] === 'MISS'"
+            [class.hover\:bg-red-800]="!shotMap()[i]" (click)="!shotMap()[i] && fire(i)"></div>
+        }@else{
+        <div class="border border-gray-500 cursor-none" [class.bg-red-800]="shotMap()[i] === 'HIT'"
+            [class.bg-blue-400]="shotMap()[i] === 'MISS'">
+
+        </div>
+        }
         }
         <!-- Submarinos -->
-  @for (sub of board()?.submarines; track sub.id) {
+        @for (sub of boardComputed()?.submarines; track sub.id) {
 
-    @if (isMyTurn()) {
-      <img [src]="sub.isHorizontal ? 'images/submarine-H.png' : 'images/submarine-V.png'"
-         class="absolute opacity-30"
-         [ngStyle]="getSubmarineStyle(sub)"
-         alt="submarino"
-        
-         >
-    }@else {
-        
+        @if (isMyTurn()) {
+        <img [src]="sub.isHorizontal ? 'images/submarine-H.png' : 'images/submarine-V.png'" class="absolute opacity-30"
+            [ngStyle]="getSubmarineStyle(sub)" alt="submarino">
+        }@else {
+
         <img [src]="sub.isHorizontal ? 'images/submarine-H.png' : 'images/submarine-V.png'"
-             class="absolute cursor-no-drop"
-             [ngStyle]="getSubmarineStyle(sub)"
-             alt="submarino"
-            
-             >
+            class="absolute cursor-none" [ngStyle]="getSubmarineStyle(sub)" alt="submarino">
 
-    }
-  }
-
-
+        }
+        }
     </div>
-

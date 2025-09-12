@@ -1,9 +1,10 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, output } from '@angular/core';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
 import { formatPosition, parsePosition } from '../../../../utils/board-utils';
 import { NgStyle } from '@angular/common';
 import Submarine from '../../../../models/Submarine';
+import Shot from '../../../../models/Shot';
 
 @Component({
   selector: 'app-board-atack',
@@ -20,18 +21,25 @@ export class BoardAtackComponent {
   cellSize = 34;
   cells = Array.from({ length: 100 }, (_, i) => i);
 
-  // El tablero que me da el servicio según turno
-  board = this.gameService.getCurrentBoard;
-  isMyTurn = this.gameService.isMyTurn;
+  game = computed(() => {
+    return this.gameService.gameDTO();
+  });
 
+  isMyTurn = computed(() => {
+    return this.gameService.isMyTurn();
+  });
+  
+  boardComputed = computed(() => {
+    return this.gameService.getCurrentBoard();
+  });
+  firePlayer = output<string>();
 
   fire(cellIndex: number) {
-    console.log('Disparo en celda:', cellIndex);
-    console.log('Es mi turno? :', this.isMyTurn());
-    console.log('Board actual:', this.board());
     const x = Math.floor(cellIndex / this.BOARD_SIZE);
     const y = cellIndex % this.BOARD_SIZE;
-    this.gameService.shot(formatPosition(x, y));
+    const pos = formatPosition(x, y);
+    // Emitir coordenada al padre
+    this.firePlayer.emit(pos);
     
   }
   parsePosition(pos: string) {
@@ -51,5 +59,20 @@ export class BoardAtackComponent {
         : sub.sizeSub * this.cellSize + 'px',
     };
   }
+
+  shotMap = computed(() => {
+  const shotsInBoard1 = this.gameService.shotsInBoard1();
+  const shotsInBoard2 = this.gameService.shotsInBoard2();
+  
+  const map: Record<number, 'HIT' | 'MISS'> = {};
+  const shots = this.boardComputed()?.shots ?? [];
+  for (const shot of shots) {
+    const pos = this.parsePosition(shot.position);
+    const index = pos.row * this.BOARD_SIZE + pos.col;
+    map[index] = shot.result;
+  }
+  return map;
+});
+
 
 }

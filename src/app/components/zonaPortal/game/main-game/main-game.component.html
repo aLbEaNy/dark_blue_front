@@ -16,12 +16,12 @@
     @case ('BATTLE') {
     <div
       class="justify-self-center px-13 py-2 mt-6 mb-5 bg-principal text-yellow-500 font-bold shadow-black shadow-2xl">
-      Está atacando!
+      Está atacando! 
       <app-mini-board></app-mini-board>
 
       <app-mini-display-user></app-mini-display-user>
     </div>
-    <app-board-atack></app-board-atack>
+    <app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
 
     }
     @default {
