@@ -21,6 +21,7 @@ import { MiniBoardComponent } from '../mini-board/mini-board.component';
 import { BoardAtackComponent } from '../board-atack/board-atack.component';
 import { AIService } from '../../../../services/game/ai.service';
 import { sleep } from '../../../../utils/board-utils';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-main-game',
@@ -133,6 +134,23 @@ export class MainGameComponent implements OnInit {
     const lastShot = board1.shots[board1.shots.length - 1];
     continueTurn = lastShot.result === 'HIT';
 
+    // --- COMPROBAR FIN DE PARTIDA ---
+    if (board1.submarines.every(sub => sub.isDestroyed)) {
+      // Mostrar banner o popup de victoria de la IA
+      Swal.fire({
+                title: 'VICTORIA!!',
+                text: `${this.gameService.gameDTO()?.player2} ha ganado! para validar tu cuenta.`,
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+              });
+      await sleep(1500);
+      _game = {..._game,stage: 2, winner: 'player2', phase: 'END'}
+      this.page.set('NEWGAME');
+      this.gameService.setGame(_game);
+      return;
+    }
+   
+
     // Pequeña pausa visible para el jugador
     await sleep(500);
   }
@@ -169,7 +187,7 @@ async nextTurn() {
 async playerFire(pos: string) {
   console.log('-----------> Entro en playerFire');
   console.log('Disparo en posición:', pos);
-  const _game = this.gameService.gameDTO()!;
+  let _game = this.gameService.gameDTO()!;
   if (_game.turn !== 'player1') return;
 
   let result: 'HIT' | 'MISS' = 'MISS';
@@ -186,8 +204,6 @@ async playerFire(pos: string) {
     }
   }
 
-
-
   _game.boardPlayer2.shots.push({ position: pos, result });
   this.gameService.setGame(_game);
   this.gameService.shotsInBoard2.set([..._game.boardPlayer2.shots]);
@@ -201,7 +217,21 @@ async playerFire(pos: string) {
     // Llamar al loop de turnos
     this.nextTurn();
   } 
-  
+  // Comprobar fin de partida
+if (_game.boardPlayer2.submarines.every(sub => sub.isDestroyed)) {
+  Swal.fire({
+    title: 'VICTORIA!!',
+    text: `${_game.player1} ha ganado la partida!`,
+    icon: 'success',
+    confirmButtonText: 'Aceptar'
+  });
+  await sleep(1500);
+  _game = {..._game, stage: 2, winner: 'player1', phase: 'END'};
+  this.page.set('NEWGAME');
+  this.gameService.setGame(_game);
+  return; // No cambiar turno
+}
+
   // Si fue HIT, el jugador sigue disparando; no se cambia turno
 }
 
