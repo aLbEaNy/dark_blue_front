@@ -1,7 +1,7 @@
-import IShot from "./Shot";
+import Shot from "./Shot";
 import ISubmarine from "./Submarine";
 
 export default interface Board {
     submarines: ISubmarine[],
-    shots: IShot[] // ej: {coord:"A5", hit:true, .....}
+    shots: Shot[] // ej: {coord:"A5", hit:true, .....}
 }

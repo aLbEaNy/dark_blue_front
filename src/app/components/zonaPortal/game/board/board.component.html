@@ -13,7 +13,7 @@
   <!-- Submarinos con CDK Drag -->
   @for (sub of board()?.submarines; track sub.id) {
     <img [src]="sub.isHorizontal ? 'images/submarine-H.png' : 'images/submarine-V.png'"
-         class="absolute hover:cursor-pointer shadow-black hover:scale-105 hover:shadow-lg "
+         class="absolute hover:cursor-pointer shadow-black hover:scale-102 hover:shadow-2xl "
         title="Haz doble clic para rotar"
          [ngStyle]="getSubmarineStyle(sub)"
          alt="submarino"

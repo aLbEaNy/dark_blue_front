@@ -35,8 +35,8 @@ export class BoardComponent {
     effect(() => {
       const dto = this.gameService.gameDTO();
       console.log('EFFECT me:', this.gameService.me());
-      console.log('EFFECT BOARD_PLAYER1:', dto?.boardPlayer1.submarines);
-      console.log('EFFECT BOARD_PLAYER2:', dto?.boardPlayer2.submarines);
+      console.log('EFFECT BOARD_PLAYER1:', dto?.boardPlayer1);
+      console.log('EFFECT BOARD_PLAYER2:', dto?.boardPlayer2);
     });
   }
   

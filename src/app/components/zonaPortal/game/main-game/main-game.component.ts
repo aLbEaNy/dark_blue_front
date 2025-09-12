@@ -5,6 +5,7 @@ import {
   Injector,
   OnInit,
   signal,
+  untracked,
 } from '@angular/core';
 import { BoardComponent } from '../board/board.component';
 import { MenuComponent } from '../menu/menu.component';
@@ -13,12 +14,13 @@ import { FooterComponent } from '../../footer/footer.component';
 import { AudioService } from '../../../../services/audio/audio.service';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
-import IRestMessage from '../../../../models/IRestMessage';
 import { firstValueFrom } from 'rxjs';
 import { MiniDisplayUserComponent } from '../mini-display-user/mini-display-user.component';
 import { MiniPlacementComponent } from '../mini-placement/mini-placement.component';
 import { MiniBoardComponent } from '../mini-board/mini-board.component';
 import { BoardAtackComponent } from '../board-atack/board-atack.component';
+import { AIService } from '../../../../services/game/ai.service';
+import { sleep } from '../../../../utils/board-utils';
 
 @Component({
   selector: 'app-main-game',
@@ -43,10 +45,10 @@ export class MainGameComponent implements OnInit {
 
   perfil = signal(this.storage.get<any>('perfil'));
   page = signal('');
-  gameResponse = signal<IRestMessage | null>(null);
+ 
+  aiService = this._injector.get(AIService);
 
-  isReady = signal(false);
-
+  
   ngOnInit() {
     // Reproduce el audio al cargar el componente
     this.audioService.play('http://localhost:8080/media/audio/menu2.mp3', true);
@@ -57,14 +59,18 @@ export class MainGameComponent implements OnInit {
       const _page = this.page();
       console.log('page vale: ', _page);
 
-      if (_page === 'NEWGAME') {
-        this.newGame();
-      }
-      if (_page === 'BATTLE') {
-        this.startBattle();
-      }
-      if (_page === 'OPTIONS') {
-      }
+      untracked(() => {
+
+        if (_page === 'NEWGAME') {
+          this.newGame();
+        }
+        if (_page === 'START') {
+          this.startBattle();
+        }
+        if (_page === 'OPTIONS') {
+        }
+      });
+
     });
   }
   async newGame() {
@@ -84,22 +90,120 @@ export class MainGameComponent implements OnInit {
     }
   }
   async startBattle() {
-    console.log('startBattle desde main-game.component.ts ----------------->');
-    let _game = this.gameService.gameDTO()!;
-    this.perfil().nickname === _game.player1
-      ? (_game.readyPlayer1 = true)
-      : (_game.readyPlayer2 = true);
-
-    if (!_game.online) {
-      //MODO HISTORIA
-      _game.phase = 'BATTLE';
-      console.log('nickname-------------------> ',_game.player1);
-      
-
-    } else {
-      //MODO ONLINE
-      //TODO ONLINE
-    }
-   
+  console.log('startBattle desde main-game.component.ts ----------------->');
+  let _game = this.gameService.gameDTO()!;
+  _game.phase = 'BATTLE';
+  this.perfil().nickname === _game.player1
+    ? (_game.readyPlayer1 = true)
+    : (_game.readyPlayer2 = true);
+  this.gameService.setGame(_game);
+  
+  if (!_game.online) {
+    // MODO HISTORIA
+    this.nextTurn();
+    
+  } else {
+    // MODO ONLINE
+    // TODO ONLINE
   }
+}
+
+
+ async aiTurn() {
+  let _game = this.gameService.gameDTO()!;
+  if (_game.turn !== 'player2') return;
+
+  let continueTurn = true;
+
+  while (continueTurn) {
+    await sleep(1500);
+
+    // IA dispara → devuelve un board NUEVO (inmutable)
+    const board1 = this.aiService.fire(_game.boardPlayer1);
+
+    // Actualiza gameDTO y signal
+    _game = { ..._game, boardPlayer1: board1 };
+    this.gameService.setGame(_game);
+    this.gameService.shotsInBoard1.set([...board1.shots]);
+
+    // Espera un frame para que Angular pinte
+    await new Promise(res => requestAnimationFrame(() => res(0)));
+
+    // Último disparo
+    const lastShot = board1.shots[board1.shots.length - 1];
+    continueTurn = lastShot.result === 'HIT';
+
+    // Pequeña pausa visible para el jugador
+    await sleep(500);
+  }
+
+  // Cambiar turno al jugador humano
+  _game = { ..._game, turn: 'player1' };
+  this.gameService.setGame(_game);
+  this.gameService.isMyTurn.set(true);
+  this.gameService.getCurrentBoard.set(_game.boardPlayer2);
+}
+
+
+async nextTurn() {
+  console.log('-----------> Entro en nextTurn');
+  const _game = this.gameService.gameDTO()!;
+  
+  if (_game.phase !== 'BATTLE') return;
+
+  if (_game.turn === 'player1') {
+    // Solo habilitar la UI, esperar clics del jugador
+    // No hacemos nada más aquí; playerFire() llamará nextTurn() cuando haga MISS
+      this.page.set('BATTLE');
+    return;
+  }
+
+  if (_game.turn === 'player2') {
+      this.page.set('BATTLE');
+    // Turno de IA
+    await this.aiTurn();
+    // Al finalizar, nextTurn() se llamará de nuevo para pasar el turno al player1
+    await this.nextTurn();
+  }
+}
+async playerFire(pos: string) {
+  console.log('-----------> Entro en playerFire');
+  console.log('Disparo en posición:', pos);
+  const _game = this.gameService.gameDTO()!;
+  if (_game.turn !== 'player1') return;
+
+  let result: 'HIT' | 'MISS' = 'MISS';
+  for (const sub of _game.boardPlayer2.submarines) {
+    const index = sub.positions.indexOf(pos);
+    if (index !== -1) {
+      result = 'HIT';
+      sub.isTouched[index] = true;
+
+      if (sub.isTouched.every(t => t)) {
+        sub.isDestroyed = true;
+      }
+      break;
+    }
+  }
+
+
+
+  _game.boardPlayer2.shots.push({ position: pos, result });
+  this.gameService.setGame(_game);
+  this.gameService.shotsInBoard2.set([..._game.boardPlayer2.shots]);
+  await sleep(1500);
+
+  if (result === 'MISS') {
+    _game.turn = 'player2';
+    this.gameService.setGame(_game);
+    this.gameService.isMyTurn.set(false);
+    this.gameService.getCurrentBoard.set(_game.boardPlayer1);
+    // Llamar al loop de turnos
+    this.nextTurn();
+  } 
+  
+  // Si fue HIT, el jugador sigue disparando; no se cambia turno
+}
+
+
 }
