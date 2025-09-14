@@ -1,37 +1,57 @@
 import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AudioService {
+  private audios: Map<string, HTMLAudioElement> = new Map();
 
-  private audio: HTMLAudioElement | null = null;
-
-  play(src: string, loop: boolean = false) {
-    if (this.audio) {
-      this.audio.pause(); // detener audio previo si había
+  play(id: string, src: string, loop: boolean = false, volume: number = 1) {
+    if (this.audios.has(id)) {
+      this.stop(id);
     }
-    this.audio = new Audio(src);
-    this.audio.loop = loop;
-    this.audio.play();
+    const audio = new Audio(src);
+    audio.loop = loop;
+    audio.volume = volume; // volumen inicial
+    audio.play();
+    this.audios.set(id, audio);
   }
 
-  pause() {
-    if (this.audio) {
-      this.audio.pause();
+  pause(id: string) {
+    const audio = this.audios.get(id);
+    if (audio) audio.pause();
+  }
+
+  stop(id: string) {
+    const audio = this.audios.get(id);
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      this.audios.delete(id);
     }
   }
 
-  stop() {
-    if (this.audio) {
-      this.audio.pause();
-      this.audio.currentTime = 0; // volver al inicio
+  isPlaying(id: string): boolean {
+    const audio = this.audios.get(id);
+    return audio !== undefined && !audio.paused;
+  }
+
+  stopAll() {
+    this.audios.forEach(a => {
+      a.pause();
+      a.currentTime = 0;
+    });
+    this.audios.clear();
+  }
+
+  setVolume(id: string, volume: number) {
+    const audio = this.audios.get(id);
+    if (audio) {
+      audio.volume = Math.min(1, Math.max(0, volume)); // clamp 0..1
     }
   }
 
-  isPlaying(): boolean {
-    return this.audio !== null && !this.audio.paused
+  setVolumeAll(volume: number) {
+    this.audios.forEach(a => {
+      a.volume = Math.min(1, Math.max(0, volume));
+    });
   }
-
-
 }

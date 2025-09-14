@@ -52,7 +52,7 @@ export class MainGameComponent implements OnInit {
   
   ngOnInit() {
     // Reproduce el audio al cargar el componente
-    this.audioService.play('http://localhost:8080/media/audio/menu2.mp3', true);
+    this.audioService.play('menu2','http://localhost:8080/media/audio/menu2.mp3', true, 0.7);
   }
   constructor() {
     //Según el valor de page dispara la nueva partida
@@ -133,7 +133,17 @@ export class MainGameComponent implements OnInit {
     // Último disparo
     const lastShot = board1.shots[board1.shots.length - 1];
     continueTurn = lastShot.result === 'HIT';
-
+    if (continueTurn) {
+      this.audioService.play('hitSound','/audio/hitSound.mp3');
+      await sleep(200);
+    }else{
+      this.audioService.play('missSound','/audio/missSound.mp3');
+      // Pequeña pausa visible para el jugador
+    await sleep(1800);
+    }
+    if(_game.boardPlayer1.submarines.findIndex(sub => sub.positions.some(pos => pos === lastShot.position) && sub.isDestroyed) !== -1)
+      this.audioService.play('destroyedSound','/audio/destroyedSound.mp3');
+      await sleep(200);
     // --- COMPROBAR FIN DE PARTIDA ---
     if (board1.submarines.every(sub => sub.isDestroyed)) {
       // Mostrar banner o popup de victoria de la IA
@@ -150,9 +160,6 @@ export class MainGameComponent implements OnInit {
       return;
     }
    
-
-    // Pequeña pausa visible para el jugador
-    await sleep(500);
   }
 
   // Cambiar turno al jugador humano
@@ -196,18 +203,21 @@ async playerFire(pos: string) {
     if (index !== -1) {
       result = 'HIT';
       sub.isTouched[index] = true;
-
+      this.audioService.play('hitSound','/audio/hitSound.mp3');
       if (sub.isTouched.every(t => t)) {
         sub.isDestroyed = true;
+        this.audioService.play('destroyedSound','/audio/destroyedSound.mp3');
       }
       break;
     }
   }
-
+  if(result === 'MISS'){
+    this.audioService.play('missSound','/audio/missSound.mp3');
+  }
   _game.boardPlayer2.shots.push({ position: pos, result });
   this.gameService.setGame(_game);
   this.gameService.shotsInBoard2.set([..._game.boardPlayer2.shots]);
-  await sleep(1500);
+  await sleep(1800);
 
   if (result === 'MISS') {
     _game.turn = 'player2';
@@ -229,7 +239,7 @@ if (_game.boardPlayer2.submarines.every(sub => sub.isDestroyed)) {
   _game = {..._game, stage: 2, winner: 'player1', phase: 'END'};
   this.page.set('NEWGAME');
   this.gameService.setGame(_game);
-  return; // No cambiar turno
+  return; // se sale del while
 }
 
   // Si fue HIT, el jugador sigue disparando; no se cambia turno

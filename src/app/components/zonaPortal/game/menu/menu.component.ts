@@ -1,5 +1,6 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { AudioService } from '../../../../services/audio/audio.service';
 
 @Component({
   selector: 'app-menu',
@@ -11,6 +12,8 @@ export class MenuComponent {
  pageChange = output<string>();
 
   router = inject(Router);
+  audioService = inject(AudioService);
+
 
   hoverSound = new Audio('/audio/hoverTorpedo.mp3');
   torpedoSound = new Audio('/audio/torpedo.mp3');
@@ -18,13 +21,10 @@ export class MenuComponent {
   public disableHover = signal(false);
 
   reproducirHover() {
-    this.hoverSound.currentTime = 0; // reinicia el sonido si ya está sonando
-    this.hoverSound.play();
-    this.hoverSound.loop = true;
-
+    this.audioService.play('hoverSound','/audio/hoverTorpedo.mp3',true);
   }
   stopHover() {
-    this.hoverSound.pause();
+    this.audioService.stop('hoverSound');
   }
 
 
@@ -40,10 +40,10 @@ dispararTorpedo(event: MouseEvent, page: string) {
     this.disableHover.set(true);
 
     // Sonido torpedo
-    this.hoverSound.pause();
+    this.audioService.stop('hoverSound');
     this.torpedoSound.currentTime = 0.4;
     this.torpedoSound.play();
-
+    this.audioService.stop('menu2');
     // Cambiar de vista después de 1 segundo
     setTimeout(() => {
       this.pageChange.emit(page);
