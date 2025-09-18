@@ -1,4 +1,12 @@
-import { Component, computed, effect, inject, output, signal, untracked } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  output,
+  signal,
+  untracked,
+} from '@angular/core';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
 import { formatPosition, parsePosition } from '../../../../utils/board-utils';
@@ -14,9 +22,8 @@ import Submarine from '../../../../models/Submarine';
 export class BoardAtackComponent {
   storageService = inject(StorageService);
   gameService = inject(GameService);
-  
-  disableFire = signal(false);
 
+  disableFire = signal(false);
 
   //Referencia al tablero
   readonly BOARD_SIZE = 10;
@@ -43,7 +50,6 @@ export class BoardAtackComponent {
       untracked(() => {
         this.disableFire.set(false);
       });
-
     });
   }
 
@@ -54,7 +60,6 @@ export class BoardAtackComponent {
     this.disableShot(pos);
     // Emitir coordenada al padre
     this.firePlayer.emit(pos);
-    
   }
   parsePosition(pos: string) {
     return parsePosition(pos);
@@ -86,9 +91,11 @@ export class BoardAtackComponent {
     }
     return map;
   });
-  disableShot(pos: string){
-    this.boardComputed()?.submarines.findIndex(sub => sub.positions.some(p => p === pos)) !== -1 
-    ? this.disableFire.set(false)
-    : this.disableFire.set(true);
+  disableShot(pos: string) {
+    this.boardComputed()?.submarines.findIndex((sub) =>
+      sub.positions.some((p) => p === pos)
+    ) !== -1
+      ? this.disableFire.set(false)
+      : this.disableFire.set(true);
   }
 }
