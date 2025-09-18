@@ -1,1 +1,45 @@
-<div>MINI-BOARD</div>
+<div class="justify-self-center flex justify-center gap-4 p-4">
+    <div class="flex-col bg-principal flex justify-center gap-2 p-2 rounded-md">
+        <div class="bg-btn w-23 py-1 rounded-md flex justify-center">
+            <h2 class="text-darkBlue font-bold text-sm">Mi flota</h2>
+        </div>
+        <div class="flex-col rounded-sm">
+            @for (sub of game()?.boardPlayer1?.submarines; track sub.id) {
+            <div class="m-1 rounded-sm flex">
+
+                @for (s of sub.isTouched ; track $index) {
+                <div [ngClass]="[
+                        'rounded-r-sm',
+                        sub.isDestroyed ? 'bg-red-800 w-4' : 'bg-acero w-4',
+                    ]">
+                    <div class="p-1"></div>
+                </div>
+                }
+
+            </div>
+            }
+        </div>
+    </div>
+    <div class="flex-col bg-principal flex justify-center gap-2 p-2 rounded-md">
+        <div class="bg-btn w-23 py-1 rounded-md flex justify-center">
+            <h2 class="text-red-800 font-bold text-sm">Flota rival</h2>
+        </div>
+        <div class="flex-col rounded-sm">
+            @for (sub of game()?.boardPlayer2?.submarines; track sub.id) {
+            <div class="m-1 rounded-sm flex">
+
+                @for (s of sub.isTouched ; track $index) {
+                <div [ngClass]="[
+                        'rounded-r-sm',
+                        sub.isDestroyed ? 'bg-red-800 w-4' : 'bg-acero w-4',
+                    ]">
+                    <div class="p-1"></div>
+                </div>
+                }
+
+            </div>
+            }
+        </div>
+    </div>
+    
+</div>

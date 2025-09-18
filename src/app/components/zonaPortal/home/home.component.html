@@ -1,35 +1,30 @@
-<div class="min-h-screen w-full bg-gradient-to-b from-[#020608] via-[#0d1d2b] to-[#020d12] flex flex-col justify-center items-center text-center px-6">
-  
+<div
+  class="min-h-screen w-full bg-gradient-to-b from-[#020608] via-[#0d1d2b] to-[#020d12] flex flex-col justify-center items-center text-center px-6">
+
   <!-- Logo -->
-  <div class="mb-2 sm:mb-0">
-    <img 
-      src="images/logoDarkBlueLetras2.png" 
-      alt="Logo Dark Blue" 
-      class="max-w-[80vw] sm:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px]" 
-    />
+  <div class="mb-2 sm:mb-0 md:mb-2">
+    <img src="images/logoDarkBlueLetras2.png" alt="Logo Dark Blue" class="w-80 sm:w-50 md:w-100" />
   </div>
 
   <!-- Frase épica -->
-  <p class="text-white mb-12 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-light tracking-wide px-2 max-w-3xl">
+  <p class="text-white mb-12 sm:mb-4 md:mb-12 text-lg sm:text-sm md:text-2xl font-light tracking-wide px-2 max-w-3xl">
     ¡El destino de la humanidad está en tus manos!
   </p>
 
   <!-- Botones -->
-  <div class="flex flex-col gap-4 w-full max-w-xs lg:max-w-sm xl:max-w-md">
+  <div class="flex flex-col gap-4 w-full max-w-xs md:max-w-md">
     <button
-      class="bg-red-500 text-white py-3 lg:py-4 xl:py-5 rounded-lg text-lg lg:text-xl font-medium shadow-md hover:bg-red-600 transition"
-      routerLink="/login"
-    >
+      class="bg-red-500 text-white py-3 sm:py-1 md:py-3 rounded-lg text-lg sm:text-sm md:text-xl font-medium shadow-black shadow-lg hover:bg-red-600 transition"
+      routerLink="/login">
       Inicia Sesión
     </button>
     <button
-      class="bg-gray-700 text-white py-3 lg:py-4 xl:py-5 rounded-lg text-lg lg:text-xl font-medium shadow-md hover:bg-gray-800 transition"
-      routerLink="/registro"
-    >
+      class="bg-gray-700 text-white py-3 sm:py-1 md:py-3 rounded-lg text-lg sm:text-sm md:text-xl font-medium shadow-black shadow-lg hover:bg-gray-800 transition"
+      routerLink="/registro">
       Regístrate
     </button>
   </div>
 
   <!-- Versión -->
-  <p class="text-gray-400 text-sm lg:text-base mt-12">Versión 1.0.0</p>
+  <p class="text-gray-400 text-sm md:text-base mt-12 sm:mt-6 md:mt-12 ">Versión 1.0.0</p>
 </div>

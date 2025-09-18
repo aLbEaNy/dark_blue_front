@@ -1,5 +1,7 @@
-<div class=" justify-self-center flex items-center gap-2 py-1 px-2 mt-4 mx-4 bg-btn border-btn border-l-3 
-            border-b-3 border-t-1 border-r-1 shadow-black shadow-2xl rounded-full">
-    <h1 class="text-darkBlue font-bold text-sm">{{ nicknameDisplay()}}</h1>
-    <img [src]="avatarDisplay()" alt="avatar" class="w-4 h-4 rounded-full">
+<div class=" justify-self-center flex items-center gap-2 p-2 mt-4 mx-4 bg-principal border-btn border-l-3 
+            border-b-3 border-t-1 border-r-1 shadow-black shadow-md rounded-full">
+    <h1 class="font-bold"
+    [ngClass]="gameService.isMyTurn() || gameService.gameDTO()?.phase === 'PLACEMENT' ? 'text-fluor' : 'text-red-800'"
+    ><span class="px-3 text-acero text-md">JUEGA : </span>{{ nicknameDisplay()}}</h1>
+    <img [src]="avatarDisplay()" alt="avatar" class="w-6 h-6 rounded-full">
 </div>

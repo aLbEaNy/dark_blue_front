@@ -1,18 +1,20 @@
-<div class="min-h-screen w-full bg-[#020d12] flex flex-col justify-center items-center text-center px-6">
+<div class="min-h-screen w-full bg-principal flex flex-col justify-center items-center text-center">
 
-  <div class="bg-[#1a1a1a] p-6 rounded-lg shadow-md w-full max-w-xs sm:max-w-sm lg:max-w-md">
+  <div
+    class="bg-[#1a1a1a] p-6 sm:mt-8 md:mt-0 sm:mb-8 md:mb-0 rounded-lg shadow-black shadow-lg w-full max-w-xs sm:max-w-md">
 
-    <h2 class="text-white text-2xl font-semibold mb-6">Iniciar Sesión</h2>
+    <h2 class="text-white text-2xl font-semibold mb-6 sm:mb-0 md:mb-6">Iniciar Sesión</h2>
 
     <!-- Formulario -->
     <div class="flex flex-col gap-4">
 
       <!-- Correo -->
       <div>
-        <label for="email" class="block text-sm text-gray-300 text-left mb-1">Correo electrónico</label>
+        <label for="email" class="block text-sm text-gray-300 text-left mb-1 text-shadow-black text-shadow-sm">Correo
+          electrónico</label>
         <input type="email" id="email" mame="email" [value]="email()" (input)="email.set($any($event.target).value)"
           (blur)="emailTouched.set(true)" placeholder="ejemplo@correo.com"
-          class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500" />
+          class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 border-1 border-gray-900" />
       </div>
       <!-- Mostrar errores de email -->
       @if (emailError()) {
@@ -25,7 +27,7 @@
         <div class="relative">
           <input [type]="showPassword() ? 'text' : 'password'" id="password" [value]="password()"
             (input)="password.set($any($event.target).value)" (blur)="passwordTouched.set(true)" placeholder="••••••••"
-            class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500" />
+            class="w-full px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 border-1 border-gray-900" />
           <i (click)="showPassword.set(!showPassword())" class="absolute top-2 right-3 cursor-pointer">
 
             @if(showPassword()){
@@ -62,7 +64,8 @@
 
       <!-- Botón de login -->
       <button (click)="handleSubmit()" [disabled]="disableSubmitButton()"
-        class="bg-red-500 hover:bg-red-600 opacity-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed px-4 text-white py-2 rounded-md font-medium transition">
+        class="bg-red-500 hover:bg-red-600 opacity-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed px-4
+               text-white py-2 rounded-md font-medium transition shadow-black shadow-lg border-1 border-gray-900">
         Iniciar Sesión
       </button>
     </div>
@@ -75,7 +78,7 @@
     <!-- Login con Google -->
 
     <button (click)="loginWithGoogle()" id="google-custom-button"
-      class="w-full bg-white text-gray-700 py-2 rounded-md font-medium transition flex items-center justify-center space-x-2 hover:cursor-pointer">
+      class="w-full bg-white text-gray-700 py-2 rounded-md font-medium transition flex items-center justify-center space-x-2 hover:cursor-pointer border-1 border-gray-900 shadow-black shadow-lg">
       <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo" class="h-5 w-5" />
       <span>Iniciar sesión con Google</span>
     </button>
@@ -87,7 +90,6 @@
       <a routerLink="/registro" class="text-white font-semibold hover:underline">Regístrate</a>
     <div class="flex items-center mt-12">
 
-
-      <img src="images/logoDarkBlueLetras2.png" alt="logoDarkBlue" class="w-18 ms-2"> <span
-        class="text-acero text-sm lg:text-base ms-8">aLbEaNy SOFTWARE © 2025 </span>
+      <img src="images/logoDarkBlueLetras2.png" alt="logoDarkBlue" class="w-18 ms-2" routerLink="/"> <span
+        class="text-acero text-sm ms-auto me-2" routerLink="/">aLbEaNy SOFTWARE © 2025 </span>
     </div>

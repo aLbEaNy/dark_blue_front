@@ -1,35 +1,28 @@
-<div class="bg-[url('/images/menu.png')] bg-cover bg-center h-screen overflow-hidden">
+<div class="bg-[url('/images/menu.png')] bg-cover bg-center min-h-screen overflow-y-auto flex flex-col">
 
+  <!-- Header -->
   <app-header></app-header>
-  <div class="flex-col">
+
+  <!-- Contenido dinámico -->
 
     @switch (page()) {
-
-    @case ('NEWGAME') {
-
-    <app-mini-display-user></app-mini-display-user>
-    <div class="relative">
-      <app-board></app-board>
-    </div>
-    <app-mini-placement (pageChange)="page.set($event)"></app-mini-placement>
-    }
-    @case ('BATTLE') {
-    <div
-      class="justify-self-center px-13 py-2 mt-6 mb-5 bg-principal text-yellow-500 font-bold shadow-black shadow-2xl">
-      Está atacando! 
-      <app-mini-board></app-mini-board>
-
-      <app-mini-display-user></app-mini-display-user>
-    </div>
-    <app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
-
-    }
-    @default {
-    <app-menu (pageChange)="page.set($event)"></app-menu>
-    }
+      @case ('NEWGAME') {
+        <app-mini-display-user></app-mini-display-user>
+        <div class="relative">
+          <app-board></app-board>
+        </div>
+        <app-mini-placement (pageChange)="page.set($event)"></app-mini-placement>
+      }
+      @case ('BATTLE') {
+        <app-mini-display-user></app-mini-display-user>
+        <app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
+        <app-mini-board></app-mini-board>
+      }
+      @default {
+        <app-menu (pageChange)="page.set($event)"></app-menu>
+        <!-- Footer -->
+        <app-footer class="w-full mt-auto"></app-footer>
+      }
     }
 
-  </div>
-
-  <app-footer class="fixed bottom-0 left-0 w-full"></app-footer>
 </div>

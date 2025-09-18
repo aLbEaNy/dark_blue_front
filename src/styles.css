@@ -23,3 +23,14 @@
     @apply border-[#0d1d2b];
   }
 }
+/* Forzar que los swal2-popup acepten Tailwind */
+.swal2-popup.bg-principal {
+  background-image: linear-gradient(to bottom, #020608, #0d1d2b, #020d12) !important;
+  background-color: transparent !important; /* por si acaso */
+  color: #1187d6 !important; /* tu fluor */
+}
+.swal-title-green {
+  color: #39ff14 !important;
+}
+
+

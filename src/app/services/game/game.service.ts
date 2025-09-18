@@ -48,10 +48,17 @@ export class GameService {
   });
 
   
-  newGame(nickname: string, online: boolean) {
+  newGame(nickname: string, online: boolean, gameId: string ='') {
   return this.http.get<IRestMessage>(
-    `http://localhost:8080/game/new?nickname=${nickname}&online=${online}`
+    `http://localhost:8080/game/new?nickname=${nickname}&online=${online}&gameId=${gameId}`
   );
 }
+
+  updateGame(game: Game) {
+    return this.http.post<IRestMessage>(
+      'http://localhost:8080/game/update',
+      game
+    );
+  }
 
 }
