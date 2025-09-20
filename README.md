@@ -1,59 +1,64 @@
-# DarkBlueFront
+# Dark Blue
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.1.
+![Logo de Dark Blue](ruta/al/logo.png) <!-- Espacio reservado para tu logo -->
 
-## Development server
+**Dark Blue** es un juego web que reversiona el clásico **Hundir la Flota**, ofreciendo una experiencia moderna, interactiva y visualmente atractiva directamente desde el navegador.
 
-To start a local development server, run:
+## Autor
 
-```bash
-ng serve
-```
+**Alberto Tabernero Valle**
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Tecnologías
 
-## Code scaffolding
+![Angular](https://img.shields.io/badge/Angular-19-red?logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-blue?logo=tailwind-css&logoColor=white)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+El frontend está desarrollado con:
 
-```bash
-ng generate component component-name
-```
+- **Angular 19**  
+- **Tailwind CSS 4** para estilos y diseño responsivo  
+- **RxJS** para programación reactiva  
+- **STOMP / SockJS** para comunicación en tiempo real  
+- **SweetAlert2** para alertas y notificaciones visuales  
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Otras dependencias y herramientas incluyen PostCSS, Zone.js y TypeScript 5.
 
-```bash
-ng generate --help
-```
+## Características principales
 
-## Building
+- Interfaz moderna y responsive  
+- Turnos y disparos gestionados en tiempo real  
+- Animaciones y efectos de audio  
+- Alertas interactivas con SweetAlert2  
+- Escalado y rotación de los submarinos en el tablero  
 
-To build the project run:
+## Cómo jugar
 
-```bash
-ng build
-```
+1. Regístrate e inicia sesión.
+2. En el menu principal elige la opción de:
+    - Nueva partida (Modo Historia, player vs IA).
+    - Continuar (en construcción...).
+    - Online (en construcción...).
+    - Opciones (en construcción...).
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+ 
 
-## Running unit tests
+## Instalación y uso
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+1. Clona el repositorio del frontend:
 
-```bash
-ng test
-```
+   ```bash
+   git clone https://github.com/tu-usuario/dark-blue.git
+   cd dark-blue/dark-blue-front
 
-## Running end-to-end tests
+2. Clona el repositorio del backend:
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+    ```bash
+   git clone https://github.com/tu-usuario/dark-blue.git
+   cd dark-blue/dark-blue-back
+   
+   ⚠️ Nota: Los archivos con credenciales y claves secretas no se publican en los repositorios por motivos de seguridad. Estos se guardan en el archivo application-secrets.properties, ubicado en la carpeta resources del backend, el cual no está versionado en GitHub.
+    #API GOOGLE PARA LOGIN CON CUENTA DE GOOGLE GOOGLE_CLIENT_ID=XXXXXXXXXX.apps.googleusercontent.com
+    GOOGLE_CLIENT_SECRET=XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    #CREDENCIALES PARA ENVIAR EMAIL Y VALIDAR LA CUENTA GOOGLE_USERNAME=XXXXXXXX@gmail.com
+    GOOGLE_APP_PASS=contraseña_de_aplicación

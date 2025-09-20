@@ -21,6 +21,8 @@ import { BoardAtackComponent } from '../board-atack/board-atack.component';
 import { AIService } from '../../../../services/game/ai.service';
 import { sleep } from '../../../../utils/board-utils';
 import Swal from 'sweetalert2';
+import { WaitingOnlineComponent } from "../waiting-online/waiting-online.component";
+import GameMessage from '../../../../models/GameMessage';
 
 @Component({
   selector: 'app-main-game',
@@ -33,7 +35,8 @@ import Swal from 'sweetalert2';
     MiniPlacementComponent,
     MiniBoardComponent,
     BoardAtackComponent,
-  ],
+    WaitingOnlineComponent
+],
   templateUrl: './main-game.component.html',
   styleUrl: './main-game.component.css',
 })
@@ -45,6 +48,7 @@ export class MainGameComponent implements OnInit {
 
   perfil = signal(this.storage.get<any>('perfil'));
   page = signal('');
+
 
   ngOnInit() {
     // Reproduce el audio al cargar el componente
@@ -73,6 +77,21 @@ export class MainGameComponent implements OnInit {
       });
     });
   }
+
+//   onGameMessage(msg: GameMessage) {
+//   switch (msg.phase) {
+//     case 'JOINED':
+//       this.page.set('PLACEMENT_ONLINE');
+//       break;
+//     case 'BATTLE':
+//       this.page.set('BATTLE');
+//       break;
+//     case 'END':
+//       this.page.set('END');
+//       break;
+//   }
+// }
+
   async newGame() {
     try {
       const resp = await firstValueFrom(

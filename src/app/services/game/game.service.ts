@@ -60,5 +60,10 @@ export class GameService {
       game
     );
   }
+  cancelGame(gameId: string) {
+    return this.http.delete<IRestMessage>(
+      `http://localhost:8080/game/${gameId}`
+    );
+  }
 
 }

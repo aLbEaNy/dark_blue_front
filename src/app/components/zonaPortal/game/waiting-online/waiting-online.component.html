@@ -1,0 +1,33 @@
+<div class="fixed inset-0 flex flex-col items-center justify-center bg-black/70 text-white z-50">
+  <!-- Spinner -->
+  <div class="w-16 h-16 border-4 border-t-transparent border-[#39ff14] rounded-full animate-spin"></div>
+
+  <!-- Texto -->
+   
+  @if (createOnlineGameR.isLoading()) {
+    <p class="mt-6 text-xl font-semibold tracking-wider">
+    Conectando al servidor...
+  </p>
+  }
+  @if (createOnlineGameR.error()) {
+    
+    <p class="mt-6 text-xl font-semibold tracking-wider ">
+      Se ha producido un error...
+    </p>
+  }
+  @if (createOnlineGameR.hasValue())  {
+    <p class="mt-6 text-xl font-semibold tracking-wider">
+      Esperando a tu oponente... 
+    </p>
+    <app-online-listener (gameMessageOutput)="onGameMessage($event)" [gameId]="onlineResp().datos.gameId"></app-online-listener>
+    
+  }
+
+  <!-- Botón cancelar -->
+  <button
+    (click)="cancelar()"
+    class="mt-8 px-6 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition font-medium shadow-lg"
+  >
+    Cancelar
+  </button>
+</div>

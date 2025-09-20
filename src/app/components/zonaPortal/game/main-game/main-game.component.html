@@ -18,6 +18,14 @@
         <app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
         <app-mini-board></app-mini-board>
       }
+      @case ('ONLINE') {
+        <app-waiting-online (cancel)="page.set('MENU')" (pageOnline)="page.set('NEWGAME')"></app-waiting-online>
+      }
+      @case ('OPTIONS') {
+
+      }
+      
+      <!-- MENU es default-->
       @default {
         <app-menu (pageChange)="page.set($event)"></app-menu>
         <!-- Footer -->
