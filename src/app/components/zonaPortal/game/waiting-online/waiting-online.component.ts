@@ -4,7 +4,6 @@ import {
   computed,
   effect,
   inject,
-  Injector,
   output,
   resource,
   ResourceRef,
@@ -50,6 +49,9 @@ export class WaitingOnlineComponent {
       if(_resp.datos.player2){
         this.onGameMessage({phase: 'JOINED'})
       }
+      untracked(() => {
+        this.gameService.setGame(_resp.datos);
+      });
     });
   }
   createOnlineGameR: ResourceRef<IRestMessage> = resource({
@@ -65,9 +67,7 @@ export class WaitingOnlineComponent {
     try {
       this.webSocketService.disconnect(); // cerrar conexión WS
 
-      const resp = await firstValueFrom(
-        this.gameService.cancelGame(this.onlineResp().datos.gameId)
-      );
+      const resp = await this.gameService.cancelGame(this.onlineResp().datos.gameId);
 
       if (resp.codigo !== 0) {
         console.warn('No se pudo cancelar la partida:', resp.mensaje);
@@ -79,9 +79,16 @@ export class WaitingOnlineComponent {
       this.cancel.emit(); // notificar al padre para volver al menú
     }
   }
-   onGameMessage(msg: GameMessage) {
+   async onGameMessage(msg: GameMessage) {
     console.log('onGameMessage ---> ', msg);
     if(msg.phase === 'JOINED'){
+      const _resp = await this.gameService.getGame(this.onlineResp().datos.gameId);
+      // pasamos a fase PLACEMENT
+      _resp.datos.phase = 'PLACEMENT';
+      const _resp2 = await this.gameService.updateGame(_resp.datos);
+
+      await this.gameService.setGame(_resp2.datos);
+      console.log('GAME guardado-->> ', _resp2.datos);
       this.pageOnline.emit();
     }
    

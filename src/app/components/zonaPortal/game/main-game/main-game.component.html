@@ -13,13 +13,20 @@
         </div>
         <app-mini-placement (pageChange)="page.set($event)"></app-mini-placement>
       }
+      @case ('NEWGAME_ONLINE') { 
+        <app-online-game (pageChange)="page.set($event)"></app-online-game>
+      }
       @case ('BATTLE') {
         <app-mini-display-user></app-mini-display-user>
         <app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
         <app-mini-board></app-mini-board>
       }
+     
       @case ('ONLINE') {
-        <app-waiting-online (cancel)="page.set('MENU')" (pageOnline)="page.set('NEWGAME')"></app-waiting-online>
+        <app-waiting-online (cancel)="page.set('MENU')" (pageOnline)="page.set('NEWGAME_ONLINE')"></app-waiting-online>
+      }
+      @case ('WAITING_READY') {
+        <p>Waiting......................................</p>
       }
       @case ('OPTIONS') {
 

@@ -89,6 +89,8 @@ export class BoardAtackComponent {
       const index = pos.row * this.BOARD_SIZE + pos.col;
       map[index] = shot.result;
     }
+    console.log('Shots recibidos:', shots);
+    console.log('shotMap generado:', map);
     return map;
   });
   disableShot(pos: string) {

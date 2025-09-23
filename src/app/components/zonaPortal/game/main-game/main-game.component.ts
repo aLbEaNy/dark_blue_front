@@ -13,7 +13,7 @@ import { FooterComponent } from '../../footer/footer.component';
 import { AudioService } from '../../../../services/audio/audio.service';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { MiniDisplayUserComponent } from '../mini-display-user/mini-display-user.component';
 import { MiniPlacementComponent } from '../mini-placement/mini-placement.component';
 import { MiniBoardComponent } from '../mini-board/mini-board.component';
@@ -21,8 +21,11 @@ import { BoardAtackComponent } from '../board-atack/board-atack.component';
 import { AIService } from '../../../../services/game/ai.service';
 import { sleep } from '../../../../utils/board-utils';
 import Swal from 'sweetalert2';
-import { WaitingOnlineComponent } from "../waiting-online/waiting-online.component";
+import { WaitingOnlineComponent } from '../waiting-online/waiting-online.component';
+import { WebSocketService } from '../../../../services/webSocket/webSocket.service';
 import GameMessage from '../../../../models/GameMessage';
+import Game from '../../../../models/Game';
+import { OnlineGameComponent } from '../online-game/online-game.component';
 
 @Component({
   selector: 'app-main-game',
@@ -35,8 +38,9 @@ import GameMessage from '../../../../models/GameMessage';
     MiniPlacementComponent,
     MiniBoardComponent,
     BoardAtackComponent,
-    WaitingOnlineComponent
-],
+    WaitingOnlineComponent,
+    OnlineGameComponent,
+  ],
   templateUrl: './main-game.component.html',
   styleUrl: './main-game.component.css',
 })
@@ -45,10 +49,12 @@ export class MainGameComponent implements OnInit {
   storage = inject(StorageService);
   gameService = inject(GameService);
   aiService = inject(AIService);
+  webSocketService = inject(WebSocketService);
+  private sub?: Subscription;
+  msgSocket = signal<GameMessage>({ phase: 'PLACEMENT' });
 
   perfil = signal(this.storage.get<any>('perfil'));
   page = signal('');
-
 
   ngOnInit() {
     // Reproduce el audio al cargar el componente
@@ -59,12 +65,12 @@ export class MainGameComponent implements OnInit {
       0.7
     );
   }
+
   constructor() {
     //Según el valor de page dispara la nueva partida
     effect(() => {
       const _page = this.page();
       console.log('page vale: ', _page);
-
       untracked(() => {
         if (_page === 'NEWGAME') {
           this.newGame();
@@ -74,23 +80,12 @@ export class MainGameComponent implements OnInit {
         }
         if (_page === 'OPTIONS') {
         }
+        if (_page === 'WAITING_READY') {
+          console.log(`Effect en WAITING_READY con ${this.gameService.me()}`);
+        }
       });
     });
   }
-
-//   onGameMessage(msg: GameMessage) {
-//   switch (msg.phase) {
-//     case 'JOINED':
-//       this.page.set('PLACEMENT_ONLINE');
-//       break;
-//     case 'BATTLE':
-//       this.page.set('BATTLE');
-//       break;
-//     case 'END':
-//       this.page.set('END');
-//       break;
-//   }
-// }
 
   async newGame() {
     try {
@@ -106,19 +101,22 @@ export class MainGameComponent implements OnInit {
       console.log('Respuesta:', resp);
 
       if (resp.codigo === 0) {
-        this.gameService.setGame(resp.datos);
+        await this.gameService.setGame(resp.datos);
 
         await sleep(500);
-        console.log(">>> despierto después del sleep en newGame(), phase:", this.gameService.gameDTO()?.phase);
+        console.log(
+          '>>> despierto después del sleep en newGame(), phase:',
+          this.gameService.gameDTO()?.phase
+        );
         //OFFLINE
-       await Swal.fire({
+        await Swal.fire({
           title: `STAGE-${resp.datos.stage}`,
           html: `
-    <p class="text-lg text-[#ff9114]">
-      ¡Sobrevive al ataque de 
-      <span class="text-red-800 font-bold">${resp.datos.player2}</span>!
-    </p>
-  `,
+      <p class="text-lg text-[#ff9114]">
+        ¡Sobrevive al ataque de 
+        <span class="text-red-800 font-bold">${resp.datos.player2}</span>!
+      </p>
+    `,
           imageUrl: `${resp.datos.avatarPlayer2}`,
           imageWidth: 140,
           imageHeight: 140,
@@ -140,23 +138,13 @@ export class MainGameComponent implements OnInit {
       console.error('Error en newGame:', err);
     }
   }
-  startBattle() {
-    console.log('startBattle desde main-game.component.ts ----------------->');
-    let _game = this.gameService.gameDTO()!;
-    _game.phase = 'BATTLE';
-    this.perfil().nickname === _game.player1
-      ? (_game.readyPlayer1 = true)
-      : (_game.readyPlayer2 = true);
-    this.gameService.setGame(_game);
-    this.page.set('BATTLE');
 
-    if (!_game.online) {
-      // MODO HISTORIA
+  async startBattle() {
+      let _game = this.gameService.gameDTO()!;
+      _game.phase = 'BATTLE';
+      await this.gameService.setGame(_game);
+      this.page.set('BATTLE');
       this.nextTurn();
-    } else {
-      // MODO ONLINE
-      // TODO ONLINE
-    }
   }
 
   async aiTurn() {
@@ -169,7 +157,7 @@ export class MainGameComponent implements OnInit {
 
     while (continueTurn) {
       await sleep(1500);
-      if(this.gameService.gameDTO()?.phase !== 'BATTLE') return;
+      if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
 
       // IA dispara → devuelve un board NUEVO (inmutable)
       const board1 = this.aiService.fire(_game.boardPlayer1);
@@ -188,12 +176,12 @@ export class MainGameComponent implements OnInit {
       if (continueTurn) {
         this.audioService.play('hitSound', '/audio/hitSound.mp3');
         await sleep(200);
-        if(this.gameService.gameDTO()?.phase !== 'BATTLE') return;
+        if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
       } else {
         this.audioService.play('missSound', '/audio/missSound.mp3');
         // Pequeña pausa visible para el jugador
         await sleep(1800);
-        if(this.gameService.gameDTO()?.phase !== 'BATTLE') return;
+        if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
       }
       if (
         _game.boardPlayer1.submarines.findIndex(
@@ -204,7 +192,7 @@ export class MainGameComponent implements OnInit {
       )
         this.audioService.play('destroyedSound', '/audio/destroyedSound.mp3');
       await sleep(200);
-      if(this.gameService.gameDTO()?.phase !== 'BATTLE') return;
+      if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
       // --- COMPROBAR FIN DE PARTIDA ---
       if (board1.submarines.every((sub) => sub.isDestroyed)) {
         _game = { ..._game, stage: 2, winner: 'player2', phase: 'END' };
@@ -229,7 +217,6 @@ export class MainGameComponent implements OnInit {
           confirmButtonText: 'Aceptar',
         });
 
-
         this.page.set('');
         this.gameService.setGame(_game);
         return;
@@ -244,9 +231,9 @@ export class MainGameComponent implements OnInit {
   }
 
   async nextTurn() {
-    console.log('-----------> Entro en nextTurn');
+    console.log('>>>----------> Entro en nextTurn');
     const _game = this.gameService.gameDTO()!;
-
+    
     if (_game.turn === 'player1') {
       // Solo habilitar la UI, esperar clics del jugador
       // No hacemos nada más aquí; playerFire() llamará nextTurn() cuando haga MISS
@@ -260,56 +247,62 @@ export class MainGameComponent implements OnInit {
       await this.nextTurn();
     }
   }
+
   async playerFire(pos: string) {
     // Evita disparos rápidos despues del fin en MISS
-    if (this.gameService.gameDTO()!.boardPlayer2.submarines.every((sub) => sub.isDestroyed)) return;
-    
-    console.log('-----------> Entro en playerFire');
-    console.log('Disparo en posición:', pos);
-    let _game = this.gameService.gameDTO()!;
-    
-      if (_game.turn !== 'player1') return;
-  
-      let result: 'HIT' | 'MISS' = 'MISS';
-      for (const sub of _game.boardPlayer2.submarines) {
-        const index = sub.positions.indexOf(pos);
-        if (index !== -1) {
-          result = 'HIT';
-          sub.isTouched[index] = true;
-          this.audioService.play('hitSound', '/audio/hitSound.mp3');
-          if (sub.isTouched.every((t) => t)) {
-            sub.isDestroyed = true;
-            this.audioService.play('destroyedSound', '/audio/destroyedSound.mp3');
-          }
-          break;
-        }
-      }
-      if (result === 'MISS') { 
-        this.audioService.play('missSound', '/audio/missSound.mp3'); 
-      } 
+    const me = this.gameService.me();
+    const boardRival = this.gameService.getCurrentBoard()!;
 
-      _game.boardPlayer2.shots.push({ position: pos, result }); 
-      this.gameService.setGame(_game); 
-      this.gameService.shotsInBoard2.set([..._game.boardPlayer2.shots]); 
-      await sleep(1800); // da tiempo a animacion 
-      if(this.gameService.gameDTO()?.phase !== 'BATTLE') return;
-      if (result === 'MISS') { 
-        _game.turn = 'player2'; this.gameService.setGame(_game); 
-        this.gameService.isMyTurn.set(false); 
-        this.gameService.getCurrentBoard.set(_game.boardPlayer1); // Llamar al loop de turnos 
-        this.nextTurn(); 
+    if (boardRival.submarines.every((sub) => sub.isDestroyed)) return;
+
+    console.log('>>>-----------> Entro en playerFire');
+    console.log('Disparo en posición:', pos);
+
+    let _game = this.gameService.gameDTO()!;
+
+    if (_game.turn !== me) return;
+
+    let result: 'HIT' | 'MISS' = 'MISS';
+    for (const sub of boardRival.submarines) {
+      const index = sub.positions.indexOf(pos);
+      if (index !== -1) {
+        result = 'HIT';
+        sub.isTouched[index] = true;
+        this.audioService.play('hitSound', '/audio/hitSound.mp3');
+        if (sub.isTouched.every((t) => t)) {
+          sub.isDestroyed = true;
+          this.audioService.play('destroyedSound', '/audio/destroyedSound.mp3');
+        }
+        break;
       }
-  
-        // Comprobar fin de partida
-       if (_game.boardPlayer2.submarines.every((sub) => sub.isDestroyed)) {
-        console.log('FIN DE PARTIDA');
-        _game = { ..._game, winner: 'player1', phase: 'END' };
-        this.gameService.setGame(_game);
-        
-        // Mostrar banner o popup de victoria del jugador
-        await Swal.fire({
-          title: '¡VICTORIA!',
-          html: `
+    }
+    if (result === 'MISS') {
+      this.audioService.play('missSound', '/audio/missSound.mp3');
+    }
+
+    boardRival.shots.push({ position: pos, result });
+    this.gameService.setGame(_game);
+    this.gameService.shotsInBoard2.set([..._game.boardPlayer2.shots]);
+    await sleep(1800); // da tiempo a animacion
+    if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
+    if (result === 'MISS') {
+      _game.turn = 'player2';
+      this.gameService.setGame(_game);
+      this.gameService.isMyTurn.set(false);
+      this.gameService.getCurrentBoard.set(_game.boardPlayer1); // Llamar al loop de turnos
+      this.nextTurn();
+    }
+
+    // Comprobar fin de partida
+    if (_game.boardPlayer2.submarines.every((sub) => sub.isDestroyed)) {
+      console.log('FIN DE PARTIDA');
+      _game = { ..._game, winner: 'player1', phase: 'END' };
+      this.gameService.setGame(_game);
+
+      // Mostrar banner o popup de victoria del jugador
+      await Swal.fire({
+        title: '¡VICTORIA!',
+        html: `
           <p class="text-lg text-[#39ff14]">
           <span class="text-fluor font-bold">${
             this.gameService.gameDTO()?.player1
@@ -319,27 +312,27 @@ export class MainGameComponent implements OnInit {
           ¡Has ganado <span class="text-xl">100 🪙!</span>
           </p>
           `,
-          imageUrl: `${_game.avatarPlayer1}`,
-          imageWidth: 140,
-          imageHeight: 140,
-          imageAlt: 'Avatar ganador',
-          customClass: {
-            popup: 'bg-principal text-fluor rounded-2xl shadow-black shadow-lg',
-            image:
+        imageUrl: `${_game.avatarPlayer1}`,
+        imageWidth: 140,
+        imageHeight: 140,
+        imageAlt: 'Avatar ganador',
+        customClass: {
+          popup: 'bg-principal text-fluor rounded-2xl shadow-black shadow-lg',
+          image:
             'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
-            confirmButton:
+          confirmButton:
             'bg-btn hover:bg-yellow-600 text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
-            title: 'swal-title-green',
-          },
-          buttonsStyling: false,
-          confirmButtonText: 'Aceptar',
-        });
-        
-        this.page.set('NEWGAME');
+          title: 'swal-title-green',
+        },
+        buttonsStyling: false,
+        confirmButtonText: 'Aceptar',
+      });
 
-        return; // se sale de playerFire
-      } 
-        // Si fue HIT y hay submarinos todavía, el jugador sigue disparando; no se cambia turno
+      this.page.set('NEWGAME');
+
+      return; // se sale de playerFire
     }
-
+    // Si fue HIT y hay submarinos todavía, el jugador sigue disparando; no se cambia turno
   }
+ 
+}
