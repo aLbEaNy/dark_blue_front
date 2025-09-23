@@ -1,5 +1,5 @@
 import { WebSocketService } from './../../../../services/webSocket/webSocket.service';
-import { Component, inject, input, output, OnInit } from '@angular/core';
+import { Component, inject, input, output, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import GameMessage from '../../../../models/GameMessage';
 
@@ -8,7 +8,7 @@ import GameMessage from '../../../../models/GameMessage';
   templateUrl: './online-listener.component.html',
   styleUrls: ['./online-listener.component.css']
 })
-export class OnlineListenerComponent implements OnInit {
+export class OnlineListenerComponent implements OnInit, OnDestroy {
   webSocketService = inject(WebSocketService);
 
   gameId = input<string>()

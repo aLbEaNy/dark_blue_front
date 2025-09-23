@@ -1,0 +1,36 @@
+@switch (page()) {
+@case ('PLACEMENT') {
+<app-mini-display-user></app-mini-display-user>
+<div class="relative">
+    <app-board></app-board>
+</div>
+<app-mini-placement (pageChangeOnline)="page.set($event)"></app-mini-placement>
+}
+@case ('WAITING') {
+<div class="fixed inset-0 flex flex-col items-center justify-center bg-black/70 text-white z-50">
+    <!-- Spinner -->
+    <div class="w-16 h-16 border-4 border-t-transparent border-[#39ff14] rounded-full animate-spin"></div>
+    <p class="m-6 text-xl font-semibold tracking-wider">
+        Esperando a que tu oponente tenga su flota lista......
+    </p>
+    <!-- Botón cancelar -->
+    <button (click)="cancelar()"
+        class="mt-8 px-6 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition font-medium shadow-lg">
+        Cancelar
+    </button>
+</div>
+
+}
+@case ('BATTLE') {
+<app-mini-display-user></app-mini-display-user>
+<app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
+<app-mini-board></app-mini-board>
+}
+
+
+
+
+@default {
+
+}
+}
