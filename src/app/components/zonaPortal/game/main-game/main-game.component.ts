@@ -24,7 +24,6 @@ import Swal from 'sweetalert2';
 import { WaitingOnlineComponent } from '../waiting-online/waiting-online.component';
 import { WebSocketService } from '../../../../services/webSocket/webSocket.service';
 import GameMessage from '../../../../models/GameMessage';
-import Game from '../../../../models/Game';
 import { OnlineGameComponent } from '../online-game/online-game.component';
 
 @Component({

@@ -71,7 +71,7 @@ export class BoardComponent {
   }
 
   // Solo se hace snap al soltar, no mientras se arrastra
-  dropSubmarine(event: CdkDragEnd, sub: Submarine) {
+  async dropSubmarine(event: CdkDragEnd, sub: Submarine) {
     const boardEl = this.boardRef.nativeElement;
     if (!boardEl) return;
 
@@ -123,7 +123,17 @@ export class BoardComponent {
     console.log('Posición tablero (px):', x, y);
     console.log('Columna/fila calculada:', col, row);
     console.log('Nuevas posiciones:', sub.positions);
-    console.log('Board me actualizado (player1): ', this.board());
+    console.log(`Board me actualizado (${this.gameService.me()}): `, this.board());
+    //Sincronizamos los cambios en la flota
+    const _game= this.gameService.gameDTO()!;
+    if(this.gameService.me() === 'player1'){
+      _game.boardPlayer1 = this.board()!;
+    }else {
+      _game.boardPlayer2 = this.board()!;
+    }
+    const _resp = await this.gameService.updateGame(_game);
+    this.gameService.setGame(_resp.datos);
+
     // Reset snap visual
     event.source.reset();
   }

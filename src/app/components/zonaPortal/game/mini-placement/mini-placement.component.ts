@@ -22,24 +22,21 @@ export class MiniPlacementComponent {
       return;
 
     }
+
     //ONLINE
-    //Consigo game desde BD
-    const _resp = await this.gameService.getGame(
-      this.gameService.gameDTO()!.gameId
-    );
-    const _gameBD = _resp.datos;
+    let _game = this.gameService.gameDTO()!;
 
     // Atualizo con update para obtener respuesta del webSocket
 
     if (this.gameService.me() === 'player1'){
       console.log('SOY EL PLAYER1--> readyPlayer1 = true');  
-      _gameBD.readyPlayer1 = true;
+      _game.readyPlayer1 = true;
     }
     else{
       console.log('SOY EL PLAYER2--> readyPlayer2 = true');
-      _gameBD.readyPlayer2 = true;
+      _game.readyPlayer2 = true;
     }
-    const _gameUpdated = await this.gameService.updateGame(_gameBD);
+    const _gameUpdated = await this.gameService.updateGame(_game);
     this.gameService.setGame(_gameUpdated.datos);
     
     console.log('<---> game actualizado con updateGame: ', this.gameService.gameDTO()); 

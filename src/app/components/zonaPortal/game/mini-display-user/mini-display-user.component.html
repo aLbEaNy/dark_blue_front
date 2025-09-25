@@ -2,6 +2,6 @@
             border-b-3 border-t-1 border-r-1 shadow-black shadow-md rounded-full">
     <h1 class="font-bold"
     [ngClass]="gameService.isMyTurn() || gameService.gameDTO()?.phase === 'PLACEMENT' ? 'text-fluor' : 'text-red-800'"
-    ><span class="px-3 text-acero text-md">JUEGA : </span>{{ nicknameDisplay()}}</h1>
+    ><span class="px-3 text-acero text-sm">ATACANDO : </span>{{ nicknameDisplay()}}</h1>
     <img [src]="avatarDisplay()" alt="avatar" class="w-6 h-6 rounded-full">
 </div>
