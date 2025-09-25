@@ -13,8 +13,21 @@ export class MiniBoardComponent {
 
   gameService = inject(GameService);
   storageService = inject(StorageService);
+
+  perfil = this.storageService.get<any>('perfil');
+
+
   game = computed(() => {
     return this.gameService.gameDTO();
+  });
+
+  meBoard = computed(() => {
+    const board = this.perfil.nickname === this.game()?.player1 ? this.game()?.boardPlayer1 : this.game()?.boardPlayer2;
+    return board;
+  });
+  boardRival = computed(() => {
+    const board = this.perfil.nickname === this.game()?.player1 ? this.game()?.boardPlayer2 : this.game()?.boardPlayer1;
+    return board;
   });
 
   me = computed(() => {

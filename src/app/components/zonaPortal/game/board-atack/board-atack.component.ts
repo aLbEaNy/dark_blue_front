@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
-import { formatPosition, parsePosition } from '../../../../utils/board-utils';
+import { formatPosition, parsePosition, sleep } from '../../../../utils/board-utils';
 import { NgClass, NgStyle } from '@angular/common';
 import Submarine from '../../../../models/Submarine';
 
@@ -47,7 +47,7 @@ export class BoardAtackComponent {
     effect(() => {
       const _game = this.game();
       if (!_game) return;
-      untracked(() => {
+      untracked(async () => {
         this.disableFire.set(false);
       });
     });
@@ -89,8 +89,6 @@ export class BoardAtackComponent {
       const index = pos.row * this.BOARD_SIZE + pos.col;
       map[index] = shot.result;
     }
-    console.log('Shots recibidos:', shots);
-    console.log('shotMap generado:', map);
     return map;
   });
   disableShot(pos: string) {
