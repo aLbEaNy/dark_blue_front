@@ -23,7 +23,7 @@
       }
      
       @case ('ONLINE') {
-        <app-waiting-online (cancel)="page.set('MENU')" (pageOnline)="page.set('NEWGAME_ONLINE')"></app-waiting-online>
+        <app-waiting-online (cancel)="page.set($event)" (pageOnline)="page.set($event)"></app-waiting-online>
       }
       @case ('WAITING_READY') {
         <p>Waiting......................................</p>

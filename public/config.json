@@ -1,0 +1,4 @@
+{
+    "backendUrl": "http://localhost:8080",
+    "socketUrl": "ws://192.168.1.136:8080/ws-game"
+}

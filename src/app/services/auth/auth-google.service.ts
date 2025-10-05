@@ -15,7 +15,7 @@ export class AuthGoogleService {
   private clientId = '1076915317631-ogahf76hk4m8dlhuibsdnr6fv27kph7h.apps.googleusercontent.com';
   private client: any;
   public datos = signal<IRestMessage>({codigo: 2, mensaje: '...esperando respuesta del server desde auth.service...', datos: null});
-
+  private baseUrl = window.__env.backendUrl;
 
 
   constructor() {}
@@ -39,7 +39,7 @@ export class AuthGoogleService {
   console.log('Código recibido de Google:', response.code);
 
   const userSignal = toSignal(
-      this.http.post<IRestMessage>('http://localhost:8080/auth/google', { code: response.code })
+      this.http.post<IRestMessage>(`${this.baseUrl}/auth/google`, { code: response.code })
       .pipe(
                 startWith({
                   codigo: 2,

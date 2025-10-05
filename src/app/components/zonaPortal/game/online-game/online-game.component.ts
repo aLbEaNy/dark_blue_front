@@ -1,3 +1,4 @@
+import { PerfilService } from './../../../../services/game/perfil.service';
 import {
   Component,
   effect,
@@ -48,8 +49,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   private sub?: Subscription;
   msgSocket = signal<GameMessage>({ phase: 'PLACEMENT' });
   perfil = signal(this.storage.get<any>('perfil'));
+  perfilService = inject(PerfilService);
   pageChange = output<string>(); // hacia main
-  page = signal('PLACEMENT'); // Para las que cuelgan
+  page = signal('PLACEMENT'); // Para los hijos
 
   lastShot: ShotResult = {
     hit: false,
@@ -183,7 +185,14 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
             buttonsStyling: false,
             confirmButtonText: 'Aceptar',
           });
-
+          // Actualizar stats y borrar gameDTO 
+          let _perfil = this.perfil();
+          iAmWinner ? (_perfil.stats.wins += 1) : (_perfil.stats.losses += 1);
+          _perfil.stats.coins += parseInt(coin);
+          this.perfilService.setPerfil(_perfil);
+          this.perfilService.updatePerfil(_perfil);
+          
+          this.storage.remove('gameDTO');
           this.pageChange.emit('MENU');
         }
 
@@ -236,7 +245,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.webSocketService.disconnect(); // cerrar conexión WS
     this.sub?.unsubscribe();
   }
 }

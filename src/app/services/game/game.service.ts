@@ -3,7 +3,6 @@ import {
   computed,
   inject,
   Injectable,
-  Injector,
   linkedSignal,
   signal,
 } from '@angular/core';
@@ -20,9 +19,9 @@ import GameMessage from '../../models/GameMessage';
 export class GameService {
   private http = inject(HttpClient);
   storage = inject(StorageService);
-  private _injector = inject(Injector);
-  gameDTO = signal<Game | null>(null);
+  gameDTO = signal<Game | null>(this.storage.get('gameDTO') || null);
   perfil = this.storage.get<any>('perfil');
+  private baseUrl = window.__env.backendUrl;
 
   me = computed(() => {
     const g = this.gameDTO();
@@ -58,12 +57,12 @@ export class GameService {
   
   newGame(nickname: string, online: boolean, gameId: string = '') {
     return this.http.get<IRestMessage>(
-      `http://localhost:8080/game/new?nickname=${nickname}&online=${online}&gameId=${gameId}`
+      `${this.baseUrl}/game/new?nickname=${nickname}&online=${online}&gameId=${gameId}`
     );
   }
   getGame(gameId: string) {
     return firstValueFrom(this.http.get<IRestMessage>(
-      `http://localhost:8080/game/getGame/${gameId}`
+      `${this.baseUrl}/game/getGame/${gameId}`
     ));
   }
   async setGame(game: Game) {
@@ -73,18 +72,18 @@ export class GameService {
 
   updateGame(game: Game) {
     return firstValueFrom(
-      this.http.post<IRestMessage>('http://localhost:8080/game/update', game)
+      this.http.post<IRestMessage>(`${this.baseUrl}/game/update`, game)
     );
   }
   shoot(gameId: string, me: string, pos: string) { 
      return firstValueFrom(
-      this.http.post<GameMessage>(`http://localhost:8080/game/shoot`,{gameId, me, pos})
+      this.http.post<GameMessage>(`${this.baseUrl}/game/shoot`,{gameId, me, pos})
     );
   }
 
   cancelGame(gameId: string) {
     return firstValueFrom( this.http.delete<IRestMessage>(
-      `http://localhost:8080/game/${gameId}`
+      `${this.baseUrl}/game/${gameId}`
     ));
   }
 }

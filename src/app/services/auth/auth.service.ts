@@ -15,6 +15,7 @@ export class AuthService {
 
   private router = inject(Router);
 
+  private baseUrl = window.__env.backendUrl;
 
   /**
    * Registro de usuario. Devuelve una señal con la respuesta.
@@ -23,7 +24,7 @@ export class AuthService {
   register(data: IRegister): Signal<IRestMessage> {
     return toSignal(
       this.http
-        .post<IRestMessage>('http://localhost:8080/auth/register', data
+        .post<IRestMessage>(`${this.baseUrl}/auth/register`, data
         )
         .pipe(
           startWith({
@@ -40,7 +41,7 @@ export class AuthService {
     
     return toSignal(
       this.http
-        .post<boolean>('http://localhost:8080/auth/validateCodeActivation',
+        .post<boolean>(`${this.baseUrl}/auth/validateCodeActivation`,
             {
                 token,
                 code,
@@ -60,7 +61,7 @@ export class AuthService {
   resendTokenOrTokenAndCode(email: string, activation: boolean): Signal<IRestMessage> {
     return toSignal(
       this.http
-        .get<IRestMessage>(`http://localhost:8080/auth/resendToken?username=${email}&activation=${activation}`)
+        .get<IRestMessage>(`${this.baseUrl}/auth/resendToken?username=${email}&activation=${activation}`)
         .pipe(
           startWith({
             codigo: 2,
@@ -75,7 +76,7 @@ export class AuthService {
   login(email: string, password: string): Signal<IRestMessage> {
        return toSignal(
         this.http
-          .post<IRestMessage>('http://localhost:8080/auth/login',
+          .post<IRestMessage>(`${this.baseUrl}/auth/login`,
               {
                   username:email, password
               },

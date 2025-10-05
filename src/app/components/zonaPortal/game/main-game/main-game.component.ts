@@ -25,6 +25,7 @@ import { WaitingOnlineComponent } from '../waiting-online/waiting-online.compone
 import { WebSocketService } from '../../../../services/webSocket/webSocket.service';
 import GameMessage from '../../../../models/GameMessage';
 import { OnlineGameComponent } from '../online-game/online-game.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main-game',
@@ -44,6 +45,7 @@ import { OnlineGameComponent } from '../online-game/online-game.component';
   styleUrl: './main-game.component.css',
 })
 export class MainGameComponent implements OnInit {
+  router = inject(Router);
   audioService = inject(AudioService);
   storage = inject(StorageService);
   gameService = inject(GameService);
@@ -51,6 +53,7 @@ export class MainGameComponent implements OnInit {
   webSocketService = inject(WebSocketService);
   private sub?: Subscription;
   msgSocket = signal<GameMessage>({ phase: 'PLACEMENT' });
+  private baseUrl = window.__env.backendUrl;
 
   perfil = signal(this.storage.get<any>('perfil'));
   page = signal('');
@@ -59,7 +62,7 @@ export class MainGameComponent implements OnInit {
     // Reproduce el audio al cargar el componente
     this.audioService.play(
       'menu2',
-      'http://localhost:8080/media/audio/menu2.mp3',
+      `${this.baseUrl}/media/audio/menu2.mp3`,
       true,
       0.7
     );
@@ -82,6 +85,13 @@ export class MainGameComponent implements OnInit {
         if (_page === 'WAITING_READY') {
           console.log(`Effect en WAITING_READY con ${this.gameService.me()}`);
         }
+        if (_page === 'SALIR') {
+          //Volver a home cerrando sesion
+          this.storage.clear();
+          sessionStorage.clear();
+         
+          this.router.navigate(['/home']);
+        }
       });
     });
   }
@@ -89,11 +99,9 @@ export class MainGameComponent implements OnInit {
   async newGame() {
     try {
       const resp = await firstValueFrom(
-        // Promise solo se es pera un valor
         this.gameService.newGame(
           this.perfil().nickname,
-          false,
-          this.gameService.gameDTO()?.gameId || ''
+          false
         )
       );
 
@@ -303,12 +311,13 @@ export class MainGameComponent implements OnInit {
         title: '¡VICTORIA!',
         html: `
           <p class="text-lg text-[#39ff14]">
-          <span class="text-fluor font-bold">${
+          <span class="text-fluor text-xl font-bold font-mono">${
             this.gameService.gameDTO()?.player1
-          }</span> ha ganado!
+          }</span> ganó a <span class="text-red-800 text-xl font-bold font-mono">${
+            this.gameService.gameDTO()?.player2}</span>
           </p>
           <p class="text-yellow-400 font-bold mt-2">
-          ¡Has ganado <span class="text-xl">100 🪙!</span>
+          Has ganado <span class="text-xl">100 🪙</span>
           </p>
           `,
         imageUrl: `${_game.avatarPlayer1}`,

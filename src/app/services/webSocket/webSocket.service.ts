@@ -1,19 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { RxStomp } from '@stomp/rx-stomp';
 import { map, startWith } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
 import GameMessage from '../../models/GameMessage';
-import { Signal } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class WebSocketService {
   private rxStomp: RxStomp;
+  private socketUrl = window.__env.socketUrl;
 
   constructor() {
     this.rxStomp = new RxStomp();
     this.rxStomp.configure({
-      brokerURL: 'ws://localhost:8080/ws-game',
+      brokerURL: `${this.socketUrl}`,
       reconnectDelay: 5000,
       heartbeatIncoming: 0,
       heartbeatOutgoing: 20000,
