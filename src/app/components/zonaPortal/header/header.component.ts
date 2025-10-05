@@ -1,5 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { StorageService } from '../../../services/store/storageLocal.service';
+import { Component, inject, signal, computed } from '@angular/core';
+import { PerfilService } from '../../../services/game/perfil.service';
 
 @Component({
   selector: 'app-header',
@@ -7,11 +7,9 @@ import { StorageService } from '../../../services/store/storageLocal.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-export class HeaderComponent {
-
-  private _storage = inject(StorageService);
-
-  perfil = signal<any>(this._storage.get('perfil'));
+export class HeaderComponent{
+  perfilService = inject(PerfilService);
+  perfil = computed (() => this.perfilService.perfil());
 
 }
 

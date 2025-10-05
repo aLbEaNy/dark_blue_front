@@ -98,6 +98,7 @@ export class LoginComponent implements OnInit {
     }, 
     { injector: this._injector }
   );
+  //TODO Olvidaste tu contraseña
   
 }
 loginResponse(_resp: IRestMessage) {

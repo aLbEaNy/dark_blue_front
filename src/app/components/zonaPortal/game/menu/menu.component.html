@@ -25,7 +25,7 @@
       </button>
     </div>
 
-    <div>
+    <div class="mb-6">
       <button
         (mouseenter)="reproducirHover()"
         (mouseleave)="stopHover()"
@@ -34,6 +34,19 @@
         [ngClass]="activePage() === 'OPTIONS' ? 'torpedo-active' : 'btn-vibrate'"
       >
         OPCIONES
+      </button>
+    </div>
+
+    <div>
+
+      <button
+        (mouseenter)="reproducirHover()"
+        (mouseleave)="stopHover()"
+        (click)="dispararTorpedo('SALIR')"
+        class="p-4 w-42 rounded-e-full bg-principal opacity-90 text-fluor font-bold btn-torpedo shadow-black transform transition duration-300 hover:scale-105 hover:shadow-lg border-1 hover:border-none"
+        [ngClass]="activePage() === 'SALIR' ? 'torpedo-active' : 'btn-vibrate'"
+      >
+        SALIR
       </button>
     </div>
 

@@ -49,6 +49,7 @@ export class RegistroComponent implements OnInit {
   showRePassword = signal(false);
   messageError = signal('');
   cursorSubmit = signal(false);
+  private baseUrl = window.__env.backendUrl;
 
   
   //#endregion
@@ -100,7 +101,7 @@ export class RegistroComponent implements OnInit {
     loader: async ({ request, abortSignal }) => {
       try {
         const response = await fetch(
-          `http://localhost:8080/auth/nickname?nickname=${request}`,
+          `${this.baseUrl}/auth/nickname?nickname=${request}`,
           { method: 'GET', signal: abortSignal }
         );
         if (!response.ok) throw new Error('Error de red o servidor');
@@ -127,7 +128,7 @@ export class RegistroComponent implements OnInit {
     loader: async ({ request, abortSignal }) => {
       try {
         const response = await fetch(
-          `http://localhost:8080/auth/email?email=${request}`,
+          `${this.baseUrl}/auth/email?email=${request}`,
           { method: 'GET', signal: abortSignal }
         );
         if (!response.ok) throw new Error('Error de red o servidor');
@@ -173,9 +174,14 @@ export class RegistroComponent implements OnInit {
           email: this.email()
         });
         Swal.fire({
-          title: 'Envío de código de activación',
           text: `Hemos enviado un correo a ${this.email()} para validar tu cuenta.`,
-          icon: 'success',
+          customClass: {
+            popup:
+              'bg-principal text-red-800 rounded-2xl shadow-black shadow-lg', // fondo del modal
+            confirmButton:
+              'bg-btn hover:bg-yellow-600 text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
+          },
+          buttonsStyling: false, // necesario para que respete tus clases en el botón
           confirmButtonText: 'Aceptar'
         });
         // Navegar a validar cuenta
