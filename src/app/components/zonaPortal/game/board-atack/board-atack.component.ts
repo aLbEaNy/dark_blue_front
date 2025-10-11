@@ -6,12 +6,15 @@ import {
   output,
   signal,
   untracked,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
-import { formatPosition, parsePosition, sleep } from '../../../../utils/board-utils';
+import { formatPosition, parsePosition } from '../../../../utils/board-utils';
 import { NgClass, NgStyle } from '@angular/common';
 import Submarine from '../../../../models/Submarine';
+import { PerfilService } from '../../../../services/game/perfil.service';
 
 @Component({
   selector: 'app-board-atack',
@@ -19,10 +22,11 @@ import Submarine from '../../../../models/Submarine';
   templateUrl: './board-atack.component.html',
   styleUrl: './board-atack.component.css',
 })
-export class BoardAtackComponent {
+export class BoardAtackComponent implements OnInit, OnDestroy {
   storageService = inject(StorageService);
   gameService = inject(GameService);
-
+  perfilService = inject(PerfilService);
+  perfil = this.perfilService.perfil();
   disableFire = signal(false);
 
   //Referencia al tablero
@@ -42,6 +46,27 @@ export class BoardAtackComponent {
     return this.gameService.getCurrentBoard();
   });
   firePlayer = output<string>();
+
+  ngOnInit(): void {
+  const perfil = this.perfil;
+  perfil.stats.currentStartTime = Date.now();
+  this.perfilService.setPerfil(perfil);
+  this.perfilService.updatePerfil(perfil);
+}
+
+ngOnDestroy(): void {
+  const perfil = this.perfil;
+  const now = Date.now();
+
+  // Evitar errores si por alguna razón no se había inicializado
+  if (perfil.stats.currentStartTime) {
+    const sessionTime = now - perfil.stats.currentStartTime;
+    perfil.stats.playTime = (perfil.stats.playTime ?? 0) + sessionTime;
+    perfil.stats.currentStartTime = undefined;
+  }
+  this.perfilService.setPerfil(perfil);
+  this.perfilService.updatePerfil(perfil);
+}
 
   constructor() {
     effect(() => {

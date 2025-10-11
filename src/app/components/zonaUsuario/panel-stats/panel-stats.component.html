@@ -1,0 +1,38 @@
+<div class="h-[60vh] w-[65vw] bg-black opacity-85" >
+    <h1 class="bg-acero font-mono font-extrabold text-lg-center text-center p-2">Estadísticas del juego</h1>
+    <div class="text-fluor m-5 my-6 text-[0.6rem] font-bold">
+        <div class="d-flex flex items-center">
+            <p class="py-2">NICKNAME</p>
+            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.nickname}}</p>
+        </div>
+        <div class="d-flex flex items-center">
+            <p class="py-2">FECHA DE ALISTAMIENTO</p>
+            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.fechaRegistro | date:'dd/MM/yyyy'}}</p>
+        </div>
+        <div class="d-flex flex items-center">
+            <p class="py-2">TIEMPO DE JUEGO</p>
+            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{timeGamePlayed()}}</p>
+        </div>
+        <div class="d-flex flex items-center">
+            <p class="py-2">JUEGOS JUGADOS</p>
+            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{gamesPlayed()}}</p>
+        </div>
+        <div class="d-flex flex items-center">
+            <p class="py-2">VICTORIAS</p>
+            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.wins}}</p>
+        </div>
+        <div class="d-flex flex items-center">
+            <p class="py-2">DERROTAS
+            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.losses}}</p>
+        </div>
+        <div class="d-flex flex items-center">
+            <p class="py-2">MONEDAS</p>
+            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.coins}}</p>
+        </div>
+        <div class="d-flex flex items-center">
+            <p class="py-2">RANGO</p>
+            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.rango}}</p>
+        </div>
+    </div>
+
+</div>

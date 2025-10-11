@@ -6,6 +6,7 @@ import { ValidarCuentaComponent } from './components/zonaUsuario/validar-cuenta/
 import { authGuard } from './guards/auth.guard';
 import { MenuComponent } from './components/zonaPortal/game/menu/menu.component';
 import { MainGameComponent } from './components/zonaPortal/game/main-game/main-game.component';
+import { OptionsComponent } from './components/zonaUsuario/options/options.component';
 
 export const routes: Routes = [
      {path: '', redirectTo: '/home', pathMatch: 'full'},
@@ -21,8 +22,8 @@ export const routes: Routes = [
     canActivate: [authGuard], 
     children: [
       { path: 'menu', component: MenuComponent },
-      { path: 'main-game', component: MainGameComponent }
-      
+      { path: 'main-game', component: MainGameComponent },
+      { path: 'options', component: OptionsComponent }      
     ]
   }
 

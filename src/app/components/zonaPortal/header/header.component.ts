@@ -1,5 +1,7 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, computed, output } from '@angular/core';
 import { PerfilService } from '../../../services/game/perfil.service';
+import { Router } from '@angular/router';
+import { PagesService } from '../../../services/pages/pages.service';
 
 @Component({
   selector: 'app-header',
@@ -9,7 +11,12 @@ import { PerfilService } from '../../../services/game/perfil.service';
 })
 export class HeaderComponent{
   perfilService = inject(PerfilService);
+  pageService = inject(PagesService);
+  router = inject(Router);
   perfil = computed (() => this.perfilService.perfil());
+
+  pages = this.pageService.pages
+  
 
 }
 
