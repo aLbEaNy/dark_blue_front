@@ -1,3 +1,4 @@
+import { __version } from './../../../config';
 import { Component } from '@angular/core';
 
 @Component({
@@ -7,5 +8,6 @@ import { Component } from '@angular/core';
   styleUrl: './footer.component.css'
 })
 export class FooterComponent {
+  version = __version;
 
 }

@@ -55,7 +55,7 @@ export class GameService {
     return this.me() === 'player1' ? g.boardPlayer1 : g.boardPlayer2;
   });
   
-  newGame(nickname: string, online: boolean, gameId: string = '') {
+  newGame(nickname: string, online: boolean, gameId: string) {
     return this.http.get<IRestMessage>(
       `${this.baseUrl}/game/new?nickname=${nickname}&online=${online}&gameId=${gameId}`
     );

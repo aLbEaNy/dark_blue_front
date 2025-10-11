@@ -49,7 +49,7 @@ export class WaitingOnlineComponent {
   createOnlineGameR: ResourceRef<IRestMessage> = resource({
     loader: async () => {
       const response = await fetch(
-        `${this.baseUrl}/game/new?nickname=${this.nickname}&online=true`
+        `${this.baseUrl}/game/new?nickname=${this.nickname}&online=true&gameId=''`
       );
       return response.json();
     },

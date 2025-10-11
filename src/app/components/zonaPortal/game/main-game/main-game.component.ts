@@ -26,6 +26,8 @@ import { WebSocketService } from '../../../../services/webSocket/webSocket.servi
 import GameMessage from '../../../../models/GameMessage';
 import { OnlineGameComponent } from '../online-game/online-game.component';
 import { Router } from '@angular/router';
+import { PagesService } from '../../../../services/pages/pages.service';
+import { PerfilService } from '../../../../services/game/perfil.service';
 
 @Component({
   selector: 'app-main-game',
@@ -50,13 +52,16 @@ export class MainGameComponent implements OnInit {
   storage = inject(StorageService);
   gameService = inject(GameService);
   aiService = inject(AIService);
+  pagesService = inject(PagesService);
+  perfilService = inject(PerfilService);
   webSocketService = inject(WebSocketService);
   private sub?: Subscription;
   msgSocket = signal<GameMessage>({ phase: 'PLACEMENT' });
   private baseUrl = window.__env.backendUrl;
 
-  perfil = signal(this.storage.get<any>('perfil'));
+  perfil = this.perfilService.perfil;
   page = signal('');
+  pages = this.pagesService.pages;
 
   ngOnInit() {
     // Reproduce el audio al cargar el componente
@@ -81,7 +86,9 @@ export class MainGameComponent implements OnInit {
           this.startBattle();
         }
         if (_page === 'OPTIONS') {
-        }
+          this.pages.set('OPTIONS');
+          this.router.navigate(['/darkblue/options']);
+        }        
         if (_page === 'WAITING_READY') {
           console.log(`Effect en WAITING_READY con ${this.gameService.me()}`);
         }
@@ -101,12 +108,10 @@ export class MainGameComponent implements OnInit {
       const resp = await firstValueFrom(
         this.gameService.newGame(
           this.perfil().nickname,
-          false
+          false,
+          this.gameService.gameDTO()?.gameId || ''
         )
       );
-
-      console.log('Respuesta:', resp);
-
       if (resp.codigo === 0) {
         await this.gameService.setGame(resp.datos);
 
@@ -138,7 +143,7 @@ export class MainGameComponent implements OnInit {
           },
           buttonsStyling: false,
           timer: 2300,
-          showConfirmButton: false, // Ocultamos el botón ya que se cerrará solo
+          showConfirmButton: false,
         });
       }
     } catch (err) {
@@ -202,11 +207,16 @@ export class MainGameComponent implements OnInit {
       if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
       // --- COMPROBAR FIN DE PARTIDA ---
       if (board1.submarines.every((sub) => sub.isDestroyed)) {
-        _game = { ..._game, stage: 2, winner: 'player2', phase: 'END' };
+        _game.winner = 'player2';
+        _game.phase = 'END';
+        this.gameService.setGame(_game);
+        this.gameService.updateGame(_game);
+        this.storage.remove('gameDTO');
+
         console.log('FIN DE PARTIDA');
         // Mostrar banner o popup de victoria de la IA
-        Swal.fire({
-          title: 'VICTORIA!!',
+        await Swal.fire({
+          title: 'DERROTA!!',
           text: `${this.gameService.gameDTO()?.player2} ha ganado!`,
           imageUrl: `${_game.avatarPlayer2}`,
           imageWidth: 140,
@@ -223,10 +233,7 @@ export class MainGameComponent implements OnInit {
           buttonsStyling: false, // necesario para que respete tus clases en el botón
           confirmButtonText: 'Aceptar',
         });
-
-        this.page.set('');
-        this.gameService.setGame(_game);
-        return;
+        this.page.set('MENU');
       }
     }
 
@@ -251,6 +258,7 @@ export class MainGameComponent implements OnInit {
       // Turno de IA
       await this.aiTurn();
       // Al finalizar, nextTurn() se llamará de nuevo para pasar el turno al player1
+      if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
       await this.nextTurn();
     }
   }
@@ -303,8 +311,16 @@ export class MainGameComponent implements OnInit {
     // Comprobar fin de partida
     if (_game.boardPlayer2.submarines.every((sub) => sub.isDestroyed)) {
       console.log('FIN DE PARTIDA');
-      _game = { ..._game, winner: 'player1', phase: 'END' };
+      _game.winner = 'player1';
+      _game.phase = 'END';
       this.gameService.setGame(_game);
+      //TODO Guardar juego en bd 
+      this.gameService.updateGame(_game);
+      let _perfil = this.perfil();
+      (_perfil.stats.coins as number) += 100;
+      (_perfil.stats.wins as number) += 1;
+      this.perfilService.setPerfil(_perfil);
+      this.perfilService.updatePerfil(_perfil);
 
       // Mostrar banner o popup de victoria del jugador
       await Swal.fire({
@@ -335,7 +351,6 @@ export class MainGameComponent implements OnInit {
         buttonsStyling: false,
         confirmButtonText: 'Aceptar',
       });
-
       this.page.set('NEWGAME');
 
       return; // se sale de playerFire

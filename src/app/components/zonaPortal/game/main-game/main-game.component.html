@@ -1,9 +1,6 @@
 <div class="bg-[url('/images/menu.png')] bg-cover bg-center min-h-screen overflow-y-auto flex flex-col">
 
-  <!-- Header -->
   <app-header></app-header>
-
-  <!-- Contenido dinámico -->
 
     @switch (page()) {
       @case ('NEWGAME') {
@@ -25,17 +22,10 @@
       @case ('ONLINE') {
         <app-waiting-online (cancel)="page.set($event)" (pageOnline)="page.set($event)"></app-waiting-online>
       }
-      @case ('WAITING_READY') {
-        <p>Waiting......................................</p>
-      }
-      @case ('OPTIONS') {
-
-      }
       
       <!-- MENU es default-->
       @default {
         <app-menu (pageChange)="page.set($event)"></app-menu>
-        <!-- Footer -->
         <app-footer class="w-full mt-auto"></app-footer>
       }
     }

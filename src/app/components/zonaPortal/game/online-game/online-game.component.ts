@@ -48,8 +48,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   webSocketService = inject(WebSocketService);
   private sub?: Subscription;
   msgSocket = signal<GameMessage>({ phase: 'PLACEMENT' });
-  perfil = signal(this.storage.get<any>('perfil'));
   perfilService = inject(PerfilService);
+  perfil = this.perfilService.perfil;
   pageChange = output<string>(); // hacia main
   page = signal('PLACEMENT'); // Para los hijos
 
@@ -185,13 +185,15 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
             buttonsStyling: false,
             confirmButtonText: 'Aceptar',
           });
-          // Actualizar stats y borrar gameDTO 
+          // Actualizar stats y borrar gameDTO
           let _perfil = this.perfil();
-          iAmWinner ? (_perfil.stats.wins += 1) : (_perfil.stats.losses += 1);
-          _perfil.stats.coins += parseInt(coin);
+          iAmWinner
+            ? ((_perfil.stats.wins as number) += 1)
+            : ((_perfil.stats.losses as number) += 1);
+          (_perfil.stats.coins as number) += parseInt(coin);
           this.perfilService.setPerfil(_perfil);
           this.perfilService.updatePerfil(_perfil);
-          
+
           this.storage.remove('gameDTO');
           this.pageChange.emit('MENU');
         }

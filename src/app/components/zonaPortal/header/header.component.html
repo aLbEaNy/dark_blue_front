@@ -1,8 +1,18 @@
 <header class="flex items-center px-1 py-2 bg-principal shadow-md">
-    <h1 class="text-fluor font-bold text-xl ms-2 me-auto">Dark Blue</h1>
+    <h1 class="text-fluor font-bold text-xl ms-2 me-auto 
+        hover:text-[#999696] hover:cursor-pointer hover:scale-105 transition-all duration-200 ease-in-out"
+        (click)="router.navigate(['/darkblue/main-game'])">
+        Dark
+        Blue</h1>
     <div class="flex align-items-center me-2 hover:cursor-pointer">
-        <h3 class="align-self-end me-4 text-acero font-mono font-semibold mt-2">{{perfil().stats.coins}} 🪙</h3>
-        <h3 class="align-self-end me-2 text-acero font-bold font-mono mt-2">{{perfil().nickname}}</h3>
-        <img [src]="perfil().avatar" alt="avatar de usuario" class="w-10 h-10 ms-1 rounded-full" />
+        <h3
+            class="align-self-end me-4 text-acero font-mono font-semibold mt-2 hover:scale-105  hover:text-[#1187d6] transition-all duration-200 ease-in-out">
+            {{perfil().stats.coins}} 🪙</h3>
+        <h3
+            (click)="router.navigate(['/darkblue/options'])"
+            class="align-self-end me-2 text-acero font-bold font-mono mt-2 hover:scale-105 hover:text-[#1187d6] transition-all duration-200 ease-in-out">
+            {{perfil().nickname}}</h3>
+        <img [src]="perfil().avatar" alt="avatar de usuario"
+            class="w-10 h-10 ms-1 rounded-full hover:scale-105 transition-all duration-200 ease-in-out" />
     </div>
 </header>

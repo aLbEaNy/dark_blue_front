@@ -1,0 +1,23 @@
+@layer utilities {
+  .bg-principal {
+    @apply bg-gradient-to-b from-[#020608] via-[#0d1d2b] to-[#020d12];
+  }
+  .text-acero {
+    @apply text-[#999696];
+  }
+  .text-darkBlue {
+    @apply text-[#0b6da6];
+  }
+  .text-fluor {
+    @apply text-[#1187d6];
+  }
+  .bg-acero {
+    @apply bg-[#999696];
+  }
+  .bg-btn {
+    @apply bg-[#bfb71b];
+  }
+  .border-btn {
+    @apply border-[#0d1d2b];
+  }
+}
