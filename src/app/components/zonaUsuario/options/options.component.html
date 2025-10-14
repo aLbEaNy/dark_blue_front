@@ -1,17 +1,64 @@
-
 <div class="bg-[url('/images/subStats.png')] bg-cover bg-center min-h-screen overflow-y-auto flex flex-col">
-    
-    <!-- Header -->
-      <app-header></app-header>
-     
-      <div class="m-auto">
-       
-            <app-panel-stats></app-panel-stats>
 
+  <!-- Header -->
+  <app-header></app-header>
+  <div class="m-auto">
+    @switch (pagesComputed()) {
+    @case ('STATS') {
+    <app-panel-stats></app-panel-stats>
+    }
+    @case ('PROFILE') {
+    <app-profile></app-profile>
+    }
+    @case ('SHOP') {
+    <app-shop></app-shop>
+    }
+    @case ('OPTIONS') {
+    <div
+      class="w-[65vw] rounded-2xl bg-principal opacity-90 shadow-black shadow-xl border border-gray-800 p-6 flex flex-col items-center justify-center space-y-6">
 
+      <!-- Título -->
+      <h1 class="text-center text-xl font-extrabold font-mono text-fluor tracking-widest mb-6">
+        OPCIONES
+      </h1>
+
+      <!-- Botones de navegación -->
+      <div class="flex flex-col items-center w-full space-y-4">
+
+        <button
+          (click)="pagesService.pages.set('STATS')"
+          (click)="router.navigate(['/darkblue/options'])"
+          class="text-start px-2 w-48 py-3 rounded-xl bg-[#00ffc8]/10 border border-[#00ffc8] text-[#00ffc8] font-mono text-sm hover:bg-[#00ffc8]/20 transition">
+          <span class="me-5">📊</span> ESTADÍSTICAS
+        </button>
+
+        <button
+          (click)="pagesService.pages.set('PROFILE')"
+          (click)="router.navigate(['/darkblue/options'])"
+          class="text-start px-2 w-48 py-3 rounded-xl bg-[#00ffc8]/10 border border-[#00ffc8] text-[#00ffc8] font-mono text-sm hover:bg-[#00ffc8]/20 transition">
+          <span class="me-1">👤</span> GESTIÓN DE USUARIO
+        </button>
+
+        <button
+          (click)="pagesService.pages.set('SHOP')"
+          (click)="router.navigate(['/darkblue/options'])"
+          class="text-start px-2 w-48 py-3 rounded-xl bg-[#00ffc8]/10 border border-[#00ffc8] text-[#00ffc8] font-mono text-sm hover:bg-[#00ffc8]/20 transition">
+          <span class="me-9">🛒</span> TIENDA
+        </button>
+
+        <button
+          (click)="pagesService.pages.set('MENU')"
+          (click)="router.navigate(['/darkblue/options'])"
+          class="text-start px-2 w-48 py-3 rounded-xl bg-red-600/20 border border-red-600 text-red-400 font-mono text-sm hover:bg-red-600/30 transition">
+          <span class="me-3">🔙</span> VOLVER AL MENU
+        </button>
       </div>
-   
-    <app-footer class="w-full mt-auto"></app-footer>
+    </div>
+
+    }
+    }
+  </div>
+
+
+  <app-footer class="w-full mt-auto"></app-footer>
 </div>
-
-

@@ -2,6 +2,7 @@ import { Component, inject, output, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AudioService } from '../../../../services/audio/audio.service';
 import { NgClass } from '@angular/common';
+import { GameService } from '../../../../services/game/game.service';
 
 @Component({
   selector: 'app-menu',
@@ -12,6 +13,8 @@ import { NgClass } from '@angular/common';
 export class MenuComponent {
   router = inject(Router);
   audioService = inject(AudioService);
+  gameService = inject(GameService);
+
   pageChange = output<string>();
 
   // señal que guarda qué botón está activo
@@ -35,11 +38,17 @@ export class MenuComponent {
     // Sonido torpedo
     this.audioService.stop('hoverSound');
     this.audioService.play('torpedoSound','/audio/torpedoSound.mp3');
-    this.audioService.stop('menu2');
 
     // Cambiar de vista después de 1.2s
-    setTimeout(() => {
-      this.pageChange.emit(page);
-    }, 1200);
+      setTimeout(() => {
+        if(page === 'NEWGAME' && this.gameService.gameDTO()?.gameId){
+          let _game = this.gameService.gameDTO()!;
+          _game.gameId ='';
+          _game.online = false;
+          this.gameService.setGame(_game);
+        }
+
+        this.pageChange.emit(page);
+      }, 1200);
   }
 }

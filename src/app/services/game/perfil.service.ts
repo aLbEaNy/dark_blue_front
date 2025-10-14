@@ -30,6 +30,12 @@ export class PerfilService {
       this.http.post<Perfil>(`${this.baseUrl}/perfil/update`, perfil)
     );
   }
+  updateProfile(formData: FormData) {
+    return firstValueFrom(
+      this.http.post<Perfil>(`${this.baseUrl}/perfil/profile`, formData)
+    );
+  }
+  
   deletePerfil(nickname: string) {
     return firstValueFrom(
       this.http.delete<boolean>(`${this.baseUrl}/perfil/${nickname}`)

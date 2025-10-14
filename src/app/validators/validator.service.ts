@@ -15,7 +15,7 @@ export class ValidatorService {
     
      case "nickname":
        if (value.length < 3) return "* El nickname debe tener al menos 3 caracteres";
-       if (value.length > 12) return "El nickname no puede tener más de 12 caracteres";
+       if (value.length > 10) return "El nickname no puede tener más de 10 caracteres";
        _patron=new RegExp("^[a-zA-Z0-9_-]+$");
        if (!value.match(_patron)) return "* El nickname solo puede contener letras, números y guiones bajos";
        break;

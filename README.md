@@ -1,6 +1,6 @@
 # Dark Blue
 
-![Logo de Dark Blue](ruta/al/logo.png) <!-- Espacio reservado para tu logo -->
+![Logo de Dark Blue](/public/images/logoMini.png) <!-- Espacio reservado para tu logo -->
 
 **Dark Blue** es un juego web que reversiona el clásico **Hundir la Flota**, ofreciendo una experiencia moderna, interactiva y visualmente atractiva directamente desde el navegador.
 

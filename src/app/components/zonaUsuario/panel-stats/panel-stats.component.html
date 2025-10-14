@@ -1,38 +1,64 @@
-<div class="h-[60vh] w-[65vw] bg-black opacity-85" >
-    <h1 class="bg-acero font-mono font-extrabold text-lg-center text-center p-2">Estadísticas del juego</h1>
-    <div class="text-fluor m-5 my-6 text-[0.6rem] font-bold">
-        <div class="d-flex flex items-center">
-            <p class="py-2">NICKNAME</p>
-            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.nickname}}</p>
-        </div>
-        <div class="d-flex flex items-center">
-            <p class="py-2">FECHA DE ALISTAMIENTO</p>
-            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.fechaRegistro | date:'dd/MM/yyyy'}}</p>
-        </div>
-        <div class="d-flex flex items-center">
-            <p class="py-2">TIEMPO DE JUEGO</p>
-            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{timeGamePlayed()}}</p>
-        </div>
-        <div class="d-flex flex items-center">
-            <p class="py-2">JUEGOS JUGADOS</p>
-            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{gamesPlayed()}}</p>
-        </div>
-        <div class="d-flex flex items-center">
-            <p class="py-2">VICTORIAS</p>
-            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.wins}}</p>
-        </div>
-        <div class="d-flex flex items-center">
-            <p class="py-2">DERROTAS
-            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.losses}}</p>
-        </div>
-        <div class="d-flex flex items-center">
-            <p class="py-2">MONEDAS</p>
-            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.coins}}</p>
-        </div>
-        <div class="d-flex flex items-center">
-            <p class="py-2">RANGO</p>
-            <p class="text-white text-[0.8rem] ms-auto font-semibold">{{perfil.stats.rango}}</p>
-        </div>
+<div class="w-[65vw] rounded-2xl bg-principal opacity-90 shadow-black shadow-xl border border-gray-800 p-6 mx-auto">
+  <!-- Título -->
+  <h1 class="text-center text-xl font-extrabold font-mono text-fluor tracking-widest mb-8 mt-3">
+    ESTADÍSTICAS DEL JUEGO
+  </h1>
+
+  <!-- Contenedor general -->
+  <div class="space-y-4 text-[0.8rem] font-semibold text-acero">
+
+    <!-- Nickname -->
+    <div class="flex items-center justify-between border-b border-gray-700 pb-2">
+      <p class="text-[#00ffc8] text-[0.7rem] font-bold">NICKNAME</p>
+      <p class="text-white font-semibold">{{ perfil.nickname }}</p>
     </div>
 
+    <!-- Fecha de alistamiento -->
+    <div class="flex items-center justify-between border-b border-gray-700 pb-2">
+      <p class="text-[#00ffc8] text-[0.7rem] font-bold">FECHA DE ALISTAMIENTO</p>
+      <p class="text-white font-semibold">{{ perfil.stats.fechaRegistro | date:'dd/MM/yyyy' }}</p>
+    </div>
+
+    <!-- Tiempo de juego -->
+    <div class="flex items-center justify-between border-b border-gray-700 pb-2">
+      <p class="text-[#00ffc8] text-[0.7rem] font-bold">TIEMPO DE JUEGO</p>
+      <p class="text-white font-semibold">{{ timeGamePlayed() }}</p>
+    </div>
+
+    <!-- Juegos jugados -->
+    <div class="flex items-center justify-between border-b border-gray-700 pb-2">
+      <p class="text-[#00ffc8] text-[0.7rem] font-bold">JUEGOS JUGADOS</p>
+      <p class="text-white font-semibold">{{ gamesPlayed() }}</p>
+    </div>
+
+    <!-- Victorias -->
+    <div class="flex items-center justify-between border-b border-gray-700 pb-2">
+      <p class="text-[#00ffc8] text-[0.7rem] font-bold">VICTORIAS</p>
+      <p class="text-white font-semibold">{{ perfil.stats.wins }}</p>
+    </div>
+
+    <!-- Derrotas -->
+    <div class="flex items-center justify-between border-b border-gray-700 pb-2">
+      <p class="text-[#00ffc8] text-[0.7rem] font-bold">DERROTAS</p>
+      <p class="text-white font-semibold">{{ perfil.stats.losses }}</p>
+    </div>
+
+    <!-- Monedas -->
+    <div class="flex items-center justify-between border-b border-gray-700 pb-2">
+      <p class="text-[#00ffc8] text-[0.7rem] font-bold">MONEDAS</p>
+      <p class="text-white font-semibold">{{ perfil.stats.coins }}</p>
+    </div>
+
+    <!-- Rango -->
+    <div class="flex items-center justify-between">
+      <p class="text-[#00ffc8] text-[0.7rem] font-bold">RANGO</p>
+      <p class="text-white font-semibold">{{ perfil.stats.rango }}</p>
+    </div>
+    <button
+          (click)="router.navigate(['/darkblue/main-game'])"
+          class="text-start px-2 w-48 py-3 rounded-xl bg-red-600/20 border border-red-600 text-red-400 font-mono text-sm hover:bg-red-600/30 transition">
+          <span class="me-3">🔙</span> VOLVER AL MENU
+        </button>
+
+  </div>
 </div>

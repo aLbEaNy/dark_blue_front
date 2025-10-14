@@ -1,0 +1,138 @@
+<div class="w-[65vw] rounded-2xl bg-principal opacity-90 shadow-black shadow-xl  border border-gray-800 p-6">
+  <!-- Título -->
+  <h1 class="text-center text-xl font-extrabold font-mono text-fluor tracking-widest mb-8 mt-3">
+    GESTIÓN DE USUARIO
+  </h1>
+
+  <!-- Contenedor general -->
+  <div class="space-y-6 text-[0.8rem] font-semibold text-acero md:ms-6 md:me-6">
+
+    <!-- Sección: Avatar -->
+    <!-- Input oculto -->
+    <input #fileInput type="file" accept="image/png, image/jpeg" class="hidden" (change)="onFileSelected($event)" />
+    <div class="flex items-center justify-between border-b border-gray-700 pb-3">
+      <div>
+        <p class="text-[#00ffc8] text-[0.7rem] font-bold mb-1">AVATAR</p>
+        <button
+          class="flex items-end mt-4 gap-2 text-sm text-blue-400 hover:cursor-pointer hover:text-blue-300 transition-colors"
+          (click)="editAvatar()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+            <path
+              d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z" />
+          </svg> Editar
+        </button>
+      </div>
+      <div class="relative group inline-block">
+        <img [src]="avatar()" alt="avatar"
+          class="w-18 h-18 rounded-full border-2 border-[#00ffc8] shadow-gray-500 shadow-md hover:cursor-pointer hover:scale-105 transition-transform"
+          (click)="editAvatar()" />
+        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+           hidden group-hover:block
+           bg-gray-800 text-[#00ffc8] text-xs rounded py-1 px-2
+           whitespace-nowrap">
+          Editar la imagen del avatar
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección: Nickname -->
+    <div class="border-b border-gray-700 pb-3">
+      <p class="text-[#00ffc8] text-[0.7rem] font-bold mb-1">NICKNAME</p>
+      <div class="flex">
+        <input name="nickname" type="input" class="text-white w-full" [readonly]="!editingNickname()"
+          #nicknameInput
+          [ngClass]="editingNickname()? 'border-1 rounded-md border-[#ffffff22]': ''"
+          (input)="nickname.set($any($event.target).value)" [value]="nickname()">
+        <button
+          class="flex items-center gap-2 text-sm text-blue-400 hover:cursor-pointer hover:text-blue-300 transition-colors"
+          (click)="editNickname()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+            <path
+              d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z" />
+          </svg>
+          Editar
+        </button>
+      </div>
+      <p class="text-red-500 text-xs">{{msgErrorNickname()}}</p>
+    </div>
+
+    <!-- Sección: Email -->
+    <div class="flex items-center justify-between border-b border-gray-700 pb-3">
+      <div>
+        <p class="text-[#00ffc8] text-[0.7rem] font-bold mb-1">EMAIL</p>
+        <p class="text-acero hover:cursor-none">{{ perfil().username }}</p>
+      </div>
+
+    </div>
+
+   <!-- Sección: Contraseña -->
+<div class="border-b border-gray-700 pb-3">
+  <p class="text-[#00ffc8] text-[0.7rem] font-bold mb-1">CONTRASEÑA</p>
+  <div class="flex">
+    <input
+      name="password"
+      type="text"
+      class="text-white w-full"
+      [ngClass]="editingPassword()? 'border-1 rounded-md border-[#ffffff22]': ''"
+      [readonly]="!editingPassword()"
+      #passwordInput
+      (input)="password.set($any($event.target).value)"
+      [value]="password()"
+    >
+    <button
+      class="flex items-center gap-2 text-sm text-blue-400 hover:cursor-pointer hover:text-blue-300 transition-colors"
+      (click)="editPassword()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+        <path
+          d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z"
+        />
+      </svg>
+      Cambiar
+    </button>
+  </div>
+  <p class="text-red-500 text-xs">{{msgErrorPassword()}}</p>
+</div>
+
+    <!-- 🔥 Sección: Eliminar cuenta -->
+    <div class="flex items-end justify-between border-b border-gray-700 pb-3">
+      <div>
+        <p class="text-[#ff5c5c] text-[0.7rem] font-bold mb-1">ELIMINAR CUENTA</p>
+        <p class="text-acero text-[0.7rem]">Esta acción no se puede deshacer</p>
+      </div>
+
+      <div class="relative group">
+        <button
+          class="flex items-center gap-2 text-sm text-red-500 hover:cursor-pointer hover:text-red-400 transition-colors"
+          (click)="deleteAccount()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+            <path fill-rule="evenodd"
+              d="M10.339 2.237a.531.531 0 0 0-.678 0 11.947 11.947 0 0 1-7.078 2.75.5.5 0 0 0-.479.425A12.11 12.11 0 0 0 2 7c0 5.163 3.26 9.564 7.834 11.257a.48.48 0 0 0 .332 0C14.74 16.564 18 12.163 18 7c0-.538-.035-1.069-.104-1.589a.5.5 0 0 0-.48-.425 11.947 11.947 0 0 1-7.077-2.75ZM10 6a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 6Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+              clip-rule="evenodd" />
+          </svg>
+          Eliminar
+        </button>
+
+        <!-- Tooltip -->
+        <div
+          class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200 bg-gray-800 text-red-400 text-[0.65rem] rounded py-1 px-2 whitespace-nowrap">
+          Eliminar permanentemente tu cuenta
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="flex justify-center gap-4 mt-8">
+      <button (click)="saveChanges()"
+        class="w-36 py-2 rounded-lg bg-[#00ffc8]/10 text-[#00ffc8] border border-[#00ffc8] font-mono text-sm hover:bg-[#00ffc8]/20 transition">
+        GUARDAR CAMBIOS
+      </button>
+      <button
+        class="w-36 py-2 rounded-lg bg-red-600/20 text-red-400 border border-red-600 font-mono text-sm hover:bg-red-600/30 transition"
+        (click)="router.navigate(['/darkblue/main-game'])">
+        CANCELAR
+      </button>
+    </div>
+  </div>
+</div>

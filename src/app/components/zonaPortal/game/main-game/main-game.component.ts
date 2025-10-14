@@ -69,7 +69,7 @@ export class MainGameComponent implements OnInit {
       'menu2',
       `${this.baseUrl}/media/audio/menu2.mp3`,
       true,
-      0.7
+      0.2
     );
   }
 
@@ -88,7 +88,7 @@ export class MainGameComponent implements OnInit {
         if (_page === 'OPTIONS') {
           this.pages.set('OPTIONS');
           this.router.navigate(['/darkblue/options']);
-        }        
+        }
         if (_page === 'WAITING_READY') {
           console.log(`Effect en WAITING_READY con ${this.gameService.me()}`);
         }
@@ -96,7 +96,7 @@ export class MainGameComponent implements OnInit {
           //Volver a home cerrando sesion
           this.storage.clear();
           sessionStorage.clear();
-         
+
           this.router.navigate(['/home']);
         }
       });
@@ -105,12 +105,10 @@ export class MainGameComponent implements OnInit {
 
   async newGame() {
     try {
-      const resp = await firstValueFrom(
-        this.gameService.newGame(
-          this.perfil().nickname,
-          false,
-          this.gameService.gameDTO()?.gameId || ''
-        )
+      const resp = await this.gameService.newGame(
+        this.perfil().nickname,
+        false,
+        this.gameService.gameDTO()?.gameId || ''
       );
       if (resp.codigo === 0) {
         await this.gameService.setGame(resp.datos);
@@ -152,11 +150,11 @@ export class MainGameComponent implements OnInit {
   }
 
   async startBattle() {
-      let _game = this.gameService.gameDTO()!;
-      _game.phase = 'BATTLE';
-      await this.gameService.setGame(_game);
-      this.page.set('BATTLE');
-      this.nextTurn();
+    let _game = this.gameService.gameDTO()!;
+    _game.phase = 'BATTLE';
+    await this.gameService.setGame(_game);
+    this.page.set('BATTLE');
+    this.nextTurn();
   }
 
   async aiTurn() {
@@ -247,7 +245,7 @@ export class MainGameComponent implements OnInit {
   async nextTurn() {
     console.log('>>>----------> Entro en nextTurn');
     const _game = this.gameService.gameDTO()!;
-    
+
     if (_game.turn === 'player1') {
       // Solo habilitar la UI, esperar clics del jugador
       // No hacemos nada más aquí; playerFire() llamará nextTurn() cuando haga MISS
@@ -314,7 +312,7 @@ export class MainGameComponent implements OnInit {
       _game.winner = 'player1';
       _game.phase = 'END';
       this.gameService.setGame(_game);
-      //TODO Guardar juego en bd 
+      //TODO Guardar juego en bd
       this.gameService.updateGame(_game);
       let _perfil = this.perfil();
       (_perfil.stats.coins as number) += 100;
@@ -330,7 +328,8 @@ export class MainGameComponent implements OnInit {
           <span class="text-fluor text-xl font-bold font-mono">${
             this.gameService.gameDTO()?.player1
           }</span> ganó a <span class="text-red-800 text-xl font-bold font-mono">${
-            this.gameService.gameDTO()?.player2}</span>
+          this.gameService.gameDTO()?.player2
+        }</span>
           </p>
           <p class="text-yellow-400 font-bold mt-2">
           Has ganado <span class="text-xl">100 🪙</span>
@@ -357,5 +356,4 @@ export class MainGameComponent implements OnInit {
     }
     // Si fue HIT y hay submarinos todavía, el jugador sigue disparando; no se cambia turno
   }
- 
 }

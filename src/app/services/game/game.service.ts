@@ -56,9 +56,9 @@ export class GameService {
   });
   
   newGame(nickname: string, online: boolean, gameId: string) {
-    return this.http.get<IRestMessage>(
+    return firstValueFrom (this.http.get<IRestMessage>(
       `${this.baseUrl}/game/new?nickname=${nickname}&online=${online}&gameId=${gameId}`
-    );
+    ));
   }
   getGame(gameId: string) {
     return firstValueFrom(this.http.get<IRestMessage>(

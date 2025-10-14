@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, Injector, Signal } from '@angular/core';
-import { startWith } from 'rxjs';
+import { lastValueFrom, startWith } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import IRegister from '../../models/IRegister';
 import IRestMessage from '../../models/IRestMessage';
@@ -99,6 +99,14 @@ export class AuthService {
   logout(){
     sessionStorage.removeItem('isLogin');
     this.router.navigate(['/login']);
+  }
+  nicknameExists(nickname: string) {
+    return lastValueFrom(
+      this.http.get<IRestMessage>(`${this.baseUrl}/auth/nickname?nickname=${nickname}`));
+  }
+  deleteAccount(username: string){
+    return lastValueFrom(
+      this.http.delete<boolean>(`${this.baseUrl}/auth?username=${username}`))
   }
 
 }
