@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { PerfilService } from '../../../services/game/perfil.service';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-panel-stats',
@@ -10,6 +11,7 @@ import { DatePipe } from '@angular/common';
 })
 export class PanelStatsComponent {
    perfilService = inject(PerfilService);
+   router = inject(Router);
    perfil = this.perfilService.perfil();
    gamesPlayed = computed(() => {
     return (this.perfil.stats.wins as number) + (this.perfil.stats.losses as number);

@@ -5,15 +5,23 @@ export class AudioService {
   private audios: Map<string, HTMLAudioElement> = new Map();
 
   play(id: string, src: string, loop: boolean = false, volume: number = 1) {
-    if (this.audios.has(id)) {
-      this.stop(id);
-    }
-    const audio = new Audio(src);
-    audio.loop = loop;
-    audio.volume = volume; // volumen inicial
-    audio.play();
-    this.audios.set(id, audio);
+  if (this.audios.has(id)) {
+    this.stop(id);
   }
+  const audio = new Audio(src);
+  audio.loop = loop;
+  audio.volume = volume;
+
+  // Evitar que se propague el AbortError
+  audio.play().catch((err) => {
+    if (err.name !== 'AbortError') {
+      console.warn('AudioService play error:', err);
+    }
+  });
+
+  this.audios.set(id, audio);
+}
+
 
   pause(id: string) {
     const audio = this.audios.get(id);

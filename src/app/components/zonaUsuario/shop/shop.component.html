@@ -1,0 +1,24 @@
+<div class="w-[65vw] rounded-2xl bg-principal opacity-90 shadow-black shadow-xl border border-gray-800 p-6">
+    <!-- Título -->
+    <h1 class="text-center text-xl font-extrabold font-mono text-fluor tracking-widest mb-8 mt-3">
+        TIENDA
+    </h1>
+
+    <!-- Grid de productos -->
+    <div class="grid grid-cols-3 gap-6 text-[0.8rem]">
+        <!-- Producto -->
+
+
+        <button
+            class="mt-3 w-full py-1 rounded-lg bg-[#00ffc8]/10 text-[#00ffc8] border border-[#00ffc8] font-mono text-xs hover:bg-[#00ffc8]/20 transition"
+            (click)="comprar()">
+            COMPRAR
+        </button>
+    </div>
+</div>
+
+<!-- Carrito o créditos -->
+<div class="mt-10 text-center border-t border-gray-700 pt-5">
+    <p class="text-acero text-xs mb-2">Créditos disponibles:</p>
+    <p class="text-[#00ffc8] text-lg font-mono font-bold">{{ perfil().stats.coins }} 💰</p>
+</div>
