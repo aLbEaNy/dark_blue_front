@@ -59,9 +59,16 @@
       }
       <!-- ¿Olvidaste tu contraseña? -->
       <div class="text-right text-sm">
-        <a href="#" class="text-red-400 hover:text-red-300">¿Olvidaste tu contraseña?</a>
+        <p (click)="openModal()" class="text-red-400 cursor-pointer hover:text-red-300">¿Olvidaste tu contraseña?</p>
       </div>
 
+       <!-- Modal -->
+       @if(showModal){
+         <app-forgot-password-modal
+           (close)="closeModal()"
+         ></app-forgot-password-modal>
+       }
+       
       <!-- Botón de login -->
       <button (click)="handleSubmit()" [disabled]="disableSubmitButton()"
         class="bg-red-500 hover:bg-red-600 opacity-100 cursor-pointer disabled:opacity-50 disabled:cursor-none disabled:hover:bg-red-500 px-4

@@ -108,6 +108,10 @@ export class AuthService {
     return lastValueFrom(
       this.http.delete<boolean>(`${this.baseUrl}/auth?username=${username}`))
   }
+  forgotPassword(email: string) {
+    return lastValueFrom( 
+      this.http.get<IRestMessage>(`${this.baseUrl}/auth/forgotPassword?email=${email}`)
+    )}
 
 }
 
