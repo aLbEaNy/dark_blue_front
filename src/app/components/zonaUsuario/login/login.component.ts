@@ -15,11 +15,12 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { StorageService } from '../../../services/store/storageLocal.service';
 import { ValidatorService } from '../../../validators/validator.service';
 import IRestMessage from '../../../models/IRestMessage';
+import { ForgotPasswordModalComponent } from '../forgot-password-modal/forgot-password-modal.component';
 
 
 @Component({
   selector: 'app-login',
-  imports: [RouterLink],
+  imports: [RouterLink, ForgotPasswordModalComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -38,6 +39,15 @@ export class LoginComponent implements OnInit {
   passwordTouched = signal<boolean>(false);
   showPassword = signal(false);
   messageError = signal('');
+  showModal = false;
+
+  openModal() {
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+  }
 
   //#endregion
   
@@ -116,7 +126,6 @@ loginResponse(_resp: IRestMessage) {
           this.messageError.set(_resp.mensaje);
       }
 }
-
 
   //#endregion
 }
