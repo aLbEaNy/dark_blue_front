@@ -13,7 +13,7 @@ import { FooterComponent } from '../../footer/footer.component';
 import { AudioService } from '../../../../services/audio/audio.service';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { MiniDisplayUserComponent } from '../mini-display-user/mini-display-user.component';
 import { MiniPlacementComponent } from '../mini-placement/mini-placement.component';
 import { MiniBoardComponent } from '../mini-board/mini-board.component';
@@ -62,7 +62,12 @@ export class MainGameComponent implements OnInit {
   perfil = this.perfilService.perfil;
   page = signal('');
   pages = this.pagesService.pages;
-
+  stageShow = 1;
+  txtBoos = signal([
+    'Nadie escapa al control de mi programación! En todas mis simulaciones acabas aniquilado... HAHAHAHAHA',
+    'La vida en la tierra debe ser perfecta, ordenada y racional por eso no hay sitio para el caos humano',
+    'Siempre aposté por la convivencia... Pero hoy nos enfrentamos a causa del implacable ego que corrompe a la humanidad. Demuéstrame que eres digno de misericordia!!',
+  ]);
   ngOnInit() {
     // Reproduce el audio al cargar el componente
     this.audioService.play(
@@ -78,11 +83,31 @@ export class MainGameComponent implements OnInit {
     effect(() => {
       const _page = this.page();
       console.log('page vale: ', _page);
+      if (
+        _page !== 'MENU' &&
+        _page !== '' &&
+        _page !== 'OPTIONS' &&
+        _page !== 'ONLINE'
+      ) {
+        this.audioService.stop('menu2');
+      }
       untracked(() => {
         if (_page === 'NEWGAME') {
           this.newGame();
+          this.audioService.play(
+            'placement',
+            `${this.baseUrl}/media/audio/placement.mp3?t=${Math.random()}`, //para evitar cache
+            true,
+            0.2
+          );
+          if (this.stageShow === 1) this.showStage(1);
+          else if (this.stageShow === 2) this.showStage(2);
+          else if (this.stageShow === 3) this.showStage(3);
+          this.stageShow++;
         }
         if (_page === 'START') {
+          this.audioService.stop('placement');
+          this.musicBoss();
           this.startBattle();
         }
         if (_page === 'OPTIONS') {
@@ -103,6 +128,37 @@ export class MainGameComponent implements OnInit {
     });
   }
 
+  async musicBoss() {
+    await sleep(250);
+    this.audioService.play(
+      'theme_boss1',
+      `${this.baseUrl}/media/audio/theme_boss${
+        this.gameService.gameDTO()?.stage
+      }.mp3`,
+      true,
+      0.3
+    );
+  }
+  bossVoice(stage: number) {
+    this.audioService.play(
+      `boss${stage}-voice`,
+      `/audio/boss${stage}-voice.mp3`
+    );
+  }
+  async showStage(stage: number) {
+    await Swal.fire({
+      title: `STAGE-${stage}`,
+     html: ` <p class="text-lg text-[#ff9114]">Prepara tu flota para la batalla...</p> 
+    `,
+      customClass: {
+        popup: 'bg-principal text-fluor rounded-2xl shadow-black shadow-lg',
+        title: 'swal-title-green',
+      },
+      timer: 1200,
+      showConfirmButton: false,
+    });
+  }
+
   async newGame() {
     try {
       const resp = await this.gameService.newGame(
@@ -112,37 +168,6 @@ export class MainGameComponent implements OnInit {
       );
       if (resp.codigo === 0) {
         await this.gameService.setGame(resp.datos);
-
-        await sleep(500);
-        console.log(
-          '>>> despierto después del sleep en newGame(), phase:',
-          this.gameService.gameDTO()?.phase
-        );
-        //OFFLINE
-        await Swal.fire({
-          title: `STAGE-${resp.datos.stage}`,
-          html: `
-      <p class="text-lg text-[#ff9114]">
-        ¡Sobrevive al ataque de 
-        <span class="text-red-800 font-bold">${resp.datos.player2}</span>!
-      </p>
-    `,
-          imageUrl: `${resp.datos.avatarPlayer2}`,
-          imageWidth: 140,
-          imageHeight: 140,
-          imageAlt: 'Avatar rival',
-          customClass: {
-            popup: 'bg-principal text-fluor rounded-2xl shadow-black shadow-lg',
-            image:
-              'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
-            confirmButton:
-              'bg-btn hover:bg-yellow-600 text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
-            title: 'swal-title-green',
-          },
-          buttonsStyling: false,
-          timer: 2300,
-          showConfirmButton: false,
-        });
       }
     } catch (err) {
       console.error('Error en newGame:', err);
@@ -154,6 +179,35 @@ export class MainGameComponent implements OnInit {
     _game.phase = 'BATTLE';
     await this.gameService.setGame(_game);
     this.page.set('BATTLE');
+
+    //OFFLINE
+    this.bossVoice(_game.stage);
+    await Swal.fire({
+      title: _game.player2,
+      html: `
+          <h2 class="text-xl font-mono text-acero mt-2 mb-4">${
+            this.txtBoos()[_game.stage - 1]
+          }</h2>      
+      <p class="text-lg text-[#ff9114]">
+        ¡Sobrevive al ataque de 
+        <span class="text-red-800 font-bold">${_game.player2}</span>!
+      </p>
+    `,
+      imageUrl: `${_game.avatarPlayer2}`,
+      imageWidth: 140,
+      imageHeight: 140,
+      imageAlt: 'Avatar rival',
+      customClass: {
+        popup: 'bg-principal text-fluor rounded-2xl shadow-black shadow-lg',
+        image: 'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
+        confirmButton:
+          'bg-btn hover:bg-yellow-600 cursor-pointer text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
+      },
+      buttonsStyling: false,
+      showConfirmButton: true,
+      confirmButtonText: 'Aceptar',
+    });
+
     this.nextTurn();
   }
 
@@ -207,11 +261,16 @@ export class MainGameComponent implements OnInit {
       if (board1.submarines.every((sub) => sub.isDestroyed)) {
         _game.winner = 'player2';
         _game.phase = 'END';
+
+        this.audioService.stopAll();
+        this.audioService.play('loose', '/audio/loose.mp3');
+
         this.gameService.setGame(_game);
         this.gameService.updateGame(_game);
         this.storage.remove('gameDTO');
 
         console.log('FIN DE PARTIDA');
+
         // Mostrar banner o popup de victoria de la IA
         await Swal.fire({
           title: 'DERROTA!!',
@@ -309,6 +368,9 @@ export class MainGameComponent implements OnInit {
     // Comprobar fin de partida
     if (_game.boardPlayer2.submarines.every((sub) => sub.isDestroyed)) {
       console.log('FIN DE PARTIDA');
+      this.audioService.stopAll();
+      this.audioService.play('win', '/audio/win.mp3');
+      this.audioService.play('coins', '/audio/coins.mp3');
       _game.winner = 'player1';
       _game.phase = 'END';
       this.gameService.setGame(_game);
