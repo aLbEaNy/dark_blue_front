@@ -55,7 +55,7 @@
       <p class="text-white font-semibold">{{ perfil.stats.rango }}</p>
     </div>
     <button
-          (click)="router.navigate(['/darkblue/main-game'])"
+          (click)="pagesService.pages.set('OPTIONS')"
           class="text-start px-2 w-48 py-3 rounded-xl bg-red-600/20 border border-red-600 text-red-400 font-mono text-sm hover:bg-red-600/30 transition">
           <span class="me-3">🔙</span> VOLVER AL MENU
         </button>

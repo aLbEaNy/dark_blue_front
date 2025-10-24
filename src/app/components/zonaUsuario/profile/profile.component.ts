@@ -1,3 +1,4 @@
+import { PagesService } from './../../../services/pages/pages.service';
 import { StorageService } from './../../../services/store/storageLocal.service';
 import { AuthService } from './../../../services/auth/auth.service';
 import { Router } from '@angular/router';
@@ -27,6 +28,7 @@ export class ProfileComponent {
   authService = inject(AuthService);
   validator = inject(ValidatorService);
   storageService = inject(StorageService);
+  pagesService = inject(PagesService);
   router = inject(Router);
   perfil = this.perfilService.perfil;
   avatar = signal(this.perfil().avatar);
@@ -308,6 +310,6 @@ export class ProfileComponent {
     // Enviar al backend
     const newPerfil = await this.perfilService.updateProfile(formData);
     this.perfilService.setPerfil(newPerfil);
-    this.router.navigate(['/darkblue/main-game']);
+    this.pagesService.pages.set('OPTIONS');
   }
 }
