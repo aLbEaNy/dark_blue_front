@@ -1,12 +1,19 @@
-<div class=" justify-self-center flex items-center gap-2 p-2 mt-4 mx-4 bg-principal border-btn border-l-3 
-            border-b-3 border-t-1 border-r-1 shadow-black shadow-md rounded-full">
-    <h1 class="font-bold font-mono"
-        [ngClass]="gameService.isMyTurn() || gameService.gameDTO()?.phase === 'PLACEMENT' ? 'text-fluor' : 'text-red-800'">
-        @if (gameService.gameDTO()?.phase==='PLACEMENT') {
-            <span class="px-3 text-acero text-sm font-sans">ORDENANDO FLOTA : </span>{{ nicknameDisplay()}}
-        }@else {
-            <span class="px-3 text-acero text-sm font-sans">ATACANDO : </span>{{ nicknameDisplay()}}
-        }
-    </h1>
-    <img [src]="avatarDisplay()" alt="avatar" class="w-6 h-6 rounded-full">
+<div class="justify-self-center flex items-center gap-2">
+    <div class="flex items-center gap-3 p-1.5 px-1 mt-4 mx-1 bg-principal border-btn border-l-3 
+                border-b-3 border-t-1 border-r-1 shadow-black shadow-md rounded-md">
+        <h1 class="font-bold font-mono"
+            [ngClass]="gameService.isMyTurn() || gameService.gameDTO()?.phase === 'PLACEMENT' ? 'text-fluor' : 'text-red-800'">
+            @if (gameService.gameDTO()?.phase==='PLACEMENT') {
+            <span class="px-3 text-acero text-sm font-sans">Posiciona flota : </span>{{ nicknameDisplay()}}
+            }@else {
+            <span class="px-3 text-acero text-sm font-sans">Está disparando : </span>{{ nicknameDisplay()}}
+            }
+        </h1>
+        <img [src]="avatarDisplay()" alt="avatar" class="w-6 h-6 rounded-full">
+    </div>
+    <button class="self-end p-1 px-5 text-gray-300 font-semibold bg-red-600 border-btn border-l-5 border-b-5 border-t-2 border-r-2 
+                  shadow-lg shadow-black rounded-r-full hover:bg-gray-500 hover:text-red-600 hover:cursor-pointer transform transition duration-300 
+                  hover:scale-105 hover:shadow-lg"
+            (click)="exit()"
+                  >Salir</button>
 </div>

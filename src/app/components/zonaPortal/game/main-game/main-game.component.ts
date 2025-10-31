@@ -60,7 +60,7 @@ export class MainGameComponent implements OnInit {
   private baseUrl = window.__env.backendUrl;
 
   perfil = this.perfilService.perfil;
-  page = signal('');
+  page = signal('MENU');
   pages = this.pagesService.pages;
   stageShow = 1;
   txtBoos = signal([

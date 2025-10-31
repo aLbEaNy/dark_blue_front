@@ -1,45 +1,54 @@
-<div class="justify-self-center flex justify-center gap-4 p-4">
-    <div class="flex-col bg-principal flex justify-center gap-2 p-2 rounded-md">
-        <div class="bg-btn w-23 py-1 rounded-md flex justify-center">
-            <h2 class="text-darkBlue font-bold text-md">&nbsp;Tu flota&nbsp;</h2>
-        </div>
-        <div class="flex-col rounded-sm">
-            @for (sub of meBoard()?.submarines; track sub.id) {
-            <div class="m-1 rounded-sm flex">
-
-                @for (s of sub.isTouched ; track $index) {
-                <div [ngClass]="[
-                        'rounded-r-sm',
-                        sub.isDestroyed ? 'bg-red-800 w-4' : 'bg-acero w-4',
-                    ]">
-                    <div class="p-1"></div>
+<div class="flex justify-self-center justify-center gap-4 p-4">
+    <div class="flex flex-col bg-principal justify-center gap-2 p-2 rounded-md">
+        <div class="flex">
+            <img [src]="perfil.avatar" alt="mi avatar" class="rounded-xl w-18 h-18">
+            <div class="flex-col rounded-sm ms-1">
+                @for (sub of meBoard()?.submarines; track sub.id) {
+                <div class="m-1 rounded-sm flex">
+                    @for (s of sub.isTouched ; track $index) {
+                    <div [ngClass]="[
+                            'rounded-r-sm',
+                            sub.isDestroyed ? 'bg-red-800 w-2 h-1.5' : 'bg-acero w-2 h-1.5',
+                        ]">
+                        <div class="p-1"></div>
+                    </div>
+                    }
                 </div>
                 }
-
             </div>
-            }
         </div>
-    </div>
-    <div class="flex-col bg-principal flex justify-center gap-2 p-2 rounded-md">
-        <div class="bg-btn w-23 py-1 rounded-md flex justify-center">
-            <h2 class="text-red-800 font-bold text-md">Flota rival</h2>
+        <h2 class="self-center text-center text-fluor">ESPECIAL</h2>
+        <div class="flex gap-4 ms-2">
+            <h1 class="text-white">1</h1>
+            <h1 class="text-white">2</h1>
         </div>
-        <div class="flex-col rounded-sm">
-            @for (sub of boardRival()?.submarines; track sub.id) {
-            <div class="m-1 rounded-sm flex">
 
-                @for (s of sub.isTouched ; track $index) {
-                <div [ngClass]="[
-                        'rounded-r-sm',
-                        sub.isDestroyed ? 'bg-red-800 w-4' : 'bg-acero w-4',
-                    ]">
-                    <div class="p-1"></div>
+    </div>
+
+    <div class="flex flex-col bg-principal justify-center gap-2 p-2 rounded-md">
+        <div class="flex">
+            <img [src]="avatarRival()" alt="avatar rival" class="rounded-xl w-18 h-18">
+            <div class="flex-col rounded-sm ms-1">
+                @for (sub of boardRival()?.submarines; track sub.id) {
+                <div class="m-1 rounded-sm flex">
+                    @for (s of sub.isTouched ; track $index) {
+                    <div [ngClass]="[
+                            'rounded-r-sm',
+                            sub.isDestroyed ? 'bg-red-800 w-2 h-1.5' : 'bg-acero w-2 h-1.5',
+                        ]">
+                        <div class="p-1"></div>
+                    </div>
+                    }
+
                 </div>
                 }
-
             </div>
-            }
+        </div>
+
+        <h2 class="self-center text-center text-fluor">ESPECIAL</h2>
+        <div class="flex gap-4 ms-2">
+            <h1 class="text-white">1</h1>
+            <h1 class="text-white">2</h1>
         </div>
     </div>
-    
 </div>
