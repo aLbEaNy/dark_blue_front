@@ -1,4 +1,3 @@
-import GameMessage from '../../../../models/GameMessage';
 import { GameService } from './../../../../services/game/game.service';
 import { Component, inject, output } from '@angular/core';
 

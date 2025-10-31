@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { GameService } from '../../../../services/game/game.service';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { NgClass } from '@angular/common';
+import { PerfilService } from '../../../../services/game/perfil.service';
 
 @Component({
   selector: 'app-mini-board',
@@ -14,7 +15,13 @@ export class MiniBoardComponent {
   gameService = inject(GameService);
   storageService = inject(StorageService);
 
-  perfil = this.storageService.get<any>('perfil');
+  perfilService = inject(PerfilService);
+  perfil = this.perfilService.perfil();
+
+  avatarRival = computed(() => {
+    return this.perfil.nickname === this.game()?.player1 ? this.game()?.avatarPlayer2 : this.game()?.avatarPlayer1;
+  });
+
 
 
   game = computed(() => {

@@ -1,10 +1,11 @@
 <div class="bg-[url('/images/menu.png')] bg-cover bg-center min-h-screen overflow-y-auto flex flex-col">
 
-  <app-header></app-header>
+ 
+    <app-header></app-header>
 
     @switch (page()) {
       @case ('NEWGAME') {
-        <app-mini-display-user></app-mini-display-user>
+        <app-mini-display-user (pageChange)="page.set($event)"></app-mini-display-user>
         <div class="relative">
           <app-board></app-board>
         </div>
@@ -14,7 +15,7 @@
         <app-online-game (pageChange)="page.set($event)"></app-online-game>
       }
       @case ('BATTLE') {
-        <app-mini-display-user></app-mini-display-user>
+        <app-mini-display-user (pageChange)="page.set($event)"></app-mini-display-user>
         <app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
         <app-mini-board></app-mini-board>
       }
