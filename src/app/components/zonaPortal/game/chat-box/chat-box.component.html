@@ -1,0 +1,46 @@
+<div class="flex flex-col bg-white/10 backdrop-blur-xs rounded-md px-4 py-1.5 gap-1 w-90
+             shadow-black shadow-lg border border-blue-700/40"
+             [ngClass]="toggleChatboxMax() ? 'absolute z-10 top-30 h-135' : 'h-45'">
+
+    <!-- Botón maximizar / replegar -->
+    <button
+        (click)="toggleChatboxMax.set(!toggleChatboxMax())"
+        class="absolute top-1 right-9 text-gray-300 hover:text-white text-xs bg-blue-600 hover:bg-blue-700 
+           rounded-full px-2 py-0.5 shadow-black shadow-sm border border-gray-600/40 opacity-75 hover:opacity-100 transition-all">
+        {{toggleChatboxMax() ? '▼' : '▲'}}
+    </button>
+
+    <!-- Botón cerrar -->
+    <button (click)="toggleChatbox.set(!toggleChatbox())" class="absolute top-1 right-1 text-gray-300 hover:text-white text-xs
+     bg-red-600 hover:bg-red-700 hover:cursor-pointer active:scale-95 transition-all 
+           rounded-full px-2 py-0.5 shadow-black shadow-sm border-1 border-gray-600/40">
+        ✕
+    </button>
+    <!-- Mensajes -->
+    <div #msgBox class="flex-1 overflow-y-auto space-y-1.5 pr-1 pt-6 pb-1 custom-scrollbar">
+        @for (msg of messages(); track $index) {
+        <div [ngClass]="msg.sender === me ? 'text-right' : 'text-left'">
+            <div [ngClass]="msg.sender === me 
+            ? 'bg-blue-700 text-white ml-auto mr-5 rounded-xl rounded-tr-none max-w-[80%] shadow-black shadow-xs' 
+            : 'bg-gray-800 text-white mr-auto ml-5 rounded-xl rounded-tl-none max-w-[80%] shadow-black shadow-xs'"
+                class="px-4 py-2 inline-block text-sm">
+                <span class="block text-[0.6rem] opacity-95">
+                    {{ msg.sender === 'player1' ? gameService.gameDTO()?.player1 : gameService.gameDTO()?.player2 }}
+                </span>
+                <span class="break-words">{{ msg.content }}</span>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Input -->
+    <div class="flex  items-center">
+        <input #messageInput type="text" [value]="newMessage()" (input)="newMessage.set(messageInput.value)"
+            (keyup.enter)="sendMessage()" placeholder="Escribe un mensaje..." class="flex-1 rounded-full bg-gray-900/70 text-white placeholder-gray-400 px-3 py-0.5 
+             focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-black shadow-xs" />
+        <button (click)="sendMessage()" class="ml-2 bg-blue-700 hover:bg-blue-800 active:scale-95 text-white px-2 py-0.5 
+             rounded-full transition-all shadow-black shadow-xs">
+            ➤
+        </button>
+    </div>
+</div>

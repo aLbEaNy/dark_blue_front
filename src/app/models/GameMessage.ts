@@ -7,7 +7,13 @@ type ShotResult = {
 };
 
 export default interface GameMessage {
-  phase: 'JOINED' | 'WAITING' | 'PLACEMENT' | 'BATTLE' | 'END';
+  
+  phase?: 'JOINED' | 'WAITING' | 'PLACEMENT' | 'BATTLE' | 'END';
   game?: Game;
   lastShot?: ShotResult;
+
+  type?: 'GAME' | 'CHAT';
+  sender?: string;
+  content?: string;
+  timestamp?: string;
 }
