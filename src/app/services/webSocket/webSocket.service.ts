@@ -29,10 +29,10 @@ export class WebSocketService {
     return gameMessage$;
 }
 
-  send(destination: string, body: any) {
-    this.rxStomp.publish({ destination, body: JSON.stringify(body) });
+  sendChat(gameId: string, msg: GameMessage) {
+    this.rxStomp.publish({ destination: `/app/chat/${gameId}`, body: JSON.stringify(msg) });
   }
-
+  
   disconnect() {
     this.rxStomp.deactivate();
   }

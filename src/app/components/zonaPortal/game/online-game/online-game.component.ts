@@ -52,6 +52,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   perfil = this.perfilService.perfil;
   pageChange = output<string>(); // hacia main
   page = signal('PLACEMENT'); // Para los hijos
+  chatMessages = signal<GameMessage[]>([]);
 
   lastShot: ShotResult = {
     hit: false,
@@ -72,6 +73,15 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       .watchGameMessage(this.gameService.gameDTO()!.gameId)
       .subscribe((msg) => {
         if (!msg) return;
+        // 🗨️ Detectamos si es mensaje de chat
+        if (msg.type === 'CHAT') {
+          console.log(`[CHAT] ${msg.sender}: ${msg.content}`);
+          // Aquí emitiremos o guardaremos el mensaje en el chat
+          this.chatMessages.update((prev) => [...prev, msg]);
+          return; // 🔥 No seguimos con la lógica del juego
+        }
+
+        // Si no es chat, es mensaje del juego
         console.log(
           `>>>----> Mensaje del topic: con gameId ${
             this.gameService.gameDTO()!.gameId
@@ -81,6 +91,17 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         this.msgSocket.set(msg);
       });
   }
+  
+  sendChatMessage(content: string) {
+  const message: GameMessage = {
+    type: 'CHAT',
+    sender: this.gameService.me(),
+    content,
+    timestamp: new Date().toISOString(),
+  };
+
+  this.webSocketService.sendChat(this.gameService.gameDTO()!.gameId, message);
+}
 
   constructor() {
     effect(() => {
