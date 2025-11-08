@@ -62,4 +62,12 @@ export class AudioService {
       a.volume = Math.min(1, Math.max(0, volume));
     });
   }
+
+  randomMusic(){
+    const music = ['theme_boss1', 'theme_boss2', 'theme_boss3', 'war_of_victory', 'you_dont_get_it']
+    const random = Math.floor(Math.random() * music.length);
+    return music[random];
+  }
+
+
 }

@@ -1,14 +1,11 @@
 <div class="bg-[url('/images/menu.png')] bg-cover bg-center min-h-screen overflow-y-auto flex flex-col">
-
- 
-    <app-header></app-header>
-
+  <app-header></app-header>
     @switch (page()) {
       @case ('NEWGAME') {
         <app-mini-display-user (pageChange)="page.set($event)"></app-mini-display-user>
-        <div class="relative">
-          <app-board></app-board>
-        </div>
+          <div class="relative">
+            <app-board></app-board>
+          </div>
         <app-mini-placement (pageChange)="page.set($event)"></app-mini-placement>
       }
       @case ('NEWGAME_ONLINE') { 
@@ -30,5 +27,4 @@
         <app-footer class="w-full mt-auto"></app-footer>
       }
     }
-
 </div>

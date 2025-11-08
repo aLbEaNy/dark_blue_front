@@ -72,7 +72,7 @@ export class MainGameComponent implements OnInit {
     // Reproduce el audio al cargar el componente
     this.audioService.play(
       'menu2',
-      `${this.baseUrl}/media/audio/menu2.mp3`,
+      `${this.baseUrl}/media/audio/menu2.mp3?t=${Math.random()}`,//para evitar cache
       true,
       0.2
     );
@@ -263,8 +263,12 @@ export class MainGameComponent implements OnInit {
         _game.phase = 'END';
 
         this.audioService.stopAll();
-        this.audioService.play('loose', '/audio/loose.mp3');
-
+        this.audioService.play(
+            'placement',
+            `${this.baseUrl}/media/audio/loose.mp3?t=${Math.random()}`, //para evitar cache
+            true,
+            0.2
+          );
         this.gameService.setGame(_game);
         this.gameService.updateGame(_game);
         this.storage.remove('gameDTO');

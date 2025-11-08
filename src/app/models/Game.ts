@@ -4,7 +4,7 @@ export default interface Game {
   gameId: string;
   online: boolean;
   stage: number;
-  phase: 'PLACEMENT' | 'BATTLE' | 'END';
+  phase: 'JOINED' | 'WAITING' | 'PLACEMENT' | 'BATTLE' | 'END';
   player1: string;
   avatarPlayer1: string;
   player2: string;
