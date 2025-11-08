@@ -1,8 +1,8 @@
-<div class="w-90 flex justify-self-center gap-4 mt-4">
+<div class="w-90 flex justify-self-center ms-5 gap-1.5 mt-4">
    
             <app-chat-box [ngClass]="showChatbox() ? 'block' : 'hidden'"></app-chat-box>
     
-        <div class="flex flex-col bg-principal justify-center gap-2 p-2 rounded-md"
+        <div class="flex flex-col bg-principal justify-center gap-2 p-2 rounded-md shadow-black shadow-lg"
         [ngClass]="showChatbox() ? 'hidden' : 'block'">
             <div class="flex">
                 <img [src]="perfil.avatar" alt="mi avatar" class="rounded-xl w-18 h-18">
@@ -29,7 +29,7 @@
     
         </div>
     
-        <div class="flex flex-col bg-principal justify-center gap-2 p-2 rounded-md"
+        <div class="flex flex-col bg-principal justify-center gap-2 p-2 rounded-md shadow-black shadow-lg"
         [ngClass]="showChatbox() ? 'hidden' : 'block'">
             <div class="flex">
                 <img [src]="avatarRival()" alt="avatar rival" class="rounded-xl w-18 h-18">

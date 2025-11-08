@@ -15,6 +15,7 @@ import { WebSocketService } from '../../../../services/webSocket/webSocket.servi
 import IRestMessage from '../../../../models/IRestMessage';
 import GameMessage from '../../../../models/GameMessage';
 import { OnlineListenerComponent } from '../online-listener/online-listener.component';
+import { AudioService } from '../../../../services/audio/audio.service';
 
 @Component({
   selector: 'app-waiting-online',
@@ -25,6 +26,7 @@ import { OnlineListenerComponent } from '../online-listener/online-listener.comp
 export class WaitingOnlineComponent {
   gameService = inject(GameService);
   webSocketService = inject(WebSocketService);
+  audioService = inject(AudioService);
   perfil = this.gameService.storage.get<any>('perfil');
   private baseUrl = window.__env.backendUrl;
   nickname = this.perfil?.nickname;
@@ -76,6 +78,13 @@ export class WaitingOnlineComponent {
   async onGameMessage(msg: GameMessage) {
     console.log('#### -> Entra en onGameMessage waiting-Online-Component ', msg);
     if (msg.phase === 'JOINED') {
+       
+        this.audioService.play(
+            'placement',
+            `${this.baseUrl}/media/audio/placement.mp3?t=${Math.random()}`, //para evitar cache
+            true,
+            0.2
+          );
       const _resp = await this.gameService.getGame(msg.game?.gameId!);
       _resp.datos.phase = 'PLACEMENT';
       const _resp2 = await this.gameService.updateGame(_resp.datos);

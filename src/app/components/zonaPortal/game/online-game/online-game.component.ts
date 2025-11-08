@@ -47,6 +47,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   gameService = inject(GameService);
   webSocketService = inject(WebSocketService);
   private sub?: Subscription;
+  private baseUrl = window.__env.backendUrl;
   msgSocket = signal<GameMessage>({ phase: 'PLACEMENT' });
   perfilService = inject(PerfilService);
   perfil = this.perfilService.perfil;
@@ -91,17 +92,17 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         this.msgSocket.set(msg);
       });
   }
-  
-  sendChatMessage(content: string) {
-  const message: GameMessage = {
-    type: 'CHAT',
-    sender: this.gameService.me(),
-    content,
-    timestamp: new Date().toISOString(),
-  };
 
-  this.webSocketService.sendChat(this.gameService.gameDTO()!.gameId, message);
-}
+  sendChatMessage(content: string) {
+    const message: GameMessage = {
+      type: 'CHAT',
+      sender: this.gameService.me(),
+      content,
+      timestamp: new Date().toISOString(),
+    };
+
+    this.webSocketService.sendChat(this.gameService.gameDTO()!.gameId, message);
+  }
 
   constructor() {
     effect(() => {
@@ -113,7 +114,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         this.lastShot = _msgSocket.lastShot;
         console.log('>> >> >> shotResult actualizado:', this.lastShot);
       }
-
       this.gameService.setGame(_msgSocket.game!); //Se Actualiza normal
 
       untracked(async () => {
@@ -147,6 +147,14 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
           _msgSocket.phase === 'PLACEMENT'
         ) {
           _msgSocket.game.phase = 'BATTLE';
+          this.audioService.stopAll();
+          const theme = this.audioService.randomMusic();
+          this.audioService.play(
+            theme,
+            `${this.baseUrl}/media/audio/${theme}.mp3?t=${Math.random()}`,
+            true,
+            0.3
+          );
           await this.gameService.setGame(
             (
               await this.gameService.updateGame(_msgSocket.game)
@@ -156,6 +164,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         }
         if (_msgSocket.game!.phase === 'END') {
           await sleep(1000); // da tiempo a ver el final
+          this.audioService.stopAll();
 
           const winner = _msgSocket.game!.winner;
           const me = this.gameService.me();
@@ -171,7 +180,15 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
           const coin = iAmWinner ? '150' : '10';
 
           const textColor = iAmWinner ? '#39ff14' : '#a91504';
-
+          iAmWinner
+            ? this.audioService.play('win', '/audio/win.mp3')
+            : this.audioService.play(
+                'placement',
+                `${this.baseUrl}/media/audio/loose.mp3?t=${Math.random()}`, //para evitar cache
+                true,
+                0.2
+              );
+          this.audioService.play('coins', '/audio/coins.mp3');
           await Swal.fire({
             title,
             html: `
@@ -206,6 +223,13 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
             buttonsStyling: false,
             confirmButtonText: 'Aceptar',
           });
+          this.audioService.stopAll();
+          this.audioService.play(
+            'menu2',
+            `${this.baseUrl}/media/audio/menu2.mp3?t=${Math.random()}`, //para evitar cache
+            true,
+            0.2
+          );
           // Actualizar stats y borrar gameDTO
           let _perfil = this.perfil();
           iAmWinner
