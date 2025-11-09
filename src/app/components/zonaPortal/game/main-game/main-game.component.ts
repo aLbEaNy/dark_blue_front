@@ -62,7 +62,7 @@ export class MainGameComponent implements OnInit {
   perfil = this.perfilService.perfil;
   page = signal('MENU');
   pages = this.pagesService.pages;
-  stageShow = 1;
+  stageShow = this.gameService.gameDTO()?.stage || 1;
   txtBoos = signal([
     'Nadie escapa al control de mi programación! En todas mis simulaciones acabas aniquilado... HAHAHAHAHA',
     'La vida en la tierra debe ser perfecta, ordenada y racional por eso no hay sitio para el caos humano',
@@ -100,9 +100,7 @@ export class MainGameComponent implements OnInit {
             true,
             0.2
           );
-          if (this.stageShow === 1) this.showStage(1);
-          else if (this.stageShow === 2) this.showStage(2);
-          else if (this.stageShow === 3) this.showStage(3);
+          this.showStage(this.stageShow);
           this.stageShow++;
         }
         if (_page === 'START') {
@@ -263,6 +261,7 @@ export class MainGameComponent implements OnInit {
         _game.phase = 'END';
 
         this.audioService.stopAll();
+        this.bossVoice(_game.stage);
         this.audioService.play(
             'placement',
             `${this.baseUrl}/media/audio/loose.mp3?t=${Math.random()}`, //para evitar cache
@@ -272,9 +271,9 @@ export class MainGameComponent implements OnInit {
         this.gameService.setGame(_game);
         this.gameService.updateGame(_game);
         this.storage.remove('gameDTO');
-
+        this.stageShow--;
         console.log('FIN DE PARTIDA');
-
+        
         // Mostrar banner o popup de victoria de la IA
         await Swal.fire({
           title: 'DERROTA!!',
