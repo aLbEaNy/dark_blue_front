@@ -4,60 +4,98 @@ import Board from '../../models/Board';
 @Injectable({ providedIn: 'root' })
 export class AIService {
   private letters = 'ABCDEFGHIJ'.split('');
-  
-  // Estado interno
+
+  // Estado interno: targetHits representa el frente que la IA está persiguiendo ahora
   private targetHits: string[] = [];
   private lastDirection: 'H' | 'V' | null = null;
 
   fire(board: Board): Board {
-  if (board.submarines.every(sub => sub.isDestroyed)) return board;
+    if (board.submarines.every(sub => sub.isDestroyed)) return board;
 
-  let pos: string;
+    // 1) Decidir posición a disparar según estado actual
+    let pos: string;
+    if (this.targetHits.length === 0) {
+      pos = this.smartRandomPosition(board);
+    } else if (this.targetHits.length === 1) {
+      const candidates = this.getAdjacent(this.targetHits[0], board);
+      pos = this.pickRandom(candidates, board);
+    } else {
+      pos = this.fireAlongLine(board);
+    }
 
-  if (this.targetHits.length === 0) {
-    pos = this.randomFreePosition(board);
-  } else if (this.targetHits.length === 1) {
-    const candidates = this.getAdjacent(this.targetHits[0], board);
-    pos = this.pickRandom(candidates, board);
-  } else {
-    pos = this.fireAlongLine(board);
-  }
+    // 2) Aplicar el resultado sobre una copia de los submarinos
+    const updatedSubmarines = board.submarines.map(sub => {
+      const index = sub.positions.indexOf(pos);
+      if (index !== -1) {
+        const isTouched = [...sub.isTouched];
+        isTouched[index] = true;
+        const isDestroyed = isTouched.every(t => t);
+        return { ...sub, isTouched, isDestroyed };
+      }
+      return sub;
+    });
 
-  // Calcular resultado
-  let result: 'HIT' | 'MISS' = 'MISS';
-  const submarines = board.submarines.map(sub => {
-    const index = sub.positions.indexOf(pos);
-    if (index !== -1) {
-      result = 'HIT';
-      const isTouched = [...sub.isTouched];
-      isTouched[index] = true;
+    // Determinar si fue HIT y cuál submarino fue afectado
+    const hitIndex = updatedSubmarines.findIndex(s => s.positions.includes(pos));
+    const wasHit = hitIndex !== -1;
+    const hitSub = wasHit ? updatedSubmarines[hitIndex] : null;
+    const result: 'HIT' | 'MISS' = wasHit ? 'HIT' : 'MISS';
 
-      const isDestroyed = isTouched.every(t => t);
-
-      if (isDestroyed) {
+    // 3) Gestión del comportamiento tras el resultado
+    if (wasHit && hitSub) {
+      if (hitSub.isDestroyed) {
+        // Hundido: limpiar el frente actual y buscar hits activos en subs no hundidos
         this.targetHits = [];
         this.lastDirection = null;
+
+        const allShots = [...board.shots, { position: pos, result }];
+        let resumed = false;
+        for (let i = allShots.length - 1; i >= 0 && !resumed; i--) {
+          const shotPos = allShots[i].position;
+          for (const s of updatedSubmarines) {
+            if (!s.isDestroyed) {
+              const idx = s.positions.indexOf(shotPos);
+              if (idx !== -1 && s.isTouched[idx]) {
+                const activeHits: string[] = [];
+                s.positions.forEach((p, j) => {
+                  if (s.isTouched[j]) activeHits.push(p);
+                });
+                if (activeHits.length > 0) {
+                  this.targetHits = activeHits;
+                  this.lastDirection =
+                    this.targetHits.length >= 2
+                      ? this.getDirection(this.targetHits)
+                      : null;
+                  resumed = true;
+                  break;
+                }
+              }
+            }
+          }
+        }
       } else {
-        this.targetHits = [...this.targetHits, pos];
+        // Fue HIT pero no hundió: añadir al frente actual
+        if (!this.targetHits.includes(pos)) {
+          this.targetHits = [...this.targetHits, pos];
+        }
         if (this.targetHits.length >= 2) {
           this.lastDirection = this.getDirection(this.targetHits);
         }
       }
-
-      return { ...sub, isTouched, isDestroyed };
     }
-    return sub;
-  });
 
-  return {
-    ...board,
-    submarines,
-    shots: [...board.shots, { position: pos, result }]
-  };
-}
+    // 4) Devolver nuevo board
+    return {
+      ...board,
+      submarines: updatedSubmarines,
+      shots: [...board.shots, { position: pos, result }]
+    };
+  }
 
+  // -------------------------------------------------------
+  // UTILIDADES
+  // -------------------------------------------------------
 
-  /** Genera todas las posiciones del tablero */
   private allPositions(): string[] {
     const res: string[] = [];
     for (const r of this.letters) {
@@ -66,59 +104,115 @@ export class AIService {
     return res;
   }
 
-  /** Disparo aleatorio entre posiciones libres */
-  private randomFreePosition(board: Board): string {
+  /** Tiro aleatorio inteligente: prioriza posiciones con más casillas libres alrededor */
+  private smartRandomPosition(board: Board): string {
     const used = board.shots.map(s => s.position);
-    const candidates = this.allPositions().filter(p => !used.includes(p));
-    return this.pickRandom(candidates, board);
+    const free = this.allPositions().filter(p => !used.includes(p));
+
+    const freeWithSpace = free.map(pos => ({
+      pos,
+      space: this.getMaxFreeLine(pos, used)
+    }));
+
+    freeWithSpace.sort((a, b) => b.space - a.space); // Prioridad a zonas más abiertas
+
+    const topN = freeWithSpace.filter(c => c.space === freeWithSpace[0].space);
+    return topN[Math.floor(Math.random() * topN.length)].pos;
   }
 
-  /** Casillas vecinas libres de un HIT */
-  private getAdjacent(pos: string, board: Board): string[] {
-    const row = pos[0], col = parseInt(pos.slice(1), 10);
+  private getMaxFreeLine(pos: string, used: string[]): number {
+    const row = pos[0];
+    const col = parseInt(pos.slice(1), 10);
+    const horizontal = this.countFreeLine(row, col, used, 'H');
+    const vertical = this.countFreeLine(row, col, used, 'V');
+    return Math.max(horizontal, vertical);
+  }
+
+  private countFreeLine(row: string, col: number, used: string[], dir: 'H' | 'V'): number {
     const rowIdx = this.letters.indexOf(row);
+    let count = 1;
+
+    for (let offset = 1; offset < 10; offset++) {
+      const r = dir === 'H' ? row : this.letters[rowIdx - offset];
+      const c = dir === 'H' ? col - offset : col;
+      if (!r || c < 1 || used.includes(`${r}${c}`)) break;
+      count++;
+    }
+    for (let offset = 1; offset < 10; offset++) {
+      const r = dir === 'H' ? row : this.letters[rowIdx + offset];
+      const c = dir === 'H' ? col + offset : col;
+      if (!r || c > 10 || used.includes(`${r}${c}`)) break;
+      count++;
+    }
+    return count;
+  }
+
+  private getAdjacent(pos: string, board: Board): string[] {
+    const row = pos[0];
+    const col = parseInt(pos.slice(1), 10);
+    const idx = this.letters.indexOf(row);
     const candidates: string[] = [];
-    if (rowIdx > 0) candidates.push(`${this.letters[rowIdx - 1]}${col}`);
-    if (rowIdx < 9) candidates.push(`${this.letters[rowIdx + 1]}${col}`);
+    if (idx > 0) candidates.push(`${this.letters[idx - 1]}${col}`);
+    if (idx < 9) candidates.push(`${this.letters[idx + 1]}${col}`);
     if (col > 1) candidates.push(`${row}${col - 1}`);
     if (col < 10) candidates.push(`${row}${col + 1}`);
     const used = board.shots.map(s => s.position);
     return candidates.filter(c => !used.includes(c));
   }
 
-  /** Disparo extendido a lo largo de la línea deducida */
   private fireAlongLine(board: Board): string {
     const rows = this.targetHits.map(h => h[0]);
     const cols = this.targetHits.map(h => parseInt(h.slice(1), 10));
     const used = board.shots.map(s => s.position);
-    const candidates: string[] = [];
+    let cands: string[] = [];
 
     if (this.lastDirection === 'H') {
       const row = rows[0];
       const min = Math.min(...cols), max = Math.max(...cols);
-      if (min > 1) candidates.push(`${row}${min - 1}`);
-      if (max < 10) candidates.push(`${row}${max + 1}`);
+      if (min > 1) cands.push(`${row}${min - 1}`);
+      if (max < 10) cands.push(`${row}${max + 1}`);
     } else if (this.lastDirection === 'V') {
       const col = cols[0];
-      const rowIdxs = rows.map(r => this.letters.indexOf(r));
-      const minIdx = Math.min(...rowIdxs), maxIdx = Math.max(...rowIdxs);
-      if (minIdx > 0) candidates.push(`${this.letters[minIdx - 1]}${col}`);
-      if (maxIdx < 9) candidates.push(`${this.letters[maxIdx + 1]}${col}`);
+      const idxs = rows.map(r => this.letters.indexOf(r));
+      const minIdx = Math.min(...idxs), maxIdx = Math.max(...idxs);
+      if (minIdx > 0) cands.push(`${this.letters[minIdx - 1]}${col}`);
+      if (maxIdx < 9) cands.push(`${this.letters[maxIdx + 1]}${col}`);
     }
 
-    const free = candidates.filter(c => !used.includes(c));
-    return free.length > 0 ? this.pickRandom(free, board) : this.randomFreePosition(board);
+    let free = cands.filter(c => !used.includes(c));
+
+    // ⚡ Probar la dirección perpendicular si no hay libres
+    if (free.length === 0) {
+      const altCands: string[] = [];
+      if (this.lastDirection === 'H') {
+        for (const h of this.targetHits) {
+          const rowIdx = this.letters.indexOf(h[0]);
+          const col = parseInt(h.slice(1), 10);
+          if (rowIdx > 0) altCands.push(`${this.letters[rowIdx - 1]}${col}`);
+          if (rowIdx < 9) altCands.push(`${this.letters[rowIdx + 1]}${col}`);
+        }
+      } else if (this.lastDirection === 'V') {
+        for (const h of this.targetHits) {
+          const row = h[0];
+          const col = parseInt(h.slice(1), 10);
+          if (col > 1) altCands.push(`${row}${col - 1}`);
+          if (col < 10) altCands.push(`${row}${col + 1}`);
+        }
+      }
+      free = altCands.filter(c => !used.includes(c));
+    }
+
+    if (free.length === 0) return this.smartRandomPosition(board);
+    return this.pickRandom(free, board);
   }
 
-  /** Deducción de orientación H o V */
   private getDirection(hits: string[]): 'H' | 'V' {
     const rows = hits.map(h => h[0]);
     return rows.every(r => r === rows[0]) ? 'H' : 'V';
   }
 
-  /** Elegir al azar */
   private pickRandom(arr: string[], board: Board): string {
-    if (!arr || arr.length === 0) return this.randomFreePosition(board);
+    if (!arr || arr.length === 0) return this.smartRandomPosition(board);
     return arr[Math.floor(Math.random() * arr.length)];
   }
 }
