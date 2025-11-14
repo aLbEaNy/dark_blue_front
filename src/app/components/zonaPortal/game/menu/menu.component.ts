@@ -47,7 +47,6 @@ export class MenuComponent {
           _game.online = false;
           this.gameService.setGame(_game);
         }
-
         this.pageChange.emit(page);
       }, 1200);
   }

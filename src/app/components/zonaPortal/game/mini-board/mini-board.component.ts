@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { GameService } from '../../../../services/game/game.service';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { NgClass } from '@angular/common';
@@ -6,6 +6,7 @@ import { PerfilService } from '../../../../services/game/perfil.service';
 import { ChatComponent } from "../chat/chat.component";
 import { ChatBoxComponent } from "../chat-box/chat-box.component";
 import { ChatService } from '../../../../services/chat/chat.service';
+import { SpecialService } from '../../../../services/game/special.service';
 
 @Component({
   selector: 'app-mini-board',
@@ -13,22 +14,39 @@ import { ChatService } from '../../../../services/chat/chat.service';
   templateUrl: './mini-board.component.html',
   styleUrl: './mini-board.component.css',
 })
-export class MiniBoardComponent {
+export class MiniBoardComponent implements OnInit{
+  ngOnInit(): void {
+    this.specialService.asignSpecialBoss(this.game()?.stage || 1);
+  }
 
   gameService = inject(GameService);
   storageService = inject(StorageService);
   chatService = inject(ChatService);
   perfilService = inject(PerfilService);
+  specialService = inject(SpecialService);
 
   perfil = this.perfilService.perfil();
   showChatbox = this.chatService.showChatbox;
-
+  bossSlot1 = this.specialService.specialBossSlot1;
+  bossSlot2 = this.specialService.specialBossSlot2;
+  playerSlot1 = this.specialService.specialPlayerSlot1;
+  playerSlot2 = this.specialService.specialPlayerSlot2;
+  counterBossSlot1 = computed(() => this.specialService.counterBossSlot1());
+  counterBossSlot2 = computed(() => this.specialService.counterBossSlot2());
+  activeBossSpecial1 = computed(() => {
+    const counter = this.specialService.counterBossSlot1();
+    return this.specialService.adminSpecialCounter(this.bossSlot1()?.name!, this.counterBossSlot1());  
+  });
+  activeBossSpecial2 = computed(() => {
+    const counter = this.specialService.counterBossSlot2();
+    return this.specialService.adminSpecialCounter(this.bossSlot2()?.name!, this.counterBossSlot2());  
+  });
+  readyBossSpecial1 = this.specialService.readyBossSpecial1;
+  readyBossSpecial2 = this.specialService.readyBossSpecial2;
+  
   avatarRival = computed(() => {
     return this.perfil.nickname === this.game()?.player1 ? this.game()?.avatarPlayer2 : this.game()?.avatarPlayer1;
   });
-
-
-
   game = computed(() => {
     return this.gameService.gameDTO();
   });
@@ -46,7 +64,19 @@ export class MiniBoardComponent {
     return this.gameService.me();
   });
 
+  constructor() {
+    effect(() => {
+      const _activeBossSpecial1 = this.activeBossSpecial1();
+      const _activeBossSpecial2 = this.activeBossSpecial2();
+      if (_activeBossSpecial1) {
+        this.readyBossSpecial1.set(true);
+      }
+      if (_activeBossSpecial2) {
+        this.readyBossSpecial2.set(true);
+      }
+    });
   
+  }
 
 
 }

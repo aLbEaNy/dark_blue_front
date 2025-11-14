@@ -37,7 +37,6 @@ export class GameService {
   isMyTurn = linkedSignal(() => {
     const g = this.gameDTO();
     if (!g) return;
-    console.log('Comparando turn vs me BOOLEAN:', g.turn, this.me());
     return g.turn === this.me();
   });
   
@@ -45,7 +44,6 @@ export class GameService {
   getCurrentBoard = linkedSignal(() => {
     const g = this.gameDTO();
     if (!g) return null;
-    console.log('CURRENT_BOARD');
     return g.turn === 'player1' ? g.boardPlayer2 : g.boardPlayer1;
   });
   
