@@ -7,4 +7,8 @@ export default interface Stats {
   playTime?: number; // total en milisegundos
   currentStartTime?: number; // timestamp del inicio actual
   rango?: string;
+  specials?: string[];
+  specialSlot1?: string;
+  specialSlot2?: string;
+
 }

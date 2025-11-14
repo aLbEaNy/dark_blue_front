@@ -5,12 +5,12 @@ import Board from '../../models/Board';
 export class AIService {
   private letters = 'ABCDEFGHIJ'.split('');
 
-  // Estado interno: targetHits representa el frente que la IA está persiguiendo ahora
+  //targetHits representa los HIT que la IA está persiguiendo pendientes de hundir
   private targetHits: string[] = [];
   private lastDirection: 'H' | 'V' | null = null;
 
-  fire(board: Board): Board {
-    if (board.submarines.every(sub => sub.isDestroyed)) return board;
+  fire(board: Board, laserPos: string = ''): Board {
+    if (board.submarines.every((sub) => sub.isDestroyed)) return board;
 
     // 1) Decidir posición a disparar según estado actual
     let pos: string;
@@ -22,21 +22,26 @@ export class AIService {
     } else {
       pos = this.fireAlongLine(board);
     }
+    if (laserPos !== '') {
+      pos = laserPos;
+    }
 
     // 2) Aplicar el resultado sobre una copia de los submarinos
-    const updatedSubmarines = board.submarines.map(sub => {
+    const updatedSubmarines = board.submarines.map((sub) => {
       const index = sub.positions.indexOf(pos);
       if (index !== -1) {
         const isTouched = [...sub.isTouched];
         isTouched[index] = true;
-        const isDestroyed = isTouched.every(t => t);
+        const isDestroyed = isTouched.every((t) => t);
         return { ...sub, isTouched, isDestroyed };
       }
       return sub;
     });
 
     // Determinar si fue HIT y cuál submarino fue afectado
-    const hitIndex = updatedSubmarines.findIndex(s => s.positions.includes(pos));
+    const hitIndex = updatedSubmarines.findIndex((s) =>
+      s.positions.includes(pos)
+    );
     const wasHit = hitIndex !== -1;
     const hitSub = wasHit ? updatedSubmarines[hitIndex] : null;
     const result: 'HIT' | 'MISS' = wasHit ? 'HIT' : 'MISS';
@@ -74,7 +79,7 @@ export class AIService {
           }
         }
       } else {
-        // Fue HIT pero no hundió: añadir al frente actual
+        // Fue HIT pero no hundió: añadir a seguimiento actual
         if (!this.targetHits.includes(pos)) {
           this.targetHits = [...this.targetHits, pos];
         }
@@ -88,7 +93,7 @@ export class AIService {
     return {
       ...board,
       submarines: updatedSubmarines,
-      shots: [...board.shots, { position: pos, result }]
+      shots: [...board.shots, { position: pos, result }],
     };
   }
 
@@ -106,17 +111,19 @@ export class AIService {
 
   /** Tiro aleatorio inteligente: prioriza posiciones con más casillas libres alrededor */
   private smartRandomPosition(board: Board): string {
-    const used = board.shots.map(s => s.position);
-    const free = this.allPositions().filter(p => !used.includes(p));
+    const used = board.shots.map((s) => s.position);
+    const free = this.allPositions().filter((p) => !used.includes(p));
 
-    const freeWithSpace = free.map(pos => ({
+    const freeWithSpace = free.map((pos) => ({
       pos,
-      space: this.getMaxFreeLine(pos, used)
+      space: this.getMaxFreeLine(pos, used),
     }));
 
     freeWithSpace.sort((a, b) => b.space - a.space); // Prioridad a zonas más abiertas
 
-    const topN = freeWithSpace.filter(c => c.space === freeWithSpace[0].space);
+    const topN = freeWithSpace.filter(
+      (c) => c.space === freeWithSpace[0].space
+    );
     return topN[Math.floor(Math.random() * topN.length)].pos;
   }
 
@@ -128,7 +135,12 @@ export class AIService {
     return Math.max(horizontal, vertical);
   }
 
-  private countFreeLine(row: string, col: number, used: string[], dir: 'H' | 'V'): number {
+  private countFreeLine(
+    row: string,
+    col: number,
+    used: string[],
+    dir: 'H' | 'V'
+  ): number {
     const rowIdx = this.letters.indexOf(row);
     let count = 1;
 
@@ -156,30 +168,32 @@ export class AIService {
     if (idx < 9) candidates.push(`${this.letters[idx + 1]}${col}`);
     if (col > 1) candidates.push(`${row}${col - 1}`);
     if (col < 10) candidates.push(`${row}${col + 1}`);
-    const used = board.shots.map(s => s.position);
-    return candidates.filter(c => !used.includes(c));
+    const used = board.shots.map((s) => s.position);
+    return candidates.filter((c) => !used.includes(c));
   }
 
   private fireAlongLine(board: Board): string {
-    const rows = this.targetHits.map(h => h[0]);
-    const cols = this.targetHits.map(h => parseInt(h.slice(1), 10));
-    const used = board.shots.map(s => s.position);
+    const rows = this.targetHits.map((h) => h[0]);
+    const cols = this.targetHits.map((h) => parseInt(h.slice(1), 10));
+    const used = board.shots.map((s) => s.position);
     let cands: string[] = [];
 
     if (this.lastDirection === 'H') {
       const row = rows[0];
-      const min = Math.min(...cols), max = Math.max(...cols);
+      const min = Math.min(...cols),
+        max = Math.max(...cols);
       if (min > 1) cands.push(`${row}${min - 1}`);
       if (max < 10) cands.push(`${row}${max + 1}`);
     } else if (this.lastDirection === 'V') {
       const col = cols[0];
-      const idxs = rows.map(r => this.letters.indexOf(r));
-      const minIdx = Math.min(...idxs), maxIdx = Math.max(...idxs);
+      const idxs = rows.map((r) => this.letters.indexOf(r));
+      const minIdx = Math.min(...idxs),
+        maxIdx = Math.max(...idxs);
       if (minIdx > 0) cands.push(`${this.letters[minIdx - 1]}${col}`);
       if (maxIdx < 9) cands.push(`${this.letters[maxIdx + 1]}${col}`);
     }
 
-    let free = cands.filter(c => !used.includes(c));
+    let free = cands.filter((c) => !used.includes(c));
 
     // ⚡ Probar la dirección perpendicular si no hay libres
     if (free.length === 0) {
@@ -199,7 +213,7 @@ export class AIService {
           if (col < 10) altCands.push(`${row}${col + 1}`);
         }
       }
-      free = altCands.filter(c => !used.includes(c));
+      free = altCands.filter((c) => !used.includes(c));
     }
 
     if (free.length === 0) return this.smartRandomPosition(board);
@@ -207,12 +221,45 @@ export class AIService {
   }
 
   private getDirection(hits: string[]): 'H' | 'V' {
-    const rows = hits.map(h => h[0]);
-    return rows.every(r => r === rows[0]) ? 'H' : 'V';
+    const rows = hits.map((h) => h[0]);
+    return rows.every((r) => r === rows[0]) ? 'H' : 'V';
   }
 
   private pickRandom(arr: string[], board: Board): string {
     if (!arr || arr.length === 0) return this.smartRandomPosition(board);
     return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  getLaserPositions(board: Board): string[] {
+    const used = board.shots.map((s) => s.position);
+    let positions: string[] = [];
+    while (true) {
+      const laser_H_V = Math.random() < 0.5 ? 'H' : 'V';
+      let letter;
+      let number;
+      if (laser_H_V === 'H') {
+        letter = this.letters[Math.floor(Math.random() * this.letters.length)];
+      }
+      if (laser_H_V === 'V') {
+        number = Math.floor(Math.random() * 10) + 1;
+      }
+      if (laser_H_V === 'H') {
+        // Fila completa
+        for (let i = 0; i < 10; i++) {
+          positions.push(`${letter}${i + 1}`);
+        }
+      } else {
+        // Columna completa
+        for (let i = 0; i < 10; i++) {
+          positions.push(`${this.letters[i]}${number}`);
+        }
+      }
+     positions = positions.filter((p) => !used.includes(p));
+      if (positions.length > 0) break;
+      positions = [];
+
+    }
+
+    return positions;
   }
 }

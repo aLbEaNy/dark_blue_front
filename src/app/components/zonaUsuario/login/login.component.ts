@@ -16,6 +16,7 @@ import { StorageService } from '../../../services/store/storageLocal.service';
 import { ValidatorService } from '../../../validators/validator.service';
 import IRestMessage from '../../../models/IRestMessage';
 import { ForgotPasswordModalComponent } from '../forgot-password-modal/forgot-password-modal.component';
+import { PerfilService } from '../../../services/game/perfil.service';
 
 
 @Component({
@@ -31,6 +32,8 @@ export class LoginComponent implements OnInit {
   private _storage = inject(StorageService);
   private _authService = inject(AuthService);
   private authGoogleService = inject (AuthGoogleService);
+  private perfilService = inject(PerfilService);
+
 
   //#region Señales
   email = signal<string>('');
@@ -108,8 +111,7 @@ export class LoginComponent implements OnInit {
     }, 
     { injector: this._injector }
   );
-  //TODO Olvidaste tu contraseña
-  
+
 }
 loginResponse(_resp: IRestMessage) {
   if (_resp.datos === null) return;
@@ -118,6 +120,7 @@ loginResponse(_resp: IRestMessage) {
         console.log('token:-----------> ',_resp.datos.token);
         this.messageError.set('');
         //Navegar a home y almacenar datos de usuario... Cambiar flag de isLogin en store (session)
+        this.perfilService.setPerfil(_resp.datos.perfil);
         this._storage.set('perfil', _resp.datos.perfil);
         this._storage.set('token', _resp.datos.token);
         sessionStorage.setItem('isLogin', "true");
@@ -126,6 +129,5 @@ loginResponse(_resp: IRestMessage) {
           this.messageError.set(_resp.mensaje);
       }
 }
-
   //#endregion
 }

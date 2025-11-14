@@ -30,16 +30,6 @@ export class BoardComponent {
     return this.gameService.me() === 'player1' ? dto.boardPlayer1 : dto.boardPlayer2;
   });
   
-  constructor() {
-    // Logs de board para depuración
-    effect(() => {
-      const dto = this.gameService.gameDTO();
-      console.log('EFFECT me:', this.gameService.me());
-      console.log('EFFECT BOARD_PLAYER1:', dto?.boardPlayer1);
-      console.log('EFFECT BOARD_PLAYER2:', dto?.boardPlayer2);
-    });
-  }
-  
   getSubmarineStyle(sub: Submarine) {
     const pos = this.parsePosition(sub.positions[0]);
     return {

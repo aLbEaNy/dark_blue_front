@@ -19,7 +19,6 @@ export class MiniDisplayUserComponent {
   nicknameDisplay = computed(() => {
     const dto = this.gameService.gameDTO();
     if (!dto) return ''; // <-- prevenir null
-    console.log('En computed nicknameDisplay según fase ', dto.phase);
     if (dto.phase === 'BATTLE' && this.gameService.me() === 'player1') {
       return this.gameService.isMyTurn() ? dto.player1 : dto.player2;
     } else if (dto.phase === 'BATTLE' && this.gameService.me() === 'player2') {
