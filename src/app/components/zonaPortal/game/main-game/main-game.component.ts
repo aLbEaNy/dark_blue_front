@@ -304,10 +304,13 @@ export class MainGameComponent implements OnInit {
           this.gameService.setGame(_game);
           this.specialService.counterBossSlot1.set(0);
           this.specialService.readyBossSpecial1.set(false);
-          //audio x2
+          this.audioService.play('x2', '/audio/x2.mp3');
           return; // Con esto vuelve a disparar sin cambio de turno
         }
         if (this.specialService.specialBossSlot1()?.name === 'multiShot') {
+          this.specialService.readyBossSpecial1.set(false);
+          this.audioService.play('multiShot', '/audio/multiShot.mp3');
+          await sleep(1100);
           for (let i = 0; i < 5; i++) {
             // IA dispara → devuelve un board NUEVO (inmutable)
             const board1 = this.aiService.fire(_game.boardPlayer1);
@@ -338,7 +341,7 @@ export class MainGameComponent implements OnInit {
               '/audio/destroyedSound.mp3'
             );
           this.specialService.counterBossSlot1.set(0);
-          this.specialService.readyBossSpecial1.set(false);
+
           this.checkEndGame(_game, board1);
           await sleep(1800);
         }
@@ -350,8 +353,8 @@ export class MainGameComponent implements OnInit {
           const positions = this.aiService.getLaserPositions(boardActual);
           console.log('positions LASER SLOT1 ->', positions);
           let _board1 = boardActual;
-
-          // audio laser (si lo tienes)
+          this.audioService.play('laserShot', '/audio/laserShot.mp3');
+          await sleep(1100);
           for (const pos of positions) {
             _board1 = this.aiService.fire(_board1, pos); // fire con board inmutable devuelve uno nuevo
             _game = { ..._game, boardPlayer1: _board1 }; // actualiza _game con el board más reciente
@@ -375,10 +378,13 @@ export class MainGameComponent implements OnInit {
           this.gameService.setGame(_game);
           this.specialService.counterBossSlot2.set(0);
           this.specialService.readyBossSpecial2.set(false);
-          //audio x2
+          this.audioService.play('x2', '/audio/x2.mp3');
           return; // Con esto vuelve a disparar sin cambio de turno
         }
         if (this.specialService.specialBossSlot2()?.name === 'multiShot') {
+          this.specialService.readyBossSpecial2.set(false);
+          this.audioService.play('multiShot', '/audio/multiShot.mp3');
+          await sleep(1100);
           for (let i = 0; i < 5; i++) {
             // IA dispara → devuelve un board NUEVO (inmutable)
             const board1 = this.aiService.fire(_game.boardPlayer1);
@@ -409,7 +415,6 @@ export class MainGameComponent implements OnInit {
             );
 
           this.specialService.counterBossSlot2.set(0);
-          this.specialService.readyBossSpecial2.set(false);
           this.checkEndGame(_game, board1);
           await sleep(1800);
         }
@@ -418,7 +423,8 @@ export class MainGameComponent implements OnInit {
           const positions = this.aiService.getLaserPositions(boardActual);
           console.log('positions LASER SLOT2 ->', positions);
           let _board1 = boardActual;
-
+          this.audioService.play('laserShot', '/audio/laserShot.mp3');
+          await sleep(1100);
           for (const pos of positions) {
             _board1 = this.aiService.fire(_board1, pos);
             _game = { ..._game, boardPlayer1: _board1 };
@@ -546,7 +552,7 @@ export class MainGameComponent implements OnInit {
           image:
             'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
           confirmButton:
-            'bg-btn hover:bg-yellow-600 text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
+            'bg-btn hover:bg-yellow-600 cursor-pointer text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
           title: 'swal-title-green',
         },
         buttonsStyling: false,
@@ -592,7 +598,7 @@ export class MainGameComponent implements OnInit {
           image:
             'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
           confirmButton:
-            'bg-btn hover:bg-yellow-600 text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
+            'bg-btn hover:bg-yellow-600 text-darkBlue cursor-pointer font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
         },
         buttonsStyling: false, // necesario para que respete tus clases en el botón
         confirmButtonText: 'Aceptar',
