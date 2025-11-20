@@ -1,8 +1,48 @@
-<div class="justify-self-center px-14 py-2 mt-6 mb-5 bg-principal text-yellow-500 font-bold shadow-black shadow-lg rounded-sm">
-    Coloca tu flota para Empezar !!</div>
-<div class="justify-self-center">
-    <button class="p-3 px-5 text-darkBlue font-extrabold text-xl bg-btn border-btn border-l-5 border-b-5 border-t-2 border-r-2 
-                  shadow-lg shadow-black rounded-full hover:cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-lg"
-            (click)="startBattle($event, 'START')"            
-    >Empezar</button>
-</div>
+<div
+    class="justify-self-center px-8 py-4 mt-4 mb-5 bg-principal text-lg text-yellow-500 font-bold shadow-black shadow-lg rounded-md">
+    @if(showSelelectorSlot1()){
+    <app-selector-special></app-selector-special>
+    }
+    @if(showSelelectorSlot2()){
+    <app-selector-special></app-selector-special>
+    }
+    ⇧ Coloca tu flota para Empezar ⇧
+    <div class="flex justify-center gap-4 mt-2">
+        <div class="flex-col ">
+            <p class="text-fluor font-bold text-[0.6rem] mb-1">ESPECIAL 1</p>
+            <div id="special1" class="ms-1 cursor-pointer relative group w-10 h-10 border-2 rounded-md border-gray-500"
+                (click)="specialService.showSelector1.set(true)">
+
+                <img [src]="computedSlot1().image || ''">
+
+                <!-- Tooltip -->
+                <div class="opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block
+            bg-principal text-acero text-md font-mono rounded p-3 w-70 shadow-lg shadow-black z-10">
+                    {{ computedSlot1().description || 'La ranura está vacía' }}
+                </div>
+            </div>
+        </div>
+        <div class="flex-col">
+
+            <p class="text-fluor font-bold text-[0.6rem] mb-1">ESPECIAL 2</p>
+            <div id="special2" class="ms-1 cursor-pointer relative group w-10 h-10 border-2 rounded-md border-gray-500"
+                (click)="specialService.showSelector2.set(true)">
+
+                <img [src]="computedSlot2().image || ''">
+
+                <!-- Tooltip -->
+                <div
+                    class="opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block
+                                bg-principal text-acero text-md font-mono rounded p-3 w-70 shadow-lg shadow-black z-10">
+                    {{ computedSlot2().description || 'La ranura está vacía' }}
+                </div>
+            </div>
+        </div>
+
+        <div class="">
+            <button
+                class="ms-4 mt-2 p-2 text-darkBlue text-md font-extrabold  bg-btn border-btn border-l-5 border-b-5 border-t-2 border-r-2 
+                      shadow-xs shadow-white rounded-r-full hover:cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-md"
+                (click)="startBattle($event, 'START')">Empezar</button>
+        </div>
+    </div>

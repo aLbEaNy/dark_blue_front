@@ -122,7 +122,7 @@ loginResponse(_resp: IRestMessage) {
         //Navegar a home y almacenar datos de usuario... Cambiar flag de isLogin en store (session)
         this.perfilService.setPerfil(_resp.datos.perfil);
         this._storage.set('perfil', _resp.datos.perfil);
-        this._storage.set('token', _resp.datos.token);
+        sessionStorage.setItem('token', _resp.datos.token);
         sessionStorage.setItem('isLogin', "true");
         this._router.navigate(['/darkblue/main-game']);
       } else {

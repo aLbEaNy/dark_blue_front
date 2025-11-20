@@ -78,8 +78,8 @@ export class MainGameComponent implements OnInit {
     'No entiendo como has perdido si era superfácil, eso es que no has practicado suficiente',
     'Correcto! Aunque ahora no lo veas, esto es lo mejor que puedes hacer... Levantarte con humildad para seguir luchando',
   ];
-  counterBossSlot1Computed = this.specialService.counterBossSlot1;
-  counterBossSlot2Computed = this.specialService.counterBossSlot2;
+  playerSlot1 = this.specialService.specialPlayerSlot1;
+  playerSlot2 = this.specialService.specialPlayerSlot2;
   //#endregion
 
   ngOnInit() {
@@ -213,6 +213,10 @@ export class MainGameComponent implements OnInit {
     //Restear contadores de MISS
     this.specialService.counterBossSlot1.set(0);
     this.specialService.counterBossSlot2.set(0);
+    this.specialService.counterPlayerSlot1.set(0);
+    this.specialService.counterPlayerSlot2.set(0);
+    console.log('El player tiene en slot1: -->', this.playerSlot1());
+    console.log('El player tiene en slot2: -->', this.playerSlot2());
     this.bossVoice(_game.stage);
     await Swal.fire({
       title: _game.player2,
@@ -468,17 +472,12 @@ export class MainGameComponent implements OnInit {
       await this.nextTurn();
     }
   }
-
   async playerFire(pos: string) {
-    // Evita disparos rápidos despues del fin en MISS
-    const me = this.gameService.me();
     const boardRival = this.gameService.getCurrentBoard()!;
-
     if (boardRival.submarines.every((sub) => sub.isDestroyed)) return;
+    
     console.log('- Disparo del player en posición: --->', pos);
     let _game = this.gameService.gameDTO()!;
-
-    if (_game.turn !== me) return;
 
     let result: 'HIT' | 'MISS' = 'MISS';
     for (const sub of boardRival.submarines) {
@@ -503,13 +502,6 @@ export class MainGameComponent implements OnInit {
     this.gameService.shotsInBoard2.set([..._game.boardPlayer2.shots]);
     await sleep(1800); // da tiempo a animacion
     if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
-    if (result === 'MISS') {
-      _game.turn = 'player2';
-      this.gameService.setGame(_game);
-      this.gameService.isMyTurn.set(false);
-      this.gameService.getCurrentBoard.set(_game.boardPlayer1); // Llamar al loop de turnos
-      this.nextTurn();
-    }
 
     // Comprobar fin de partida
     if (_game.boardPlayer2.submarines.every((sub) => sub.isDestroyed)) {
@@ -562,6 +554,17 @@ export class MainGameComponent implements OnInit {
 
       return; // se sale de playerFire
     }
+    if (result === 'MISS') {
+     
+       {
+        _game.turn = 'player2';
+        this.gameService.setGame(_game);
+        this.gameService.isMyTurn.set(false);
+        this.gameService.getCurrentBoard.set(_game.boardPlayer1); // Llamar al loop de turnos
+        this.nextTurn();
+      }
+    }
+
     // Si fue HIT y hay submarinos todavía, el jugador sigue disparando; no se cambia turno
   }
   async checkEndGame(_game: Game, board1: Board) {

@@ -1,6 +1,6 @@
 export default interface Special{
-    name?: String,
-    description?: String,
-    image?: String,
-    owner?: String,
+    name?: string,
+    description?: string,
+    image?: string,
+    owner?: string,
 }

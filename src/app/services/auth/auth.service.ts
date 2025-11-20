@@ -100,6 +100,10 @@ export class AuthService {
     sessionStorage.removeItem('isLogin');
     this.router.navigate(['/login']);
   }
+  getToken(): string | null {
+    return sessionStorage.getItem('token');
+  }
+
   nicknameExists(nickname: string) {
     return lastValueFrom(
       this.http.get<IRestMessage>(`${this.baseUrl}/auth/nickname?nickname=${nickname}`));

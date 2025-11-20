@@ -15,6 +15,7 @@ import { formatPosition, parsePosition } from '../../../../utils/board-utils';
 import { NgClass, NgStyle } from '@angular/common';
 import Submarine from '../../../../models/Submarine';
 import { PerfilService } from '../../../../services/game/perfil.service';
+import { SpecialService } from '../../../../services/game/special.service';
 
 @Component({
   selector: 'app-board-atack',
@@ -26,6 +27,7 @@ export class BoardAtackComponent implements OnInit, OnDestroy {
   storageService = inject(StorageService);
   gameService = inject(GameService);
   perfilService = inject(PerfilService);
+  specialService = inject(SpecialService);
   perfil = this.perfilService.perfil();
   disableFire = signal(false);
 
@@ -48,25 +50,25 @@ export class BoardAtackComponent implements OnInit, OnDestroy {
   firePlayer = output<string>();
 
   ngOnInit(): void {
-  const perfil = this.perfil;
-  perfil.stats.currentStartTime = Date.now();
-  this.perfilService.setPerfil(perfil);
-  this.perfilService.updatePerfil(perfil);
-}
-
-ngOnDestroy(): void {
-  const perfil = this.perfil;
-  const now = Date.now();
-
-  // Evitar errores si por alguna razón no se había inicializado
-  if (perfil.stats.currentStartTime) {
-    const sessionTime = now - perfil.stats.currentStartTime;
-    perfil.stats.playTime = (perfil.stats.playTime ?? 0) + sessionTime;
-    perfil.stats.currentStartTime = undefined;
+    const perfil = this.perfil;
+    perfil.stats.currentStartTime = Date.now();
+    this.perfilService.setPerfil(perfil);
+    this.perfilService.updatePerfil(perfil);
   }
-  this.perfilService.setPerfil(perfil);
-  this.perfilService.updatePerfil(perfil);
-}
+
+  ngOnDestroy(): void {
+    const perfil = this.perfil;
+    const now = Date.now();
+
+    // Evitar errores si por alguna razón no se había inicializado
+    if (perfil.stats.currentStartTime) {
+      const sessionTime = now - perfil.stats.currentStartTime;
+      perfil.stats.playTime = (perfil.stats.playTime ?? 0) + sessionTime;
+      perfil.stats.currentStartTime = undefined;
+    }
+    this.perfilService.setPerfil(perfil);
+    this.perfilService.updatePerfil(perfil);
+  }
 
   constructor() {
     effect(() => {
@@ -116,11 +118,16 @@ ngOnDestroy(): void {
     }
     return map;
   });
-  disableShot(pos: string) {
-    this.boardComputed()?.submarines.findIndex((sub) =>
-      sub.positions.some((p) => p === pos)
-    ) !== -1
-      ? this.disableFire.set(false)
-      : this.disableFire.set(true);
+  disableShot(pos: string) { //Evita disparos rápidos despues de MISS
+    if (
+      this.boardComputed()?.submarines.findIndex((sub) =>
+        sub.positions.some((p) => p === pos)
+      ) !== -1
+    ) {
+      this.disableFire.set(false);
+    } else {
+      this.disableFire.set(true);
+    }
+
   }
 }

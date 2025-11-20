@@ -23,10 +23,29 @@
         </div>
         <h2 class="self-center text-center text-fluor">ESPECIAL</h2>
         <div class="flex self-center gap-4">
-            <div id="special1" [ngClass]="!playerSlot1() ? 'border-gray-500' : 'border-red-600'"
-                class="w-10 h-10 border-2 rounded-md"></div>
-            <div id="special2" [ngClass]="!playerSlot2() ? 'border-gray-500' : 'border-red-600'"
-                class="w-10 h-10 border-2 rounded-md"></div>
+            <div id="special1" [ngClass]="readyPlayerSpecial1() ? 'border-green-600' : 'border-gray-500'"
+                class="relative group w-10 h-10 border-2 rounded-md">
+                @if(playerSlot1().owner !==''){
+                <img [src]="playerSlot1().image">
+                }
+                <!-- Tooltip -->
+                <div class="opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block
+                               bg-principal text-acero text-md font-mono rounded p-3 w-70 shadow-lg shadow-black z-10">
+                    {{ playerSlot1().description || 'La ranura está vacía' }}
+                </div>
+            </div>
+            <div id="special2" [ngClass]="readyPlayerSpecial2() ? 'border-green-600' : 'border-gray-500'"
+                class="relative group w-10 h-10 border-2 rounded-md">
+                @if(playerSlot2().owner !==''){
+                <img [src]="playerSlot2().image">
+                }
+                <!-- Tooltip -->
+                <div
+                    class="opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block
+                                bg-principal text-acero text-md font-mono rounded p-3 w-70 shadow-lg shadow-black z-10">
+                    {{ playerSlot2().description || 'La ranura está vacía' }}
+                </div>
+            </div>
         </div>
 
     </div>
@@ -54,27 +73,44 @@
 
         <h2 class="self-center text-center text-fluor">ESPECIAL</h2>
         <div class="flex self-center gap-4">
-            <div id="specialR1" [ngClass]="readyBossSpecial1() ? 'border-green-600' : 'border-red-600'"
+            <div id="specialR1"
+                [ngClass]="readyBossSpecial1() || readyPlayerRivalSpecial1() ? 'border-green-600' : 'border-gray-500'"
                 class="relative group w-10 h-10 border-2 rounded-md">
                 @if(!gameService.gameDTO()?.online && bossSlot1()?.owner !==''){
                 <img [src]="bossSlot1()?.image">
                 }
+                @if(gameService.gameDTO()?.online && playerRivalSlot1()?.owner !==''){
+                <img [src]="playerRivalSlot1()?.image">
+                }
                 <!-- Tooltip -->
                 <div class="opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block
-           bg-principal text-acero text-md font-mono rounded p-3 w-70 shadow-lg shadow-black z-10">
-                    {{ bossSlot1()?.description }}
+                            bg-principal text-acero text-md font-mono rounded p-3 w-70 shadow-lg shadow-black z-10">
+                    @if(!gameService.gameDTO()?.online){
+                    {{ bossSlot1()?.description || 'La ranura está vacía' }}
+                    }
+                    @else{
+                    {{ playerRivalSlot1()?.description || 'La ranura está vacía' }}
+                    }
                 </div>
             </div>
-            <div id="specialR2" 
-                [ngClass]="readyBossSpecial2() ? 'border-green-600' : 'border-red-600'"
+            <div id="specialR2"
+                [ngClass]="readyBossSpecial2() || readyPlayerRivalSpecial2() ? 'border-green-600' : 'border-gray-500'"
                 class="relative group w-10 h-10 border-2 rounded-md">
                 @if(!gameService.gameDTO()?.online && gameService.gameDTO()?.stage !==1){
                 <img [src]="bossSlot2()?.name ? bossSlot2()?.image: bossSlot2()?.image">
                 }
+                @if(gameService.gameDTO()?.online && playerRivalSlot2()?.owner !==''){
+                <img [src]="playerRivalSlot2()?.image">
+                }
                 <!-- Tooltip -->
                 <div class="opacity-100 absolute bottom-full left-1/2 -translate-x-3/4 mb-2 hidden group-hover:block
-           bg-principal text-acero text-md font-mono rounded p-3 w-70 shadow-lg shadow-black z-10">
-                    {{ bossSlot2()?.description }}
+                            bg-principal text-acero text-md font-mono rounded p-3 w-70 shadow-lg shadow-black z-10">
+                    @if(!gameService.gameDTO()?.online){
+                    {{ bossSlot2()?.description || 'La ranura está vacía' }}
+                    }
+                    @else{
+                    {{ playerRivalSlot2()?.description || 'La ranura está vacía' }}
+                    }
                 </div>
             </div>
         </div>
