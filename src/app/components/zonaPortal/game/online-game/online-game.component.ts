@@ -131,9 +131,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
           //Consigo el turno anterior para que la vista no cambie para que de tiempo a animaciones
           //COPIA PROFUNDA
           this.gameTurnBack = structuredClone(this.msgSocket().game!);
-          this.turnBack =
-            this.msgSocket().game!.turn! === 'player1' ? 'player2' : 'player1';
-
+          this.turnBack = this.msgSocket().game!.turn! === 'player1' ? 'player2' : 'player1';
           this.gameTurnBack.turn = this.turnBack;
           this.gameService.setGame(this.gameTurnBack);
           await sleep(1800); // da tiempo a animacion
@@ -177,7 +175,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
           const winnerNick = winner === 'player1' ? game.player1 : game.player2;
 
           const title = iAmWinner ? '¡VICTORIA!' : 'DERROTA';
-          const coin = iAmWinner ? '150' : '10';
+          const coin = iAmWinner ? '500' : '100';
 
           const textColor = iAmWinner ? '#39ff14' : '#a91504';
           iAmWinner

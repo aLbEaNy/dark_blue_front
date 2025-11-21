@@ -1,0 +1,29 @@
+<div class="relative">
+    <div class="z-12 absolute bg-white/45 rounded-md backdrop-blur-xs">
+        <div class="bg-btn text-darkBlue rounded-t-md">
+            <p class="ms-3 px-4 me-4">Elige un ataque especial:</p>
+        </div>
+        <div class="flex p-3 gap-3">
+            <div class="w-16 bg-principal rounded-md text-fluor text-center cursor-pointer 
+                            shadow-sm shadow-black hover:scale-102 hover:shadow-md transition-all"
+                            (click)="specialService.selectorChangeSlot('')">
+                slot vacío
+            </div>
+            @for (special of specials() ; track special) {
+                <div class="relative group rounded-md  shadow-sm shadow-black "
+                [ngClass]="inSlot1().name === special || inSlot2().name === special? 'cursor-default bg-gray-700':'cursor-pointer bg-principal hover:scale-102 hover:shadow-md transition-all'"
+                (click)="inSlot1().name !== special && inSlot2().name !== special && specialService.selectorChangeSlot(special)"
+                >
+                    <img class="w-16" 
+                         
+                        [src]="specialService.getSpecial(special, perfilService.perfil().nickname).image" alt="ataque especial">
+                    <!-- Tooltip -->
+                <div class="opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block
+                               bg-principal text-acero text-md font-mono rounded p-3 w-70 shadow-lg shadow-black z-10">
+                    {{ specialService.getSpecial(special, perfilService.perfil().nickname).description || 'La ranura está vacía' }}
+                </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

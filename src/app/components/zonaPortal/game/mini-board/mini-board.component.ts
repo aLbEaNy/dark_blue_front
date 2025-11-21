@@ -31,8 +31,14 @@ export class MiniBoardComponent implements OnInit{
   bossSlot2 = this.specialService.specialBossSlot2;
   playerSlot1 = this.specialService.specialPlayerSlot1;
   playerSlot2 = this.specialService.specialPlayerSlot2;
+  playerRivalSlot1 = this.specialService.specialPlayerRivalSlot1;
+  playerRivalSlot2 = this.specialService.specialPlayerRivalSlot2;
   counterBossSlot1 = computed(() => this.specialService.counterBossSlot1());
   counterBossSlot2 = computed(() => this.specialService.counterBossSlot2());
+  counterPlayerSlot1 = computed(() => this.specialService.counterPlayerSlot1());
+  counterPlayerSlot2 = computed(() => this.specialService.counterPlayerSlot2());
+  counterPlayerRivalSlot1 = computed(() => this.specialService.counterPlayerRivalSlot1());
+  counterPlayerRivalSlot2 = computed(() => this.specialService.counterPlayerRivalSlot2());
   activeBossSpecial1 = computed(() => {
     const counter = this.specialService.counterBossSlot1();
     return this.specialService.adminSpecialCounter(this.bossSlot1()?.name!, this.counterBossSlot1());  
@@ -41,8 +47,30 @@ export class MiniBoardComponent implements OnInit{
     const counter = this.specialService.counterBossSlot2();
     return this.specialService.adminSpecialCounter(this.bossSlot2()?.name!, this.counterBossSlot2());  
   });
+  activePlayerSpecial1 = computed(() => {
+    const counter = this.specialService.counterPlayerSlot1();
+    return this.specialService.adminSpecialCounter(this.playerSlot1()?.name!, this.counterPlayerSlot1());  
+  });
+  activePlayerSpecial2 = computed(() => {
+    const counter = this.specialService.counterPlayerSlot2();
+    return this.specialService.adminSpecialCounter(this.playerSlot2()?.name!, this.counterPlayerSlot2());  
+  });
+  activePlayerRival1 = computed(() => {
+    const counter = this.specialService.counterPlayerRivalSlot1();
+    return this.specialService.adminSpecialCounter(this.playerRivalSlot1()?.name!, this.counterPlayerRivalSlot1());  
+  });
+  activePlayerRival2 = computed(() => {
+    const counter = this.specialService.counterPlayerRivalSlot2();
+    return this.specialService.adminSpecialCounter(this.playerRivalSlot2()?.name!, this.counterPlayerRivalSlot2());  
+  });
+
+
   readyBossSpecial1 = this.specialService.readyBossSpecial1;
   readyBossSpecial2 = this.specialService.readyBossSpecial2;
+  readyPlayerSpecial1 = computed(() => this.specialService.readyPlayerSpecial1());
+  readyPlayerSpecial2 = computed(() => this.specialService.readyPlayerSpecial2());
+  readyPlayerRivalSpecial1 = computed(() => this.specialService.readyPlayerRivalSpecial1());
+  readyPlayerRivalSpecial2 = computed(() => this.specialService.readyPlayerRivalSpecial2());
   
   avatarRival = computed(() => {
     return this.perfil.nickname === this.game()?.player1 ? this.game()?.avatarPlayer2 : this.game()?.avatarPlayer1;

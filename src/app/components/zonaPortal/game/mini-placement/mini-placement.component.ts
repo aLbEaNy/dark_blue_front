@@ -1,9 +1,12 @@
+import { PerfilService } from '../../../../services/game/perfil.service';
+import { SpecialService } from '../../../../services/game/special.service';
 import { GameService } from './../../../../services/game/game.service';
-import { Component, inject, output } from '@angular/core';
+import { Component, computed, inject, output, signal } from '@angular/core';
+import { SelectorSpecialComponent } from "../selector-special/selector-special.component";
 
 @Component({
   selector: 'app-mini-placement',
-  imports: [],
+  imports: [SelectorSpecialComponent],
   templateUrl: './mini-placement.component.html',
   styleUrl: './mini-placement.component.css'
 })
@@ -11,8 +14,16 @@ export class MiniPlacementComponent {
   gameService = inject(GameService);
   pageChange = output<string>();
   pageChangeOnline = output<string>();
-
-
+  perfilService = inject(PerfilService);
+  specialService = inject(SpecialService);
+  specials = this.perfilService.perfil().stats.specials;
+  slot1 = signal(this.perfilService.perfil().stats.specialSlot1 || '');
+  computedSlot1 = computed(() => this.specialService.specialPlayerSlot1());
+  slot2 = signal(this.perfilService.perfil().stats.specialSlot2 || '');
+  computedSlot2 = computed(() =>this.specialService.specialPlayerSlot2());
+  showSelelectorSlot1 = computed(() => this.specialService.showSelector1());
+  showSelelectorSlot2 = computed(() => this.specialService.showSelector2());
+  
   async startBattle(event: MouseEvent, page: string) { 
     console.log('has pulsado el boton EMPEZAR')
     //OFFLINE    
@@ -48,5 +59,14 @@ export class MiniPlacementComponent {
     this.pageChangeOnline.emit('WAITING'); 
   }
 
+  // async changeSlot(slot: 1 | 2){
+  //   if(slot === 1){
+  //     this.showSelelectSlot1.set(!this.showSelelectSlot1());
+  //   }
+  //   else{
+  //     this.showSelelectSlot2.set(!this.showSelelectSlot2());
+  //   }
+
+  // }
 
 }
