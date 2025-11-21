@@ -80,7 +80,7 @@ export class MainGameComponent implements OnInit {
   ];
   playerSlot1 = this.specialService.specialPlayerSlot1;
   playerSlot2 = this.specialService.specialPlayerSlot2;
-  
+
   activePlayerSpecial1 = computed(() => {
     const counter = this.specialService.counterPlayerSlot1();
     return this.specialService.adminSpecialCounter(
@@ -360,8 +360,6 @@ export class MainGameComponent implements OnInit {
               '/audio/destroyedSound.mp3'
             );
           this.specialService.counterBossSlot1.set(0);
-
-          this.checkEndGame(_game, board1, 'player2');
           await sleep(1800);
         }
 
@@ -386,10 +384,13 @@ export class MainGameComponent implements OnInit {
 
           this.specialService.counterBossSlot1.set(0);
           this.specialService.readyBossSpecial1.set(false);
-
-          this.checkEndGame(_game, _board1, 'player2');
           await sleep(1800);
         }
+
+       //Fin de partida?
+        this.checkEndGame(_game, _game.boardPlayer1, 'player2');
+        await sleep(900);
+        if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
       }
       if (this.specialService.readyBossSpecial2()) {
         //dispara special2
@@ -434,7 +435,6 @@ export class MainGameComponent implements OnInit {
             );
 
           this.specialService.counterBossSlot2.set(0);
-          this.checkEndGame(_game, board1, 'player2');
           await sleep(1800);
         }
         if (this.specialService.specialBossSlot2()?.name === 'laserShot') {
@@ -455,14 +455,15 @@ export class MainGameComponent implements OnInit {
 
           this.specialService.counterBossSlot2.set(0);
           this.specialService.readyBossSpecial2.set(false);
-
-          this.checkEndGame(_game, _board1, 'player2');
           await sleep(1800);
         }
+        //Fin de partida?
+        this.checkEndGame(_game, _game.boardPlayer1, 'player2');
+        await sleep(900);
+        if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
       }
       //#endregion
     }
-
     // Cambiar turno al jugador humano
     _game = { ..._game, turn: 'player1' };
     this.gameService.setGame(_game);
@@ -511,7 +512,7 @@ export class MainGameComponent implements OnInit {
     }
     if (result === 'MISS') {
       this.audioService.play('missSound', '/audio/missSound.mp3');
-      if (!this.activePlayerSpecial1()) 
+      if (!this.activePlayerSpecial1())
         this.specialService.counterPlayerSlot1.update((c) => c + 1);
       if (!this.activePlayerSpecial2())
         this.specialService.counterPlayerSlot2.update((c) => c + 1);
@@ -524,150 +525,137 @@ export class MainGameComponent implements OnInit {
     if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
 
     this.checkEndGame(_game, _game.boardPlayer2, 'player1');
-    if(this.page() !== 'BATTLE') return;
+    if (this.page() !== 'BATTLE') return;
 
-     //#region Special Shots
-      let _HIT = false;
-      let _MISS = false;
-      let _destroyed = false;
+    //#region Special Shots
+    let _HIT = false;
+    let _MISS = false;
+    let _destroyed = false;
     if (result === 'MISS' && this.activePlayerSpecial1()) {
-      if(this.playerSlot1()?.name === 'x2Shot'){
+      if (this.playerSlot1()?.name === 'x2Shot') {
         this.specialService.activateSpecialFlag.set(true);
-        this.audioService.play('x2', '/audio/x2.mp3');
         this.specialService.counterPlayerSlot1.set(0);
+        this.audioService.play('x2', '/audio/x2.mp3');
         return;
       }
-      if (this.playerSlot1()?.name === 'multiShot'){
+      if (this.playerSlot1()?.name === 'multiShot') {
         this.specialService.activateSpecialFlag.set(true);
-        this.audioService.play('multiShot', '/audio/multiShot.mp3');
         this.specialService.counterPlayerSlot1.set(0);
-         await sleep(1100);
-          for (let i = 0; i < 5; i++) {
-            // IA dispara → devuelve un board NUEVO (inmutable)
-            const board2 = this.aiService.fire(_game.boardPlayer2);
-            // Actualiza gameDTO y signal
-            _game = { ..._game, boardPlayer2: board2 };
-            this.gameService.setGame(_game);
-            this.gameService.shotsInBoard2.set([...board2.shots]);
-            // Último disparo
-            const lastShot = board2.shots[board2.shots.length - 1];
-            if (lastShot.result === 'HIT') _HIT = true;
-            if (lastShot.result === 'MISS') _MISS = true;
-            if (
-              _game.boardPlayer2.submarines.findIndex(
-                (sub) =>
-                  sub.positions.some((pos) => pos === lastShot.position) &&
-                  sub.isDestroyed
-              ) !== -1
-            )
-              _destroyed = true;
-          }
-          if (_HIT) this.audioService.play('hitSound', '/audio/hitSound.mp3');
-          if (_MISS)
-            this.audioService.play('missSound', '/audio/missSound.mp3');
-          if (_destroyed)
-            this.audioService.play(
-              'destroyedSound',
-              '/audio/destroyedSound.mp3'
-            );
-            this.checkEndGame(_game, _game.boardPlayer2, 'player1');
-            await sleep(1800);
-            if(this.page() !== 'BATTLE') return;
-       
+        this.audioService.play('multiShot', '/audio/multiShot.mp3');
+        await sleep(1100);
+        for (let i = 0; i < 5; i++) {
+          // IA dispara → devuelve un board NUEVO (inmutable)
+          const board2 = this.aiService.fire(_game.boardPlayer2);
+          // Actualiza gameDTO y signal
+          _game = { ..._game, boardPlayer2: board2 };
+          this.gameService.setGame(_game);
+          this.gameService.shotsInBoard2.set([...board2.shots]);
+          // Último disparo
+          const lastShot = board2.shots[board2.shots.length - 1];
+          if (lastShot.result === 'HIT') _HIT = true;
+          if (lastShot.result === 'MISS') _MISS = true;
+          if (
+            _game.boardPlayer2.submarines.findIndex(
+              (sub) =>
+                sub.positions.some((pos) => pos === lastShot.position) &&
+              sub.isDestroyed
+            ) !== -1
+          )
+          _destroyed = true;
+        }
+        if (_HIT) this.audioService.play('hitSound', '/audio/hitSound.mp3');
+        if (_MISS) this.audioService.play('missSound', '/audio/missSound.mp3');
+        if (_destroyed)
+          this.audioService.play('destroyedSound', '/audio/destroyedSound.mp3');
+        this.checkEndGame(_game, _game.boardPlayer2, 'player1');
+        await sleep(1800);
+        if (this.page() !== 'BATTLE') return;
       }
-      if (this.playerSlot1()?.name === 'laserShot'){
+      if (this.playerSlot1()?.name === 'laserShot') {
         this.specialService.activateSpecialFlag.set(true);
         this.audioService.play('laserShot', '/audio/laserShot.mp3');
         this.specialService.counterPlayerSlot1.set(0);
 
         let boardActual = this.gameService.gameDTO()!.boardPlayer2;
-          const positions = this.aiService.getLaserPositions(boardActual);
-          console.log('positions LASER SLOT2 ->', positions);
-          let _board2 = boardActual;
-          this.audioService.play('laserShot', '/audio/laserShot.mp3');
-          await sleep(1100);
-          for (const pos of positions) {
-            _board2 = this.aiService.fire(_board2, pos);
-            _game = { ..._game, boardPlayer2: _board2 };
-            this.gameService.shotsInBoard2.set([..._board2.shots]);
-            this.gameService.setGame(_game);
-            await sleep(70);
-            this.checkLastShot(_game, _board2, 'player1');
-          }
-          this.checkEndGame(_game, _board2, 'player1');
-          await sleep(1800);
-          if(this.page() !== 'BATTLE') return;
-
-
-
+        const positions = this.aiService.getLaserPositions(boardActual);
+        console.log('positions LASER SLOT2 ->', positions);
+        let _board2 = boardActual;
+        this.audioService.play('laserShot', '/audio/laserShot.mp3');
+        await sleep(1100);
+        for (const pos of positions) {
+          _board2 = this.aiService.fire(_board2, pos);
+          _game = { ..._game, boardPlayer2: _board2 };
+          this.gameService.shotsInBoard2.set([..._board2.shots]);
+          this.gameService.setGame(_game);
+          await sleep(70);
+          this.checkLastShot(_game, _board2, 'player1');
+        }
+        this.checkEndGame(_game, _board2, 'player1');
+        await sleep(1800);
+        if (this.page() !== 'BATTLE') return;
       }
     }
-     if (result === 'MISS' && this.activePlayerSpecial2()) {
-      if(this.playerSlot2()?.name === 'x2Shot'){
+    if (result === 'MISS' && this.activePlayerSpecial2()) {
+      if (this.playerSlot2()?.name === 'x2Shot') {
         this.specialService.activateSpecialFlag.set(true);
-        this.audioService.play('x2', '/audio/x2.mp3');
         this.specialService.counterPlayerSlot2.set(0);
+        this.audioService.play('x2', '/audio/x2.mp3');
         return;
       }
-      if (this.playerSlot2()?.name === 'multiShot'){
+      if (this.playerSlot2()?.name === 'multiShot') {
         this.specialService.activateSpecialFlag.set(true);
+        this.specialService.counterPlayerSlot2.set(0);
         this.audioService.play('multiShot', '/audio/multiShot.mp3');
-        this.specialService.counterPlayerSlot2.set(0);
-         await sleep(1100);
-          for (let i = 0; i < 5; i++) {
-            // IA dispara → devuelve un board NUEVO (inmutable)
-            const board2 = this.aiService.fire(_game.boardPlayer2);
-            // Actualiza gameDTO y signal
-            _game = { ..._game, boardPlayer2: board2 };
-            this.gameService.setGame(_game);
-            this.gameService.shotsInBoard2.set([...board2.shots]);
-            // Último disparo
-            const lastShot = board2.shots[board2.shots.length - 1];
-            if (lastShot.result === 'HIT') _HIT = true;
-            if (lastShot.result === 'MISS') _MISS = true;
-            if (
-              _game.boardPlayer2.submarines.findIndex(
-                (sub) =>
-                  sub.positions.some((pos) => pos === lastShot.position) &&
-                  sub.isDestroyed
-              ) !== -1
-            )
-              _destroyed = true;
-          }
-          if (_HIT) this.audioService.play('hitSound', '/audio/hitSound.mp3');
-          if (_MISS)
-            this.audioService.play('missSound', '/audio/missSound.mp3');
-          if (_destroyed)
-            this.audioService.play(
-              'destroyedSound',
-              '/audio/destroyedSound.mp3'
-            );
-            this.checkEndGame(_game, _game.boardPlayer2, 'player1');
-            await sleep(1800);
-            if(this.page() !== 'BATTLE') return;
-
+        await sleep(1100);
+        for (let i = 0; i < 5; i++) {
+          // IA dispara → devuelve un board NUEVO (inmutable)
+          const board2 = this.aiService.fire(_game.boardPlayer2);
+          // Actualiza gameDTO y signal
+          _game = { ..._game, boardPlayer2: board2 };
+          this.gameService.setGame(_game);
+          this.gameService.shotsInBoard2.set([...board2.shots]);
+          // Último disparo
+          const lastShot = board2.shots[board2.shots.length - 1];
+          if (lastShot.result === 'HIT') _HIT = true;
+          if (lastShot.result === 'MISS') _MISS = true;
+          if (
+            _game.boardPlayer2.submarines.findIndex(
+              (sub) =>
+                sub.positions.some((pos) => pos === lastShot.position) &&
+                sub.isDestroyed
+            ) !== -1
+          )
+            _destroyed = true;
+        }
+        if (_HIT) this.audioService.play('hitSound', '/audio/hitSound.mp3');
+        if (_MISS) this.audioService.play('missSound', '/audio/missSound.mp3');
+        if (_destroyed)
+          this.audioService.play('destroyedSound', '/audio/destroyedSound.mp3');
+        this.checkEndGame(_game, _game.boardPlayer2, 'player1');
+        await sleep(1800);
+        if (this.page() !== 'BATTLE') return;
       }
-      if (this.playerSlot2()?.name === 'laserShot'){
+      if (this.playerSlot2()?.name === 'laserShot') {
         this.specialService.activateSpecialFlag.set(true);
-        this.audioService.play('laserShot', '/audio/laserShot.mp3');
         this.specialService.counterPlayerSlot2.set(0);
+        this.audioService.play('laserShot', '/audio/laserShot.mp3');
         let boardActual = this.gameService.gameDTO()!.boardPlayer2;
-          const positions = this.aiService.getLaserPositions(boardActual);
-          console.log('positions LASER SLOT2 ->', positions);
-          let _board2 = boardActual;
-          this.audioService.play('laserShot', '/audio/laserShot.mp3');
-          await sleep(1100);
-          for (const pos of positions) {
-            _board2 = this.aiService.fire(_board2, pos);
-            _game = { ..._game, boardPlayer2: _board2 };
-            this.gameService.shotsInBoard2.set([..._board2.shots]);
-            this.gameService.setGame(_game);
-            await sleep(70);
-            this.checkLastShot(_game, _board2, 'player1');
-          }
-          this.checkEndGame(_game, _board2, 'player1');
-          await sleep(1800);
-          if(this.page() !== 'BATTLE') return;
+        const positions = this.aiService.getLaserPositions(boardActual);
+        console.log('positions LASER SLOT2 ->', positions);
+        let _board2 = boardActual;
+        this.audioService.play('laserShot', '/audio/laserShot.mp3');
+        await sleep(1100);
+        for (const pos of positions) {
+          _board2 = this.aiService.fire(_board2, pos);
+          _game = { ..._game, boardPlayer2: _board2 };
+          this.gameService.shotsInBoard2.set([..._board2.shots]);
+          this.gameService.setGame(_game);
+          await sleep(70);
+          this.checkLastShot(_game, _board2, 'player1');
+        }
+        this.checkEndGame(_game, _board2, 'player1');
+        await sleep(1800);
+        if (this.page() !== 'BATTLE') return;
       }
     }
 
@@ -682,110 +670,119 @@ export class MainGameComponent implements OnInit {
 
     // Si fue HIT y hay submarinos todavía, el jugador sigue disparando; no se cambia turno
   }
-  async checkEndGame(_game: Game, board: Board, whoAsk: 'player1' | 'player2'){
+  async checkEndGame(_game: Game, board: Board, whoAsk: 'player1' | 'player2') {
     switch (whoAsk) {
       case 'player1':
-         // Comprobar fin de partida
-    if (_game.boardPlayer2.submarines.every((sub) => sub.isDestroyed)) {
-      _game.winner = 'player1';
-      _game.phase = 'END';
-      this.gameService.setGame(_game);
-      this.gameService.updateGame(_game);
-      let _perfil = this.perfil();
-      const rerward = _game.stage * 3500;
-      _game.stage++;
-      (_perfil.stats.coins as number) += rerward;
-      (_perfil.stats.wins as number) += 1;
-      this.perfilService.setPerfil(_perfil);
-      this.perfilService.updatePerfil(_perfil);
-      await sleep(1500);
-      this.audioService.stopAll();
-      this.audioService.play('win', '/audio/win.mp3');
-      this.audioService.play('coins', '/audio/coins.mp3');
-      // Mostrar banner o popup de victoria del jugador
-      await Swal.fire({
-        title: '¡VICTORIA!',
-        html: `
+        // Comprobar fin de partida
+        if (_game.boardPlayer2.submarines.every((sub) => sub.isDestroyed)) {
+          _game.winner = 'player1';
+          _game.phase = 'END';
+          this.gameService.setGame(_game);
+          this.gameService.updateGame(_game);
+          let _perfil = this.perfil();
+          const rerward = _game.stage * 3500;
+          _game.stage++;
+          (_perfil.stats.coins as number) += rerward;
+          (_perfil.stats.wins as number) += 1;
+          this.perfilService.setPerfil(_perfil);
+          this.perfilService.updatePerfil(_perfil);
+          await sleep(1800);
+          this.audioService.stopAll();
+          this.audioService.play('win', '/audio/win.mp3');
+          this.audioService.play('coins', '/audio/coins.mp3');
+          this.specialService.counterBossSlot1.set(0);
+          this.specialService.readyBossSpecial1.set(false);
+          this.specialService.counterBossSlot2.set(0);
+          this.specialService.readyBossSpecial2.set(false);
+          // Mostrar banner o popup de victoria del jugador
+          await Swal.fire({
+            title: '¡VICTORIA!',
+            html: `
           <p class="text-lg text-[#39ff14]">
           <span class="text-fluor text-xl font-bold font-mono">${
             this.gameService.gameDTO()?.player1
           }</span> ganó a <span class="text-red-800 text-xl font-bold font-mono">${
-          this.gameService.gameDTO()?.player2
-        }</span>
+              this.gameService.gameDTO()?.player2
+            }</span>
           </p>
           <p class="text-yellow-400 font-bold mt-2">
           Has ganado <span class="text-xl">${rerward} 🪙</span>
           </p>
           `,
-        imageUrl: `${_game.avatarPlayer1}`,
-        imageWidth: 140,
-        imageHeight: 140,
-        imageAlt: 'Avatar ganador',
-        customClass: {
-          popup: 'bg-principal text-fluor rounded-2xl shadow-black shadow-lg',
-          image:
-            'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
-          confirmButton:
-            'bg-btn hover:bg-yellow-600 cursor-pointer text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
-          title: 'swal-title-green',
-        },
-        buttonsStyling: false,
-        confirmButtonText: 'Aceptar',
-      });
-      this.page.set('NEWGAME');
-
-      // se sale de playerFire
-    }
+            imageUrl: `${_game.avatarPlayer1}`,
+            imageWidth: 140,
+            imageHeight: 140,
+            imageAlt: 'Avatar ganador',
+            customClass: {
+              popup:
+                'bg-principal text-fluor rounded-2xl shadow-black shadow-lg',
+              image:
+                'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
+              confirmButton:
+                'bg-btn hover:bg-yellow-600 cursor-pointer text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
+              title: 'swal-title-green',
+            },
+            buttonsStyling: false,
+            confirmButtonText: 'Aceptar',
+          });
+          this.page.set('NEWGAME');
+        }
         break;
+
       case 'player2':
         if (board.submarines.every((sub) => sub.isDestroyed)) {
-      _game.winner = 'player2';
-      _game.phase = 'END';
-      this.gameService.setGame(_game);
-      this.gameService.updateGame(_game);
-      this.storage.remove('gameDTO');
-      await sleep(1800);
-      this.audioService.stopAll();
-      this.bossVoice(_game.stage);
-      this.audioService.play(
-        'loose',
-        `${this.baseUrl}/media/audio/loose.mp3?t=${Math.random()}`, //para evitar cache
-        true,
-        0.2
-      );
-      // Mostrar banner o popup de victoria de la IA
-      await Swal.fire({
-        title: 'DERROTA!!',
-        text: `${this.gameService.gameDTO()?.player2} ha ganado!`,
-        html: `
+          _game.winner = 'player2';
+          _game.phase = 'END';
+          this.gameService.setGame(_game);
+          this.gameService.updateGame(_game);
+          this.storage.remove('gameDTO');
+          await sleep(1800);
+          this.audioService.stopAll();
+          this.bossVoice(_game.stage);
+          this.audioService.play(
+            'loose',
+            `${this.baseUrl}/media/audio/loose.mp3?t=${Math.random()}`, //para evitar cache
+            true,
+            0.2
+          );
+          this.specialService.counterBossSlot1.set(0);
+          this.specialService.counterBossSlot2.set(0);
+          // Mostrar banner o popup de victoria de la IA
+          await Swal.fire({
+            title: 'DERROTA!!',
+            text: `${this.gameService.gameDTO()?.player2} ha ganado!`,
+            html: `
           <h2 class="text-xl font-mono text-acero mt-2 mb-4">${
             this.txtWinBoss[_game.stage - 1]
           }</h2>      
           `,
-        imageUrl: `${_game.avatarPlayer2}`,
-        imageWidth: 140,
-        imageHeight: 140,
-        imageAlt: 'Avatar ganador',
-        customClass: {
-          popup: 'bg-principal text-red-800 rounded-2xl shadow-black shadow-lg', // fondo del modal
-          image:
-            'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
-          confirmButton:
-            'bg-btn hover:bg-yellow-600 text-darkBlue cursor-pointer font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
-        },
-        buttonsStyling: false, // necesario para que respete tus clases en el botón
-        confirmButtonText: 'Aceptar',
-      });
-      this.audioService.pause('loose');
+            imageUrl: `${_game.avatarPlayer2}`,
+            imageWidth: 140,
+            imageHeight: 140,
+            imageAlt: 'Avatar ganador',
+            customClass: {
+              popup:
+                'bg-principal text-red-800 rounded-2xl shadow-black shadow-lg', // fondo del modal
+              image:
+                'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
+              confirmButton:
+                'bg-btn hover:bg-yellow-600 text-darkBlue cursor-pointer font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
+            },
+            buttonsStyling: false, // necesario para que respete tus clases en el botón
+            confirmButtonText: 'Aceptar',
+          });
+          this.audioService.pause('loose');
 
-      this.page.set('MENU');
-    }
+          this.page.set('MENU');
+        }
         break;
     }
-
-    
   }
-  async checkLastShot(_game: Game, board: Board, whoAsk: 'player1' | 'player2') {
+  async checkLastShot(
+    _game: Game,
+    board: Board,
+    whoAsk: 'player1' | 'player2'
+  ) {
     const lastShot = board.shots[board.shots.length - 1];
     if (lastShot.result === 'HIT') {
       this.audioService.play('hitSound', '/audio/hitSound.mp3');
@@ -804,7 +801,6 @@ export class MainGameComponent implements OnInit {
       ) !== -1
     ) {
       this.audioService.play('destroyedSound', '/audio/destroyedSound.mp3');
-      this.checkEndGame(_game, board, whoAsk);
       await sleep(900);
     }
   }
