@@ -29,6 +29,8 @@ export class SpecialService {
   readyPlayerRivalSpecial2 = signal(false);
   showSelector1 = signal(false);
   showSelector2 = signal(false);  
+  activateSpecialFlag = signal(false);
+
 
   asignSpecialBoss(stage: number) {
     let _special1: Special = {

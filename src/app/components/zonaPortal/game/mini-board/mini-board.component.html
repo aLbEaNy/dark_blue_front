@@ -23,7 +23,7 @@
         </div>
         <h2 class="self-center text-center text-fluor">ESPECIAL</h2>
         <div class="flex self-center gap-4">
-            <div id="special1" [ngClass]="readyPlayerSpecial1() ? 'border-green-600' : 'border-gray-500'"
+            <div id="special1" [ngClass]="activePlayerSpecial1() ? 'border-green-600' : 'border-gray-500'"
                 class="relative group w-10 h-10 border-2 rounded-md">
                 @if(playerSlot1().owner !==''){
                 <img [src]="playerSlot1().image">
@@ -34,7 +34,7 @@
                     {{ playerSlot1().description || 'La ranura está vacía' }}
                 </div>
             </div>
-            <div id="special2" [ngClass]="readyPlayerSpecial2() ? 'border-green-600' : 'border-gray-500'"
+            <div id="special2" [ngClass]="activePlayerSpecial2() ? 'border-green-600' : 'border-gray-500'"
                 class="relative group w-10 h-10 border-2 rounded-md">
                 @if(playerSlot2().owner !==''){
                 <img [src]="playerSlot2().image">
