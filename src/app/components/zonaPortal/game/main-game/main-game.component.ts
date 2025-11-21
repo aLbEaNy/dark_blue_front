@@ -95,6 +95,7 @@ export class MainGameComponent implements OnInit {
       this.specialService.counterPlayerSlot2()
     );
   });
+  disableFire = signal(false);
   //#endregion
 
   ngOnInit() {
@@ -224,7 +225,7 @@ export class MainGameComponent implements OnInit {
     _game.phase = 'BATTLE';
     await this.gameService.setGame(_game);
     this.page.set('BATTLE');
-
+    this.disableFire.set(false);
     //Restear contadores de MISS
     this.specialService.counterBossSlot1.set(0);
     this.specialService.counterBossSlot2.set(0);
@@ -489,6 +490,7 @@ export class MainGameComponent implements OnInit {
     }
   }
   async playerFire(pos: string) {
+    this.disableFire.set(true);
     if (this.gameService.gameDTO()?.phase !== 'BATTLE') return;
     const boardRival = this.gameService.getCurrentBoard()!;
     if (boardRival.submarines.every((sub) => sub.isDestroyed)) return;
@@ -501,6 +503,7 @@ export class MainGameComponent implements OnInit {
       const index = sub.positions.indexOf(pos);
       if (index !== -1) {
         result = 'HIT';
+        this.disableFire.set(false);
         sub.isTouched[index] = true;
         this.audioService.play('hitSound', '/audio/hitSound.mp3');
         if (sub.isTouched.every((t) => t)) {
@@ -536,6 +539,7 @@ export class MainGameComponent implements OnInit {
         this.specialService.activateSpecialFlag.set(true);
         this.specialService.counterPlayerSlot1.set(0);
         this.audioService.play('x2', '/audio/x2.mp3');
+        this.disableFire.set(false);
         return;
       }
       if (this.playerSlot1()?.name === 'multiShot') {
@@ -600,6 +604,7 @@ export class MainGameComponent implements OnInit {
         this.specialService.activateSpecialFlag.set(true);
         this.specialService.counterPlayerSlot2.set(0);
         this.audioService.play('x2', '/audio/x2.mp3');
+        this.disableFire.set(false);
         return;
       }
       if (this.playerSlot2()?.name === 'multiShot') {
@@ -665,9 +670,9 @@ export class MainGameComponent implements OnInit {
       this.gameService.setGame(_game);
       this.gameService.isMyTurn.set(false);
       this.gameService.getCurrentBoard.set(_game.boardPlayer1); // Llamar al loop de turnos
+      this.disableFire.set(false);
       this.nextTurn();
     }
-
     // Si fue HIT y hay submarinos todavía, el jugador sigue disparando; no se cambia turno
   }
   async checkEndGame(_game: Game, board: Board, whoAsk: 'player1' | 'player2') {
@@ -725,7 +730,10 @@ export class MainGameComponent implements OnInit {
             buttonsStyling: false,
             confirmButtonText: 'Aceptar',
           });
-          this.page.set('NEWGAME');
+          if(this.gameService.gameDTO()!.stage > 3)
+            this.page.set('MENU'); //Los 3 jefes derrotados
+          else
+            this.page.set('NEWGAME');
         }
         break;
 

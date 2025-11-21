@@ -13,7 +13,7 @@
       }
       @case ('BATTLE') {
         <app-mini-display-user (pageChange)="page.set($event)"></app-mini-display-user>
-        <app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
+        <app-board-atack (firePlayer)="playerFire($event)" [disableFire]="disableFire()"></app-board-atack>
         <app-mini-board></app-mini-board>
       }
      

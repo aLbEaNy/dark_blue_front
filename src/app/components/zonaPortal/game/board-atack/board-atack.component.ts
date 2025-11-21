@@ -1,13 +1,11 @@
 import {
   Component,
   computed,
-  effect,
   inject,
   output,
-  signal,
-  untracked,
   OnInit,
   OnDestroy,
+  input,
 } from '@angular/core';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
@@ -29,8 +27,7 @@ export class BoardAtackComponent implements OnInit, OnDestroy {
   perfilService = inject(PerfilService);
   specialService = inject(SpecialService);
   perfil = this.perfilService.perfil();
-  disableFire = signal(false);
-  activateSpecialFlag = this.specialService.activateSpecialFlag;
+  disableFire = input();
 
   //Referencia al tablero
   readonly BOARD_SIZE = 10;
@@ -71,35 +68,11 @@ export class BoardAtackComponent implements OnInit, OnDestroy {
     this.perfilService.updatePerfil(perfil);
   }
 
-  constructor() {
-  effect(() => {
-    const active = this.activateSpecialFlag();
-
-    // Si se activa el x2Shot → desbloquea disparo inmediatamente
-    if (active) {
-      this.disableFire.set(false);
-    }
-  });
-
-  effect(() => {
-    const _game = this.game();
-    if (!_game) return;
-    untracked(() => this.disableFire.set(false));
-  });
-}
-
-
   fire(cellIndex: number) {
-    this.activateSpecialFlag.set(false);
     if (this.disableFire()) return;
-    this.disableFire.set(true);
     const x = Math.floor(cellIndex / this.BOARD_SIZE);
     const y = cellIndex % this.BOARD_SIZE;
     const pos = formatPosition(x, y);
-    if(this.activateSpecialFlag())
-      this.disableFire.set(false);
-    else 
-      this.disableShot(pos);
     // Emitir coordenada al padre
     this.firePlayer.emit(pos);
   }
@@ -133,18 +106,5 @@ export class BoardAtackComponent implements OnInit, OnDestroy {
     }
     return map;
   });
-  disableShot(pos: string) {
-    //Evita disparos rápidos despues de MISS
-    if (
-      this.boardComputed()?.submarines.findIndex((sub) =>
-        sub.positions.some((p) => p === pos)
-      ) !== -1
-    ) {
-      this.disableFire.set(false);
-    } else if (this.activateSpecialFlag()){
-      this.disableFire.set(false);
-    } else {
-      this.disableFire.set(true);
-    }
-  }
+  
 }
