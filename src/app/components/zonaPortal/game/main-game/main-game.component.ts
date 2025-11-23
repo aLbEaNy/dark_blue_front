@@ -685,9 +685,9 @@ export class MainGameComponent implements OnInit {
           this.gameService.setGame(_game);
           this.gameService.updateGame(_game);
           let _perfil = this.perfil();
-          const rerward = _game.stage * 3500;
+          const reward = _game.stage * 3500;
           _game.stage++;
-          (_perfil.stats.coins as number) += rerward;
+          (_perfil.stats.coins as number) += reward;
           (_perfil.stats.wins as number) += 1;
           this.perfilService.setPerfil(_perfil);
           this.perfilService.updatePerfil(_perfil);
@@ -711,7 +711,7 @@ export class MainGameComponent implements OnInit {
             }</span>
           </p>
           <p class="text-yellow-400 font-bold mt-2">
-          Has ganado <span class="text-xl">${rerward} 🪙</span>
+          Has ganado <span class="text-xl">${reward} 🪙</span>
           </p>
           `,
             imageUrl: `${_game.avatarPlayer1}`,

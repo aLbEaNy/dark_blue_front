@@ -1,6 +1,6 @@
 @switch (page()) {
     @case ('PLACEMENT') {
-    <app-mini-display-user></app-mini-display-user>
+    <app-mini-display-user (exitGame)="exitGame.set($event)"></app-mini-display-user>
     <div class="relative">
         <app-board></app-board>
     </div>

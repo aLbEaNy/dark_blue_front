@@ -54,6 +54,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   pageChange = output<string>(); // hacia main
   page = signal('PLACEMENT'); // Para los hijos
   chatMessages = signal<GameMessage[]>([]);
+  exitGame = signal(false);
+  alonePlayer = false;
 
   lastShot: ShotResult = {
     hit: false,
@@ -66,7 +68,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.conectSocket();
   }
-
+   ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
   async conectSocket() {
     // Subcripción al socket para online
 
@@ -74,6 +78,14 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       .watchGameMessage(this.gameService.gameDTO()!.gameId)
       .subscribe((msg) => {
         if (!msg) return;
+
+        if(msg.type === 'EXIT'){
+          console.log('solo queda ',this.gameService.me(),' en el juego');
+          this.alonePlayer = true;
+          this.rivalOutside();
+          return; 
+        }
+
         // 🗨️ Detectamos si es mensaje de chat
         if (msg.type === 'CHAT') {
           console.log(`[CHAT] ${msg.sender}: ${msg.content}`);
@@ -84,7 +96,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
 
         // Si no es chat, es mensaje del juego
         console.log(
-          `>>>----> Mensaje del topic: con gameId ${
+          `>>>----> Mensaje del topic en online-game: con gameId ${
             this.gameService.gameDTO()!.gameId
           }`,
           msg
@@ -109,7 +121,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       //ONLINE webSocket
       const _msgSocket = this.msgSocket();
       if (!_msgSocket || !_msgSocket.game) return;
-      console.log('msgSocket vale: ', _msgSocket);
+      console.log('# # # - msgSocket vale: ', _msgSocket);
       if (_msgSocket.lastShot) {
         this.lastShot = _msgSocket.lastShot;
         console.log('>> >> >> shotResult actualizado:', this.lastShot);
@@ -247,6 +259,12 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         this.gameService.isMyTurn.set(_msgSocket.game!.turn === me);
       });
     });
+    effect(() => {
+      if (this.exitGame()) {
+        console.log('EXITING GAME ...............');
+         this.pageChange.emit('MENU');
+      }
+    });  
   }
 
   async playerFire(pos: string) {
@@ -289,7 +307,46 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-    this.sub?.unsubscribe();
-  }
+  async rivalOutside(){
+    console.log('En rivalOutside alonePlayer --> ', this.alonePlayer);
+    await sleep(1000);
+    if(this.alonePlayer){
+      
+      const _game = this.gameService.gameDTO()!;
+      const me = this.gameService.me(); //winner
+      const reward = '500';
+      await Swal.fire({
+                  title: '¡VICTORIA!',
+                  html: `
+                <p class="text-lg text-[#39ff14]">
+                <span class="text-fluor text-xl font-bold font-mono">
+                ${me === 'player1' ? _game.player1 : _game.player2}
+                </span> Ha ganado 
+                </p>
+                <p class="text-yellow-400 font-bold mt-2">
+                <span class="text-red-800 text-xl font-bold font-mono">
+                ${me === 'player1' ? _game.player2 : _game.player1}
+                </span> ha abandonado el juego...
+                Has ganado <span class="text-xl">${reward} 🪙</span>
+                </p>
+                `,
+                  imageUrl: `${me === 'player1' ? _game.avatarPlayer1: _game.avatarPlayer2}`,
+                  imageWidth: 140,
+                  imageHeight: 140,
+                  imageAlt: 'Avatar ganador',
+                  customClass: {
+                    popup:
+                      'bg-principal text-fluor rounded-2xl shadow-black shadow-lg',
+                    image:
+                      'rounded-full shadow-black shadow-lg border-4 border-yellow-500',
+                    confirmButton:
+                      'bg-btn hover:bg-yellow-600 cursor-pointer text-darkBlue font-bold px-6 py-2 rounded-lg shadow-black shadow-lg',
+                    title: 'swal-title-green',
+                  },
+                  buttonsStyling: false,
+                  confirmButtonText: 'Aceptar',
+                });
+      this.cancelar();
+    }     
+  } 
 }

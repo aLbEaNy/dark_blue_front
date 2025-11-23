@@ -1,5 +1,5 @@
 <div class="bg-[url('/images/menu.png')] bg-cover bg-center min-h-screen overflow-y-auto flex flex-col">
-  <app-header></app-header>
+  <app-header [page]="page()"></app-header>
     @switch (page()) {
       @case ('NEWGAME') {
         <app-mini-display-user (pageChange)="page.set($event)"></app-mini-display-user>

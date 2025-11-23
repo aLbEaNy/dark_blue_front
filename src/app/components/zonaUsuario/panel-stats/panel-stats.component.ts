@@ -1,7 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { PerfilService } from '../../../services/game/perfil.service';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
 import { PagesService } from '../../../services/pages/pages.service';
 
 @Component({
