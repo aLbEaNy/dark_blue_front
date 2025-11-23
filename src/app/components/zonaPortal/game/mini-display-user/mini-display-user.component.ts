@@ -1,3 +1,4 @@
+import { WebSocketService } from './../../../../services/webSocket/webSocket.service';
 import { GameService } from './../../../../services/game/game.service';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { Component, computed, inject, output } from '@angular/core';
@@ -16,6 +17,7 @@ export class MiniDisplayUserComponent {
   gameService = inject(GameService);
   storageService = inject(StorageService);
   audioService = inject(AudioService);
+  webSocketService = inject(WebSocketService);
   router = inject(Router);
   exitGame = output<boolean>();
 
@@ -113,6 +115,8 @@ export class MiniDisplayUserComponent {
     if (!this.gameService.gameDTO()?.online) {
       this.pageChange.emit('MENU');
     } else {
+      //TODO exit
+      this.webSocketService.sendGameMessage(this.gameService.gameDTO()?.gameId!, {phase: 'EXIT'});
       this.exitGame.emit(true);
       await sleep(1000);//Pausa para evitar que socket adelante a emit
       const _resp = await this.gameService.exitGame(this.gameService.gameDTO()?.gameId!);

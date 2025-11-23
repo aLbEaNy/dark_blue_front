@@ -32,6 +32,9 @@ export class WebSocketService {
   sendChat(gameId: string, msg: GameMessage) {
     this.rxStomp.publish({ destination: `/app/chat/${gameId}`, body: JSON.stringify(msg) });
   }
+  sendGameMessage(gameId: string, msg: GameMessage) {
+    this.rxStomp.publish({ destination: `/app/game/${gameId}`, body: JSON.stringify(msg) });
+  }
   
   disconnect() {
     this.rxStomp.deactivate();

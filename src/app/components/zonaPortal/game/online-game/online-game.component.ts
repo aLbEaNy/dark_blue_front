@@ -288,25 +288,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  async cancelar() {
-    try {
-      this.webSocketService.disconnect(); // cerrar conexión WS
-
-      const resp = await this.gameService.cancelGame(
-        this.gameService.gameDTO()!.gameId
-      );
-
-      if (resp.codigo !== 0) {
-        console.warn('No se pudo cancelar la partida:', resp.mensaje);
-        return;
-      }
-    } catch (err) {
-      console.error('Error al cancelar la partida', err);
-    } finally {
-      this.pageChange.emit('MENU');
-    }
-  }
-
   async rivalOutside(){
     console.log('En rivalOutside alonePlayer --> ', this.alonePlayer);
     await sleep(1000);
@@ -346,7 +327,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
                   buttonsStyling: false,
                   confirmButtonText: 'Aceptar',
                 });
-      this.cancelar();
+      this.pageChange.emit('MENU');
     }     
   } 
 }
