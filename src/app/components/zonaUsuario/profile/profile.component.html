@@ -1,4 +1,10 @@
 <div class="w-[65vw] rounded-2xl bg-principal opacity-90 shadow-black shadow-xl  border border-gray-800 p-6">
+  <div class="flex justify-end mb-2">
+        <button (click)="pagesService.pages.set('OPTIONS')" class="px-4 py-1 text-xs font-mono rounded-lg border border-[#00ffc8] text-[#00ffc8] bg-[#00ffc8]/10 
+               hover:bg-[#00ffc8]/20 transition shadow-black shadow-sm cursor-pointer">
+            ⬅ VOLVER
+        </button>
+    </div>
   <!-- Título -->
   <h1 class="text-center text-xl font-extrabold font-mono text-fluor tracking-widest mb-8 mt-3">
     GESTIÓN DE USUARIO
@@ -125,11 +131,11 @@
     <!-- Botones de acción -->
     <div class="flex justify-center gap-4 mt-8">
       <button (click)="saveChanges()"
-        class="w-36 py-2 rounded-lg bg-[#00ffc8]/10 text-[#00ffc8] border border-[#00ffc8] font-mono text-sm hover:bg-[#00ffc8]/20 transition">
+        class="w-36 py-2 rounded-lg cursor-pointer bg-[#00ffc8]/10 text-[#00ffc8] border border-[#00ffc8] font-mono text-sm hover:bg-[#00ffc8]/20 transition">
         GUARDAR CAMBIOS
       </button>
       <button
-        class="w-36 py-2 rounded-lg bg-red-600/20 text-red-400 border border-red-600 font-mono text-sm hover:bg-red-600/30 transition"
+        class="w-36 py-2 rounded-lg cursor-pointer bg-red-600/20 text-red-400 border border-red-600 font-mono text-sm hover:bg-red-600/30 transition"
         (click)="pagesService.pages.set('OPTIONS')">
         CANCELAR
       </button>

@@ -1,4 +1,4 @@
-import { Component, inject, computed, output } from '@angular/core';
+import { Component, inject, computed, output, input } from '@angular/core';
 import { PerfilService } from '../../../services/game/perfil.service';
 import { Router } from '@angular/router';
 import { PagesService } from '../../../services/pages/pages.service';
@@ -16,6 +16,8 @@ export class HeaderComponent{
   perfil = computed (() => this.perfilService.perfil());
 
   pages = this.pageService.pages
+
+  page = input()
   
 
 }

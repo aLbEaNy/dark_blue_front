@@ -1,52 +1,56 @@
-<div class="w-[95vw] mt-4 mb-4 rounded-2xl bg-principal/95 shadow-2xl shadow-black border border-gray-500 p-8 backdrop-blur-sm">
+<div
+    class="w-[95vw] mt-4 mb-4 rounded-2xl bg-principal/95 shadow-2xl shadow-black border border-gray-500 p-8 backdrop-blur-sm">
 
+    <div class="flex justify-end mb-2">
+        <button (click)="pagesService.pages.set('OPTIONS')" class="px-4 py-1 text-xs font-mono rounded-lg border border-[#00ffc8] text-[#00ffc8] bg-[#00ffc8]/10 
+               hover:bg-[#00ffc8]/20 transition shadow-black shadow-sm cursor-pointer">
+            ⬅ VOLVER
+        </button>
+    </div>
     <!-- Título -->
-    <h1 class="text-center text-3xl font-extrabold bg-principal font-mono py-4 text-[#00ffc8] tracking-[0.2em] mb-10 mt-3 shadow-black shadow-md border-2 border-gray-500 rounded-xl drop-shadow-lg">
+    <h1
+        class="text-center text-3xl font-extrabold bg-principal font-mono py-4 text-[#00ffc8] tracking-[0.2em] mb-10 mt-3 shadow-black shadow-md border-2 border-gray-500 rounded-xl drop-shadow-lg">
         LA TIENDA DE DARK BLUE
     </h1>
-
     <!-- Grid de productos -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-[0.8rem]">
-        
-        @for (item of items() ; track item.id) { 
-            <div
-                class="group relative bg-[#0c0f12]/80 border border-gray-800 rounded-xl p-4 shadow-lg shadow-black transition-all duration-300 hover:shadow-[0_0_15px_#00ffc850]">
-                
-                <!-- Imagen -->
-                <div class="w-full h-24 rounded-md bg-black/30 border border-gray-700 flex items-center justify-center">
-                    <img [src]="item.image" class="max-h-16 opacity-80 group-hover:opacity-100 transition" />
-                </div>
-    
-                <!-- Título del ítem -->
-                <p class="mt-3 text-fluor font-mono text-lg font-bold tracking-widest">
-                    {{item.name}}
-                </p>
-    
-                <!-- Descripción -->
-                <p class="text-white font-mono text-[0.7rem] leading-relaxed mt-1">
-                    {{item.description}}
-                </p>
-    
-                <!-- Precio -->
-                <p class="mt-3 text-[#00ffc8] font-bold font-mono text-sm">
-                    {{item.price === 0 ? '??' : item.price}} {{item.typeCoin === 'euro'?  '€' : '🪙'}}
-                </p>
-    
-                <!-- Botón comprar -->
-                <button
-                    [disabled]="isBought(item ) && item.typeCoin !== 'euro'"
-                    (click)="buy(item)"
-                    [ngClass]="isBought(item) && item.typeCoin !== 'euro' ? 'opacity-30' : 'opacity-100'"
-                    class="cursor-pointer mt-3 w-full py-1.5 rounded-lg bg-[#00ffc8]/10 text-[#00ffc8] border border-[#00ffc8] font-mono text-xs 
-                           hover:bg-[#00ffc8]/20 hover:shadow-[0_0_10px_#00ffc8aa] transition">
-                    @if(isBought(item)){
-                        Ya lo has comprado
-                    }@else{
-                        COMPRAR
-                    }
-                </button>
+
+        @for (item of items() ; track item.id) {
+        <div
+            class="group relative bg-[#0c0f12]/80 border border-gray-800 rounded-xl p-4 shadow-lg shadow-black transition-all duration-300 hover:shadow-[0_0_15px_#00ffc850]">
+
+            <!-- Imagen -->
+            <div class="w-full h-24 rounded-md bg-black/30 border border-gray-700 flex items-center justify-center">
+                <img [src]="item.image" class="max-h-16 opacity-80 group-hover:opacity-100 transition" />
             </div>
-         
+
+            <!-- Título del ítem -->
+            <p class="mt-3 text-fluor font-mono text-lg font-bold tracking-widest">
+                {{item.name}}
+            </p>
+
+            <!-- Descripción -->
+            <p class="text-white font-mono text-[0.7rem] leading-relaxed mt-1">
+                {{item.description}}
+            </p>
+
+            <!-- Precio -->
+            <p class="mt-3 text-[#00ffc8] font-bold font-mono text-sm">
+                {{item.price === 0 ? '??' : item.price}} {{item.typeCoin === 'euro'? '€' : '🪙'}}
+            </p>
+
+            <!-- Botón comprar -->
+            <button [disabled]="isBought(item ) && item.typeCoin !== 'euro'" (click)="buy(item)"
+                [ngClass]="isBought(item) && item.typeCoin !== 'euro' ? 'opacity-30' : 'opacity-100'" class="cursor-pointer mt-3 w-full py-1.5 rounded-lg bg-[#00ffc8]/10 text-[#00ffc8] border border-[#00ffc8] font-mono text-xs 
+                           hover:bg-[#00ffc8]/20 hover:shadow-[0_0_10px_#00ffc8aa] transition">
+                @if(isBought(item)){
+                Ya lo has comprado
+                }@else{
+                COMPRAR
+                }
+            </button>
+        </div>
+
         }
     </div>
     <!-- Créditos -->
@@ -55,4 +59,3 @@
         <p class="text-[#00ffc8] text-xl font-mono font-extrabold">{{ perfil().stats.coins }} 🪙</p>
     </div>
 </div>
-

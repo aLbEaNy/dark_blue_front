@@ -84,4 +84,9 @@ export class GameService {
       `${this.baseUrl}/game/${gameId}`
     ));
   }
+  exitGame(gameId: string) {
+    return firstValueFrom(this.http.get<boolean>(
+      `${this.baseUrl}/game/exit/${gameId}`
+    ));
+  }
 }

@@ -4,6 +4,7 @@ import { ShopService } from '../../../services/shop/shop.service';
 import Item from '../../../models/Item';
 import Swal from 'sweetalert2';
 import { NgClass } from '@angular/common';
+import { PagesService } from '../../../services/pages/pages.service';
 
 
 @Component({
@@ -14,6 +15,7 @@ import { NgClass } from '@angular/common';
 })
 export class ShopComponent implements OnInit {
   perfilService = inject(PerfilService);
+  pagesService = inject(PagesService);
   shopService = inject(ShopService);
   perfil = this.perfilService.perfil;
   items = signal<Item[]>([]);

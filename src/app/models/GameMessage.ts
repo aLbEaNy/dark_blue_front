@@ -8,11 +8,11 @@ type ShotResult = {
 
 export default interface GameMessage {
   
-  phase?: 'JOINED' | 'WAITING' | 'PLACEMENT' | 'BATTLE' | 'END';
+  phase?: 'EXIT' | 'JOINED' | 'WAITING' | 'PLACEMENT' | 'BATTLE' | 'END';
   game?: Game;
   lastShot?: ShotResult;
 
-  type?: 'GAME' | 'CHAT';
+  type?: 'GAME' | 'CHAT' | 'EXIT';
   sender?: string;
   content?: string;
   timestamp?: string;
