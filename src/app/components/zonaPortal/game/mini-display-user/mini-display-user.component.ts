@@ -115,10 +115,7 @@ export class MiniDisplayUserComponent {
     if (!this.gameService.gameDTO()?.online) {
       this.pageChange.emit('MENU');
     } else {
-      //TODO exit
-      this.webSocketService.sendGameMessage(this.gameService.gameDTO()?.gameId!, {phase: 'EXIT'});
       this.exitGame.emit(true);
-      await sleep(1000);//Pausa para evitar que socket adelante a emit
       const _resp = await this.gameService.exitGame(this.gameService.gameDTO()?.gameId!);
       if(_resp)
         console.log('Se envió señal al socket de EXIT')

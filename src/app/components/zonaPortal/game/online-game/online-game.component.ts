@@ -288,6 +288,25 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     }
   }
 
+  async cancelar() {
+    this.exitGame.set(true);
+    const _resp = await this.gameService.exitGame(
+      this.gameService.gameDTO()?.gameId!
+    );
+    if (_resp) console.log('Se envió señal al socket de EXIT');
+
+    this.audioService.stopAll();
+    this.audioService.play(
+      'menu2',
+      `${this.baseUrl}/media/audio/menu2.mp3`,
+      true,
+      0.2
+    );
+    const _game = this.gameService.gameDTO();
+    _game?.gameId === null;
+    this.gameService.setGame(_game!);
+  }
+
   async rivalOutside(){
     console.log('En rivalOutside alonePlayer --> ', this.alonePlayer);
     await sleep(1000);

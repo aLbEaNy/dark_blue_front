@@ -59,12 +59,9 @@ export class WaitingOnlineComponent {
 
   async cancelar() {
     try {
-      this.webSocketService.disconnect(); // cerrar conexión WS
-
       const resp = await this.gameService.cancelGame(
         this.onlineResp().datos.gameId
       );
-
       if (resp.codigo !== 0) {
         console.warn('No se pudo cancelar la partida:', resp.mensaje);
         return;

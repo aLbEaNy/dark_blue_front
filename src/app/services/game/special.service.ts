@@ -90,12 +90,12 @@ export class SpecialService {
         }
         break;
       case 'multiShot':
-        if (counter === 1) {//4
+        if (counter === 4) {//4
           return true;
         }
         break;
       case 'laserShot':
-        if (counter === 1) {//6
+        if (counter === 6) {//6
           return true;
         }
         break;
