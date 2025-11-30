@@ -14,15 +14,16 @@
             Esperando a que tu oponente tenga su flota lista......
         </p>
         <!-- Botón cancelar -->
-        <button (click)="cancelar()"
-            class="mt-8 px-6 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition font-medium shadow-lg">
+        <button 
+            (click)="cancelar()"
+            class="mt-8 px-6 py-2 rounded-xl bg-red-600 cursor-pointer hover:bg-red-700 transition font-medium shadow-lg">
             Cancelar
         </button>
     </div>
     
     }
     @case ('BATTLE') {
-    <app-mini-display-user></app-mini-display-user>
+    <app-mini-display-user (exitGame)="exitGame.set($event)"></app-mini-display-user>
     <app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
     <app-mini-board></app-mini-board>
     }

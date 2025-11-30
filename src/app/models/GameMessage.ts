@@ -12,7 +12,7 @@ export default interface GameMessage {
   game?: Game;
   lastShot?: ShotResult;
 
-  type?: 'GAME' | 'CHAT' | 'EXIT';
+  type?: 'GAME' | 'CHAT' | 'EXIT' | 'SPECIAL';
   sender?: string;
   content?: string;
   timestamp?: string;

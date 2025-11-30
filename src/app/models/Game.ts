@@ -1,5 +1,12 @@
 import Board from './Board';
 
+type SpecialOnline = {
+  special1: string,
+  special2: string
+  activeSpecial1: boolean,
+  activeSpecial2: boolean
+}
+
 export default interface Game {
   gameId: string;
   online: boolean;
@@ -16,4 +23,6 @@ export default interface Game {
   readyPlayer1: boolean;
   readyPlayer2: boolean;
   winner: string | null;
+  specialPlayer1: SpecialOnline | null;
+  specialPlayer2: SpecialOnline | null;
 }

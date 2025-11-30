@@ -17,6 +17,15 @@ import { SpecialService } from '../../../../services/game/special.service';
 export class MiniBoardComponent implements OnInit{
   ngOnInit(): void {
     this.specialService.asignSpecialBoss(this.game()?.stage || 1);
+    const _nicknameRival = this.gameService.me() === 'player1' ? this.game()?.player2 : this.game()?.player1;
+    const playerRival = this.gameService.me() === 'player1' ? 'player2' : 'player1';
+    if(playerRival === 'player2'){
+      this.playerRivalSlot1.set(this.specialService.getSpecial(this.game()?.specialPlayer2?.special1 || '', _nicknameRival!));  
+      this.playerRivalSlot2.set(this.specialService.getSpecial(this.game()?.specialPlayer2?.special2 || '', _nicknameRival!));
+    } else{
+      this.playerRivalSlot1.set(this.specialService.getSpecial(this.game()?.specialPlayer1?.special1 || '', _nicknameRival!));  
+      this.playerRivalSlot2.set(this.specialService.getSpecial(this.game()?.specialPlayer1?.special2 || '', _nicknameRival!));
+    }
   }
 
   gameService = inject(GameService);

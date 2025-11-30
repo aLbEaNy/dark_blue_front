@@ -30,12 +30,23 @@ export class MiniPlacementComponent {
     if(!this.gameService.gameDTO()?.online){
       this.pageChange.emit(page); //START
       return;
-
     }
-
     //ONLINE
     let _game = this.gameService.gameDTO()!;
 
+    this.gameService.me() === 'player1' 
+    ? _game.specialPlayer1 = {
+      special1: this.computedSlot1().name!,
+      special2: this.computedSlot2().name!,
+      activeSpecial1: false,
+      activeSpecial2: false
+    }
+    : _game.specialPlayer2 = {
+      special1: this.computedSlot1().name!,
+      special2: this.computedSlot2().name!,
+      activeSpecial1: false,
+      activeSpecial2: false
+    }
     // Atualizo con update para obtener respuesta del webSocket
 
     if (this.gameService.me() === 'player1'){
@@ -58,15 +69,5 @@ export class MiniPlacementComponent {
     }
     this.pageChangeOnline.emit('WAITING'); 
   }
-
-  // async changeSlot(slot: 1 | 2){
-  //   if(slot === 1){
-  //     this.showSelelectSlot1.set(!this.showSelelectSlot1());
-  //   }
-  //   else{
-  //     this.showSelelectSlot2.set(!this.showSelelectSlot2());
-  //   }
-
-  // }
 
 }
