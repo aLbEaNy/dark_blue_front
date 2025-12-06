@@ -41,7 +41,7 @@ export class MenuComponent {
 
     // Cambiar de vista después de 1.2s
       setTimeout(() => {
-        if(page === 'NEWGAME' && this.gameService.gameDTO()?.gameId){
+        if(page === 'NEWGAME'){
           let _game = this.gameService.gameDTO()!;
           _game.gameId ='';
           _game.online = false;

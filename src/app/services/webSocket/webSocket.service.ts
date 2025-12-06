@@ -35,7 +35,15 @@ export class WebSocketService {
   sendGameMessage(gameId: string, msg: GameMessage) {
     this.rxStomp.publish({ destination: `/app/game/${gameId}`, body: JSON.stringify(msg) });
   }
+
+  async firePosition(pos: string) {
+    this.rxStomp.publish({ destination: '/app/fire', body: pos });
+  }
   
+  async sendMultishot() {
+    this.rxStomp.publish({ destination: '/app/multishot', body: '' });
+  }
+
   disconnect() {
     this.rxStomp.deactivate();
   }

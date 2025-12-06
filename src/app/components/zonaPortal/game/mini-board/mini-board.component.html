@@ -23,7 +23,7 @@
         </div>
         <h2 class="self-center text-center text-fluor">ESPECIAL</h2>
         <div class="flex self-center gap-4">
-            <div id="special1" [ngClass]="activePlayerSpecial1() ? 'border-green-600' : 'border-gray-500'"
+            <div id="special1" [ngClass]="activePlayerSpecial1() || meActiveSlot1Comp() ? 'border-green-600' : 'border-gray-500'"
                 class="relative group w-10 h-10 border-2 rounded-md">
                 @if(playerSlot1().owner !==''){
                 <img [src]="playerSlot1().image">
@@ -34,7 +34,7 @@
                     {{ playerSlot1().description || 'La ranura está vacía' }}
                 </div>
             </div>
-            <div id="special2" [ngClass]="activePlayerSpecial2() ? 'border-green-600' : 'border-gray-500'"
+            <div id="special2" [ngClass]="activePlayerSpecial2() || meActiveSlot2Comp() ? 'border-green-600' : 'border-gray-500'"
                 class="relative group w-10 h-10 border-2 rounded-md">
                 @if(playerSlot2().owner !==''){
                 <img [src]="playerSlot2().image">
@@ -74,13 +74,13 @@
         <h2 class="self-center text-center text-fluor">ESPECIAL</h2>
         <div class="flex self-center gap-4">
             <div id="specialR1"
-                [ngClass]="readyBossSpecial1() || readyPlayerRivalSpecial1() ? 'border-green-600' : 'border-gray-500'"
+                [ngClass]="readyBossSpecial1() || rivalActiveSlot1Comp() ? 'border-green-600' : 'border-gray-500'"
                 class="relative group w-10 h-10 border-2 rounded-md">
                 @if(!gameService.gameDTO()?.online && bossSlot1()?.owner !==''){
                 <img [src]="bossSlot1()?.image">
                 }
-                @if(gameService.gameDTO()?.online && playerRivalSlot1()?.owner !==''){
-                <img [src]="playerRivalSlot1()?.image">
+                @if(gameService.gameDTO()?.online && playerRivalSlot1!.owner !==''){
+                <img [src]="playerRivalSlot1!.image">
                 }
                 <!-- Tooltip -->
                 <div class="opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block
@@ -89,18 +89,18 @@
                     {{ bossSlot1()?.description || 'La ranura está vacía' }}
                     }
                     @else{
-                    {{ playerRivalSlot1()?.description || 'La ranura está vacía' }}
+                    {{ playerRivalSlot1!.description || 'La ranura está vacía' }}
                     }
                 </div>
             </div>
             <div id="specialR2"
-                [ngClass]="readyBossSpecial2() || readyPlayerRivalSpecial2() ? 'border-green-600' : 'border-gray-500'"
+                [ngClass]="readyBossSpecial2() || rivalActiveSlot2Comp() ? 'border-green-600' : 'border-gray-500'"
                 class="relative group w-10 h-10 border-2 rounded-md">
                 @if(!gameService.gameDTO()?.online && gameService.gameDTO()?.stage !==1){
                 <img [src]="bossSlot2()?.name ? bossSlot2()?.image: bossSlot2()?.image">
                 }
-                @if(gameService.gameDTO()?.online && playerRivalSlot2()?.owner !==''){
-                <img [src]="playerRivalSlot2()?.image">
+                @if(gameService.gameDTO()?.online && playerRivalSlot2!.owner !==''){
+                <img [src]="playerRivalSlot2!.image">
                 }
                 <!-- Tooltip -->
                 <div class="opacity-100 absolute bottom-full left-1/2 -translate-x-3/4 mb-2 hidden group-hover:block
@@ -109,16 +109,13 @@
                     {{ bossSlot2()?.description || 'La ranura está vacía' }}
                     }
                     @else{
-                    {{ playerRivalSlot2()?.description || 'La ranura está vacía' }}
+                    {{ playerRivalSlot2!.description || 'La ranura está vacía' }}
                     }
                 </div>
             </div>
         </div>
     </div>
-
-
     @if(gameService.gameDTO()?.online && !showChatbox()){
     <app-chat></app-chat>
     }
-
 </div>

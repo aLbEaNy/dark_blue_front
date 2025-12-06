@@ -17,7 +17,6 @@ export class MiniDisplayUserComponent {
   gameService = inject(GameService);
   storageService = inject(StorageService);
   audioService = inject(AudioService);
-  webSocketService = inject(WebSocketService);
   router = inject(Router);
   exitGame = output<boolean>();
 

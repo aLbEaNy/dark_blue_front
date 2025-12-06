@@ -2,7 +2,9 @@ import Board from './Board';
 
 type SpecialOnline = {
   special1: string,
-  special2: string
+  special2: string,
+  counter1: number,
+  counter2: number,
   activeSpecial1: boolean,
   activeSpecial2: boolean
 }

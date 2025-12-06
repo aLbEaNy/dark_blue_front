@@ -24,8 +24,8 @@
     }
     @case ('BATTLE') {
     <app-mini-display-user (exitGame)="exitGame.set($event)"></app-mini-display-user>
-    <app-board-atack (firePlayer)="playerFire($event)"></app-board-atack>
-    <app-mini-board></app-mini-board>
+    <app-online-board-atack (firePlayer)="playerFire($event)" [disableFire]="disableFire()" [updateBoard]="updateBoard()"></app-online-board-atack>
+    <app-mini-board [msgSocket]="msgSocket()"></app-mini-board>
     }
     
     @default {
