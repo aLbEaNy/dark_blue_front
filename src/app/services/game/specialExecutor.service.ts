@@ -17,48 +17,25 @@ export class SpecialExecutorService {
   webSocketService = inject(WebSocketService);
 
 
-  async executeX2Shot(player: 'player1' | 'player2') {
-    this.audioService.play('x2', '/audio/x2.mp3');
-    // Habilitas otro disparo
-  }
-
-
-  async executeMultiShot(game: Game, count: number, isOnline: boolean) {
-    let board = game.boardPlayer2;
-    let hit = false;
-    let miss = false;
-    let destroyed = false;
-
-    for (let i = 0; i < count; i++) {
-
+  async executeMultiShot(game: Game, isOnline: boolean) {
+    let board = this.gameService.me() === 'player1' ? game.boardPlayer2 : game.boardPlayer1;
+    for (let i = 0; i < 5; i++) {
       if (isOnline) {
-        // pedir disparo al backend
-        //board = await this.webSocketService.sendMultishot();
+        this.aiService.fire(board);
       } else {
-        // disparo local offline
-        board = this.aiService.fire(board);
+        // disparo local offline      
       }
 
-      game = { ...game, boardPlayer2: board };
-      this.gameService.setGame(game);
-      this.gameService.shotsInBoard2.set([...board.shots]);
 
-      const last = board.shots.at(-1)!;
 
-      if (last.result === 'HIT') hit = true;
-      if (last.result === 'MISS') miss = true;
-
-      if (board.submarines.some(s => s.positions.includes(last.position) && s.isDestroyed))
-        destroyed = true;
     }
 
-    if (hit) this.audioService.play('hitSound', '/audio/hitSound.mp3');
-    if (miss) this.audioService.play('missSound', '/audio/missSound.mp3');
-    if (destroyed) this.audioService.play('destroyedSound', '/audio/destroyedSound.mp3');
+      
+
+  
   }
 
-  async executeLaser(game: Game, isOnline: boolean) {
-    this.audioService.play('laserShot', '/audio/laserShot.mp3');
+  async executeLaserShot(game: Game, isOnline: boolean) {
 
     let board = game.boardPlayer2;
     const positions = this.aiService.getLaserPositions(board);

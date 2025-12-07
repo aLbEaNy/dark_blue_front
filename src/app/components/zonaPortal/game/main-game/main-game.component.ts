@@ -324,7 +324,7 @@ export class MainGameComponent implements OnInit {
           this.gameService.setGame(_game);
           this.specialService.counterBossSlot1.set(0);
           this.specialService.readyBossSpecial1.set(false);
-          this.audioService.play('x2', '/audio/x2.mp3');
+          this.audioService.play('x2Shot', '/audio/x2Shot.mp3');
           return; // Con esto vuelve a disparar sin cambio de turno
         }
         if (this.specialService.specialBossSlot1()?.name === 'multiShot') {
@@ -399,7 +399,7 @@ export class MainGameComponent implements OnInit {
           this.gameService.setGame(_game);
           this.specialService.counterBossSlot2.set(0);
           this.specialService.readyBossSpecial2.set(false);
-          this.audioService.play('x2', '/audio/x2.mp3');
+          this.audioService.play('x2Shot', '/audio/x2Shot.mp3');
           return; // Con esto vuelve a disparar sin cambio de turno
         }
         if (this.specialService.specialBossSlot2()?.name === 'multiShot') {
@@ -538,7 +538,7 @@ export class MainGameComponent implements OnInit {
       if (this.playerSlot1()?.name === 'x2Shot') {
         this.specialService.activateSpecialFlag.set(true);
         this.specialService.counterPlayerSlot1.set(0);
-        this.audioService.play('x2', '/audio/x2.mp3');
+        this.audioService.play('x2Shot', '/audio/x2Shot.mp3');
         this.disableFire.set(false);
         return;
       }
@@ -603,7 +603,7 @@ export class MainGameComponent implements OnInit {
       if (this.playerSlot2()?.name === 'x2Shot') {
         this.specialService.activateSpecialFlag.set(true);
         this.specialService.counterPlayerSlot2.set(0);
-        this.audioService.play('x2', '/audio/x2.mp3');
+        this.audioService.play('x2Shot', '/audio/x2Shot.mp3');
         this.disableFire.set(false);
         return;
       }

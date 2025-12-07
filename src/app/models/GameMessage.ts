@@ -12,6 +12,9 @@ export default interface GameMessage {
   game?: Game;
   lastShot?: ShotResult;
   multiShotResults?: ShotResult[];
+  player?: string;
+  slot?: number;
+  special?: string;
 
   type?: 'GAME' | 'CHAT' | 'EXIT' | 'SPECIAL';
   sender?: string;

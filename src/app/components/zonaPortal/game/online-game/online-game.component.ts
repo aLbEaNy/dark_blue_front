@@ -1,3 +1,4 @@
+import { SpecialExecutorService } from './../../../../services/game/specialExecutor.service';
 import { PerfilService } from './../../../../services/game/perfil.service';
 import {
   Component,
@@ -51,6 +52,7 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
   gameService = inject(GameService);
   aIService = inject(AIService);
   specialService = inject(SpecialService);
+  specialExecutorService = inject(SpecialExecutorService);
   webSocketService = inject(WebSocketService);
   private sub?: Subscription;
   private baseUrl = window.__env.backendUrl;
@@ -69,6 +71,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     miss: false,
     destroyed: false,
   };
+  x2 = false;
+  multiShot = false;
+  laserShot = false;
 
   turnBack: string = '';
   gameTurnBack = this.gameService.gameDTO()!;
@@ -115,82 +120,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       const _msgSocket = this.msgSocket();
       if (!_msgSocket || !_msgSocket.game) return;
       console.log('MSG SOCKET: ', _msgSocket);
-
-      // // 💥 --- LÓGICA PARA ESPECIALES ONLINE --- 💥
-
-      // // 1. Si el backend devuelve multiShotResults → aplicar cada disparo
-      // if (_msgSocket.type === 'SPECIAL' && _msgSocket.multiShotResults) {
-      //   console.log(
-      //     '>>> Recibido SPECIAL con multiShotResults:',
-      //     _msgSocket.multiShotResults
-      //   );
-
-      //   for (const shot of _msgSocket.multiShotResults) {
-      //     this.lastShot = shot; // reutilizo tu sistema
-      //     if (shot.hit) {
-      //       this.audioService.play('hitSound', '/audio/hitSound.mp3');
-      //       if (shot.destroyed) {
-      //         this.audioService.play(
-      //           'destroyedSound',
-      //           '/audio/destroyedSound.mp3'
-      //         );
-      //       }
-      //     }
-      //     if (shot.miss) {
-      //       this.audioService.play('missSound', '/audio/missSound.mp3');
-      //     }
-      //   }
-
-      //   // Actualizamos game completo del backend
-      //   this.gameService.setGame(_msgSocket.game);
-
-      //   // Actualizar turno
-      //   const me = this.gameService.me();
-      //   this.gameService.isMyTurn.set(_msgSocket.game.turn === me);
-
-      //   return; // 🔥 IMPORTANTE: no continuar con la lógica normal
-      // }
-
-      // // 2. Activación del especial (no lleva todavía multiShotResults)
-      // if (_msgSocket.type === 'SPECIAL' && !_msgSocket.multiShotResults) {
-      //   console.log('>>> SPECIAL recibido — activando especial');
-
-      //   const game = _msgSocket.game;
-      //   const me = this.gameService.me();
-      //   // Averiguar qué especial está activo ahora mismo
-      //   const specials =
-      //     me === 'player1' ? game.specialPlayer1 : game.specialPlayer2;
-
-      //   if (!specials?.activeSpecial1 && !specials?.activeSpecial2) return;
-      //   if (specials.activeSpecial1) {
-      //     this.getSpecialActive(specials.special1, 1);
-      //     me === 'player1'
-      //       ? this.specialService.readyPlayerSpecial1.set(true)
-      //       : this.specialService.readyPlayerRivalSpecial1.set(true);
-      //   } else if (specials.activeSpecial2) {
-      //     this.getSpecialActive(specials.special2, 2);
-      //   }
-
-      //   //   {
-      //   //   console.log('Activado multiShot → generando disparo automático');
-      //   //   this.procesarMultiShot(game);
-      //   //   return;
-      //   // }
-
-      //   // SPECIAL 3 (laserShot) → igual que multi pero vertical
-      //   // if (specials.activeSpecial3) {
-      //   //   console.log('Activado laserShot → disparo láser automático');
-      //   //   this.procesarLaser(game);
-      //   //   return;
-      //   // }
-
-      //   // SPECIAL 2 → doble disparo (x2Shot)
-      //   // if (specials.activeSpecial2) {
-      //   //   console.log('Activado x2Shot → permitir segundo disparo');
-      //   //   this.gameService.allowSecondShot.set(true);
-      //   //   return;
-      //   // }
-      // }
       untracked(async () => {
         if (_msgSocket.lastShot) this.lastShot = _msgSocket.lastShot;
         this.updateBoard.set(true);
@@ -217,8 +146,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
             this.gameService.setGame(this.gameTurnBack);
             await sleep(1800); // da tiempo a animacion
             this.gameService.setGame(_msgSocket.game!); //Se Actualiza para cambiar turno
-          } else {
-            this.audioService.play('missSound', '/audio/missSound.mp3');
           }
         }
         await sleep(300); // da tiempo a animacion
@@ -305,10 +232,38 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
           return;
         }
         if (_msgSocket.type === 'SPECIAL') {
-          this.getSpecialActive(_msgSocket.game!);
-          
+          const { player, slot, special } = _msgSocket;
 
-          return;
+          // actualizar slot
+          const slotKey = `activeSpecial${slot}` as
+            | 'activeSpecial1'
+            | 'activeSpecial2';
+          const target =
+            player === 'player1'
+              ? _msgSocket.game!.specialPlayer1
+              : _msgSocket.game!.specialPlayer2;
+          if (target) target[slotKey] = false;
+
+          // actualizar game local
+          this.gameService.setGame(_msgSocket.game!);
+          this.gameService.updateGame(_msgSocket.game!);
+          await sleep(1000);
+          this.audioService.play('special', `/audio/${special}.mp3`);
+
+          // SOLO el jugador que activó el SPECIAL ejecuta el efecto
+          if (player === this.gameService.me()) {
+            switch (special) {
+              case 'multiShot':
+                this.specialExecutorService.executeMultiShot(_msgSocket.game!, true);
+                break;
+              case 'laserShot':
+                this.specialExecutorService.executeLaserShot(_msgSocket.game!, true);
+                break;
+              // otros especiales...
+            }
+          }
+
+          await sleep(700);
         }
 
         if (
@@ -334,9 +289,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         }
 
         //Cambio el turno
-
-        const me = this.gameService.me();
-        this.gameService.isMyTurn.set(_msgSocket.game!.turn === me);
       });
     });
 
@@ -347,32 +299,6 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  getSpecialActive(game: Game) {
-    const me = this.gameService.me();
-    if (me === 'player1') {
-      this.slot1Player1Ready.set(game.specialPlayer1?.activeSpecial1!);
-      this.slot2Player1Ready.set(game.specialPlayer1?.activeSpecial2!);
-    } else {
-      this.slot1Player2Ready.set(game.specialPlayer2?.activeSpecial1!);
-      this.slot2Player2Ready.set(game.specialPlayer2?.activeSpecial2!);
-    }
-   
-  }
-  //   const me = this.gameService.me();
-
-  //   }
-
-  //   switch (nameSpecial) {
-  //     case 'x2Shot':
-  //       // continua disparando normal
-  //       break;
-  //     case 'multiShot':
-  //       break;
-  //     case 'laserShot':
-  //       break;
-  //   }
-  // }
 
   async playerFire(pos: string) {
     const me = this.gameService.me()!;
