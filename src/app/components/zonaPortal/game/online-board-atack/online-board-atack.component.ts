@@ -1,42 +1,38 @@
 import {
   Component,
   computed,
+  effect,
   inject,
-  output,
-  OnInit,
-  OnDestroy,
   input,
+  output,
+  signal,
 } from '@angular/core';
-import { StorageService } from '../../../../services/store/storageLocal.service';
 import { GameService } from '../../../../services/game/game.service';
 import { formatPosition, parsePosition } from '../../../../utils/board-utils';
 import { NgClass, NgStyle } from '@angular/common';
 import Submarine from '../../../../models/Submarine';
-import { PerfilService } from '../../../../services/game/perfil.service';
-import { SpecialService } from '../../../../services/game/special.service';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-board-atack',
+  selector: 'app-online-board-atack',
   imports: [NgStyle, NgClass],
-  templateUrl: './board-atack.component.html',
-  styleUrl: './board-atack.component.css',
+  templateUrl: './online-board-atack.component.html',
+  styleUrl: './online-board-atack.component.css',
 })
-export class BoardAtackComponent implements OnInit, OnDestroy {
-  storageService = inject(StorageService);
+export class OnlineBoardAtackComponent{
   gameService = inject(GameService);
-  perfilService = inject(PerfilService);
-  specialService = inject(SpecialService);
-  perfil = this.perfilService.perfil();
+  private sub?: Subscription;
   disableFire = input();
+  updateBoard = input();
+  firePlayer = output<string>();
+
+  shotsInBoard1 = signal(this.gameService.shotsInBoard1());
+  shotsInBoard2 = signal(this.gameService.shotsInBoard2());
 
   //Referencia al tablero
   readonly BOARD_SIZE = 10;
   cellSize = 34;
   cells = Array.from({ length: 100 }, (_, i) => i);
-
-  game = computed(() => {
-    return this.gameService.gameDTO();
-  });
 
   isMyTurn = computed(() => {
     return this.gameService.isMyTurn();
@@ -45,27 +41,15 @@ export class BoardAtackComponent implements OnInit, OnDestroy {
   boardComputed = computed(() => {
     return this.gameService.getCurrentBoard();
   });
-  firePlayer = output<string>();
-
-  ngOnInit(): void {
-    const perfil = this.perfil;
-    perfil.stats.currentStartTime = Date.now();
-    this.perfilService.setPerfil(perfil);
-    this.perfilService.updatePerfil(perfil);
-  }
-
-  ngOnDestroy(): void {
-    const perfil = this.perfil;
-    const now = Date.now();
-
-    // Evitar errores si por alguna razón no se había inicializado
-    if (perfil.stats.currentStartTime) {
-      const sessionTime = now - perfil.stats.currentStartTime;
-      perfil.stats.playTime = (perfil.stats.playTime ?? 0) + sessionTime;
-      perfil.stats.currentStartTime = undefined;
-    }
-    this.perfilService.setPerfil(perfil);
-    this.perfilService.updatePerfil(perfil);
+  
+  constructor(){
+    effect(() => {
+      if(this.updateBoard()){
+        this.shotsInBoard1.set(this.gameService.gameDTO()?.boardPlayer1.shots!);
+        this.shotsInBoard2.set(this.gameService.gameDTO()?.boardPlayer2.shots!);
+        console.log('|---->> Recibo orden del padre de actualizar...');
+      }
+    });
   }
 
   fire(cellIndex: number) {
@@ -76,7 +60,7 @@ export class BoardAtackComponent implements OnInit, OnDestroy {
     // Emitir coordenada al padre
     this.firePlayer.emit(pos);
   }
-  
+
   parsePosition(pos: string) {
     return parsePosition(pos);
   }
@@ -96,8 +80,8 @@ export class BoardAtackComponent implements OnInit, OnDestroy {
   }
 
   shotMap = computed(() => {
-    const shotsInBoard1 = this.gameService.shotsInBoard1();
-    const shotsInBoard2 = this.gameService.shotsInBoard2();
+    const shotsInBoard1 = this.shotsInBoard1();
+    const shotsInBoard2 = this.shotsInBoard2();
     const map: Record<number, 'HIT' | 'MISS'> = {};
     const shots = this.boardComputed()?.shots ?? [];
     for (const shot of shots) {
@@ -107,5 +91,4 @@ export class BoardAtackComponent implements OnInit, OnDestroy {
     }
     return map;
   });
-  
 }

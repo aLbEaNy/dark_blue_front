@@ -38,12 +38,16 @@ export class MiniPlacementComponent {
     ? _game.specialPlayer1 = {
       special1: this.computedSlot1().name!,
       special2: this.computedSlot2().name!,
+      counter1: 0,
+      counter2: 0,
       activeSpecial1: false,
       activeSpecial2: false
     }
     : _game.specialPlayer2 = {
       special1: this.computedSlot1().name!,
       special2: this.computedSlot2().name!,
+      counter1: 0,
+      counter2: 0,
       activeSpecial1: false,
       activeSpecial2: false
     }

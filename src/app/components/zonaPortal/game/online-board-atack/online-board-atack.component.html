@@ -1,0 +1,56 @@
+<div
+  class="relative w-[340px] h-[340px] border border-gray-600 mt-3 shadow-lg shadow-black justify-self-center"
+>
+  <!-- Grid 10x10 -->
+  <div
+    class="grid w-full h-full bg-blue-900"
+    [style.gridTemplateColumns]="'repeat(10, ' + cellSize + 'px)'"
+    [style.gridTemplateRows]="'repeat(10, ' + cellSize + 'px)'"
+  >
+    @for (i of cells; track i) {
+      @let shot = shotMap()[i];
+
+      @if (isMyTurn()) {
+        <div
+          class="cell border border-gray-500 cursor-crosshair z-1 shadow-2xl shadow-black transform transition duration-300 hover:scale-105 hover:shadow-lg"
+          [ngClass]="[
+            !shot ? 'cursor-crosshair' : 'cursor-none',
+            shot === 'HIT' ? 'hit touched explode' : '',
+            shot === 'MISS' ? 'miss sea explodeWater' : ''
+          ]"
+          (click)="disableFire() ? '' : !shot && fire(i)"
+        ></div>
+      } @else {
+        <div
+          class="cell border border-gray-500 cursor-none"
+          [ngClass]="[
+            shot === 'HIT' ? 'hit touched explode' : '',
+            shot === 'MISS' ? 'miss sea explodeWater' : ''
+          ]"
+        ></div>
+      }
+    }
+
+    <!-- Submarinos -->
+    @for (sub of boardComputed()?.submarines; track sub.id) {
+
+      @if (isMyTurn()) {
+        <img
+          [src]="sub.isHorizontal ? 'images/submarine-H.png' : 'images/submarine-V.png'"
+          class="absolute"
+          [ngClass]="sub.isDestroyed ? 'opacity-75 z-3' : 'opacity-25'"
+          [ngStyle]="getSubmarineStyle(sub)"
+          alt="submarino"
+        />
+      } @else {
+        <img
+          [src]="sub.isHorizontal ? 'images/submarine-H.png' : 'images/submarine-V.png'"
+          class="absolute cursor-none"
+          [ngStyle]="getSubmarineStyle(sub)"
+          alt="submarino"
+          [ngClass]="sub.isDestroyed ? 'opacity-75 z-3' : 'opacity-100'"
+        />
+      }
+    }
+  </div>
+</div>

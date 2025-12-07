@@ -3,9 +3,14 @@
                 border-b-3 border-t-1 border-r-1 shadow-black shadow-md rounded-md">
         <h1 class="font-bold font-mono"
             [ngClass]="gameService.isMyTurn() || gameService.gameDTO()?.phase === 'PLACEMENT' ? 'text-fluor' : 'text-red-800'">
-            @if (gameService.gameDTO()?.phase==='PLACEMENT') {
+            @if (gameService.gameDTO()?.phase==='PLACEMENT' && !gameService.gameDTO()?.online) {
             <span class="px-3 text-acero text-sm font-sans">Posiciona flota : </span>{{ nicknameDisplay()}}
-            }@else {
+            }@else if(!gameService.gameDTO()?.online){
+            <span class="px-3 text-acero text-sm font-sans">Está disparando : </span>{{ nicknameDisplay()}}
+            }
+            @if (gameService.gameDTO()?.phase==='PLACEMENT' && gameService.gameDTO()?.online) {
+            <span class="px-3 text-acero text-sm font-sans">Posiciona flota : </span>{{ nicknameDisplay()}}
+            }@else if(gameService.gameDTO()?.online){
             <span class="px-3 text-acero text-sm font-sans">Está disparando : </span>{{ nicknameDisplay()}}
             }
         </h1>

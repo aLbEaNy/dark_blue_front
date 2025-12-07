@@ -8,7 +8,7 @@ export class AudioService {
   if (this.audios.has(id)) {
     this.stop(id);
   }
-  const audio = new Audio(src);
+  const audio = new Audio(src+'?t='+Math.random());//evitar cache del navegador
   audio.loop = loop;
   audio.volume = volume;
 

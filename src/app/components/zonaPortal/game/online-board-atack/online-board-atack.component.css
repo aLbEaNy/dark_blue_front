@@ -1,0 +1,55 @@
+.cell {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  width: 34px;
+  height: 34px
+}
+
+/* Fondo fijo */
+.cell.sea {
+  background-image: url("/images/board/sea.png");
+}
+.cell.touched {
+  background-image: url("/images/board/touched.png");
+}
+
+/* Capa explosión (solo una vez) */
+.cell.explode::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 5;
+  opacity: 1;
+  animation: fadeExplosion 1.5s forwards;
+}
+/* Capa explosión (solo una vez) */
+.cell.explodeWater::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 5;
+  opacity: 1;
+  animation: fadeExplosion 0.3s forwards;
+}
+
+.cell.explodeWater.miss::after {
+  background-image: url("/images/board/explosionSea.png");
+}
+.cell.explode.hit::after {
+  background-image: url("/images/board/explosionTouched.png");
+}
+
+/* Animación de desvanecimiento */
+@keyframes fadeExplosion {
+  0%   { opacity: 1; }
+  25%  { opacity: 0.75; }
+  50%  { opacity: 0.5; }
+  75%  { opacity: 0.25; }   /* se queda un rato la explosión */
+  100% { opacity: 0; }
+}

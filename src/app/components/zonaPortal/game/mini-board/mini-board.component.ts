@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, signal, untracked } from '@angular/core';
 import { GameService } from '../../../../services/game/game.service';
 import { StorageService } from '../../../../services/store/storageLocal.service';
 import { NgClass } from '@angular/common';
@@ -7,6 +7,8 @@ import { ChatComponent } from "../chat/chat.component";
 import { ChatBoxComponent } from "../chat-box/chat-box.component";
 import { ChatService } from '../../../../services/chat/chat.service';
 import { SpecialService } from '../../../../services/game/special.service';
+import { WebSocketService } from '../../../../services/webSocket/webSocket.service';
+import GameMessage from '../../../../models/GameMessage';
 
 @Component({
   selector: 'app-mini-board',
@@ -19,13 +21,6 @@ export class MiniBoardComponent implements OnInit{
     this.specialService.asignSpecialBoss(this.game()?.stage || 1);
     const _nicknameRival = this.gameService.me() === 'player1' ? this.game()?.player2 : this.game()?.player1;
     const playerRival = this.gameService.me() === 'player1' ? 'player2' : 'player1';
-    if(playerRival === 'player2'){
-      this.playerRivalSlot1.set(this.specialService.getSpecial(this.game()?.specialPlayer2?.special1 || '', _nicknameRival!));  
-      this.playerRivalSlot2.set(this.specialService.getSpecial(this.game()?.specialPlayer2?.special2 || '', _nicknameRival!));
-    } else{
-      this.playerRivalSlot1.set(this.specialService.getSpecial(this.game()?.specialPlayer1?.special1 || '', _nicknameRival!));  
-      this.playerRivalSlot2.set(this.specialService.getSpecial(this.game()?.specialPlayer1?.special2 || '', _nicknameRival!));
-    }
   }
 
   gameService = inject(GameService);
@@ -33,15 +28,19 @@ export class MiniBoardComponent implements OnInit{
   chatService = inject(ChatService);
   perfilService = inject(PerfilService);
   specialService = inject(SpecialService);
+  webSocketService = inject(WebSocketService);
 
   perfil = this.perfilService.perfil();
   showChatbox = this.chatService.showChatbox;
   bossSlot1 = this.specialService.specialBossSlot1;
   bossSlot2 = this.specialService.specialBossSlot2;
+
   playerSlot1 = this.specialService.specialPlayerSlot1;
   playerSlot2 = this.specialService.specialPlayerSlot2;
-  playerRivalSlot1 = this.specialService.specialPlayerRivalSlot1;
-  playerRivalSlot2 = this.specialService.specialPlayerRivalSlot2;
+
+  playerRivalSlot1 = this.specialService.specialPlayerRivalSlot1();
+  playerRivalSlot2 = this.specialService.specialPlayerRivalSlot2();
+
   counterBossSlot1 = computed(() => this.specialService.counterBossSlot1());
   counterBossSlot2 = computed(() => this.specialService.counterBossSlot2());
   counterPlayerSlot1 = computed(() => this.specialService.counterPlayerSlot1());
@@ -64,14 +63,7 @@ export class MiniBoardComponent implements OnInit{
     const counter = this.specialService.counterPlayerSlot2();
     return this.specialService.adminSpecialCounter(this.playerSlot2()?.name!, this.counterPlayerSlot2());  
   });
-  activePlayerRival1 = computed(() => {
-    const counter = this.specialService.counterPlayerRivalSlot1();
-    return this.specialService.adminSpecialCounter(this.playerRivalSlot1()?.name!, this.counterPlayerRivalSlot1());  
-  });
-  activePlayerRival2 = computed(() => {
-    const counter = this.specialService.counterPlayerRivalSlot2();
-    return this.specialService.adminSpecialCounter(this.playerRivalSlot2()?.name!, this.counterPlayerRivalSlot2());  
-  });
+ 
 
 
   readyBossSpecial1 = this.specialService.readyBossSpecial1;
@@ -100,6 +92,25 @@ export class MiniBoardComponent implements OnInit{
   me = computed(() => {
     return this.gameService.me();
   });
+  msgSocket = input<GameMessage>();
+
+  meActiveSlot1 = signal(false);
+  meActiveSlot1Comp  = computed(() => {
+    return this.meActiveSlot1();
+  });
+  meActiveSlot2 = signal(false);
+  meActiveSlot2Comp  = computed(() => {
+    return this.meActiveSlot2();
+  });
+  rivalActiveSlot1 = signal(false);
+  rivalActiveSlot1Comp = computed(() => {
+    return this.rivalActiveSlot1();
+  });
+  rivalActiveSlot2 = signal(false);
+  rivalActiveSlot2Comp = computed(() => {
+    return this.rivalActiveSlot2();
+  });
+  firstTime = true;
 
   constructor() {
     effect(() => {
@@ -111,6 +122,25 @@ export class MiniBoardComponent implements OnInit{
       if (_activeBossSpecial2) {
         this.readyBossSpecial2.set(true);
       }
+    });
+
+    effect(() => {
+      const _msgSocket = this.msgSocket();
+      if(!_msgSocket || !_msgSocket.game) return;
+      untracked(()=>{
+        if (this.me() === 'player1'){
+          this.meActiveSlot1.set(_msgSocket.game?.specialPlayer1?.activeSpecial1!);
+          this.meActiveSlot2.set(_msgSocket.game?.specialPlayer1?.activeSpecial2!);
+          this.rivalActiveSlot1.set(_msgSocket.game?.specialPlayer2?.activeSpecial1!);
+          this.rivalActiveSlot2.set(_msgSocket.game?.specialPlayer2?.activeSpecial2!);
+        } else {
+          this.meActiveSlot1.set(_msgSocket.game?.specialPlayer2?.activeSpecial1!);
+          this.meActiveSlot2.set(_msgSocket.game?.specialPlayer2?.activeSpecial2!);
+          this.rivalActiveSlot1.set(_msgSocket.game?.specialPlayer1?.activeSpecial1!);
+          this.rivalActiveSlot2.set(_msgSocket.game?.specialPlayer1?.activeSpecial2!);
+        }
+        
+      });
     });
   
   }
