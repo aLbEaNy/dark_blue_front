@@ -27,6 +27,7 @@ import { AIService } from '../../../../services/game/ai.service';
 import { SpecialService } from '../../../../services/game/special.service';
 import { OnlineBoardAtackComponent } from '../online-board-atack/online-board-atack.component';
 import Game from '../../../../models/Game';
+import Board from '../../../../models/Board';
 
 type ShotResult = {
   hit: boolean;
@@ -118,9 +119,60 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
     effect(() => {
       //ONLINE webSocket
       const _msgSocket = this.msgSocket();
-      if (!_msgSocket || !_msgSocket.game) return;
+      if (!_msgSocket || _msgSocket.type === 'CHAT') return;
       console.log('MSG SOCKET: ', _msgSocket);
       untracked(async () => {
+        if (_msgSocket.type === 'AI_SHOTS') {
+          for (const shot of _msgSocket.shots!) {
+            const _game = structuredClone(this.gameService.gameDTO()!);
+            const num = this.gameService.isMyTurn() && this.gameService.me() === 'player1'
+                ? 2
+                : 1;
+
+            const boardPlayerX = `boardPlayer${num}` as
+              | 'boardPlayer1'
+              | 'boardPlayer2';
+
+            const board = _game[boardPlayerX];
+            this.gameService.getCurrentBoard.set(board);
+            await sleep(100);
+
+            if (shot.result === 'MISS') {
+              this.audioService.play('missSound', '/audio/missSound.mp3');
+              board.shots.push({ position: shot.position, result: 'MISS' });
+            }
+
+            if (shot.result === 'HIT' || shot.result === 'DESTROYED') {
+              this.audioService.play('hitSound', '/audio/hitSound.mp3');
+              board.shots.push({ position: shot.position, result: 'HIT' });
+
+              const sub = board.submarines.find((s) =>
+                s.positions.includes(shot.position)
+              );
+              if (sub) {
+                const idx = sub.positions.indexOf(shot.position);
+                sub.isTouched[idx] = true;
+
+                if (shot.result === 'DESTROYED') {
+                  this.audioService.play(
+                    'destroyedSound',
+                    '/audio/destroyedSound.mp3'
+                  );
+                  sub.isDestroyed = true;
+                }
+              }
+            }
+
+            // 🔥 fuerza cambio de referencia y redibujo  
+            this.gameService.setGame(_game);
+             this.gameService.getCurrentBoard.set(board);
+            this.updateBoard.set(true);
+          }
+          const _game = structuredClone(this.gameService.gameDTO()!);
+          this.gameService.updateGame(_game);
+        }
+
+        if (!_msgSocket.game!) return;
         if (_msgSocket.lastShot) this.lastShot = _msgSocket.lastShot;
         this.updateBoard.set(true);
         if (this.lastShot.hit) {
@@ -254,16 +306,53 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
           if (player === this.gameService.me()) {
             switch (special) {
               case 'multiShot':
-                this.specialExecutorService.executeMultiShot(_msgSocket.game!, true);
+                this.specialExecutorService.executeSpecial(
+                  _msgSocket.game!,
+                  'multiShot',
+                  true
+                );
                 break;
               case 'laserShot':
-                this.specialExecutorService.executeLaserShot(_msgSocket.game!, true);
+                this.specialExecutorService.executeSpecial(
+                  _msgSocket.game!,
+                  'laserShot',
+                  true
+                );
+                break;
+              default:
+                // x2hot
                 break;
               // otros especiales...
             }
           }
+          if (special !== 'x2Shot'){
+            await sleep(2800);
+            // ⭐ SI YA NO HAY MÁS ESPECIALES ACTIVOS, CAMBIAR TURNO
+          const g = structuredClone(this.gameService.gameDTO()!);
+          
+          // quién ejecutó el especial es "player"
+          const nextTurn = player === "player1" ? "player2" : "player1";
+  
+          // si NO quedan especiales activos del jugador actual → cambio de turno
+          const specials =
+            player === "player1"
+              ? g.specialPlayer1
+              : g.specialPlayer2;
+  
+          // si ambos slots están desactivados → ya NO tiene especiales en cola
+          if (!specials!.activeSpecial1 && !specials!.activeSpecial2) {
+            console.log("SPECIAL terminado → cambio de turno forzado a", nextTurn);
+            g.turn = nextTurn;
+  
+            // 🔥 fuerza actualización visual
+            const board = this.gameService.isMyTurn() && this.gameService.me() === 'player1' ? g.boardPlayer1 : g.boardPlayer2;
+            this.gameService.setGame(g);
+            this.gameService.getCurrentBoard.set(board);
+            await this.gameService.updateGame(g);
+          }
 
-          await sleep(700);
+          }
+
         }
 
         if (

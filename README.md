@@ -1,64 +1,202 @@
-# Dark Blue
+![Logo de Dark Blue](src/main/resources/static/media/images/logoDarkBlueLetras2.png)
+# **Dark Blue: Mar de Acero**
+### *Batallas de submarinos en un futuro distópico — campaña vs IA y modo online 1v1 en tiempo real*
 
-![Logo de Dark Blue](/public/images/logoMini.png) <!-- Espacio reservado para tu logo -->
+---
 
-**Dark Blue** es un juego web que reversiona el clásico **Hundir la Flota**, ofreciendo una experiencia moderna, interactiva y visualmente atractiva directamente desde el navegador.
+## 🧭 Descripción del Proyecto
 
-## Autor
+**Dark Blue: Mar de Acero** es un videojuego web inspirado en el clásico *Hundir la Flota*, reinventado y ambientado en un futuro distópico dominado por una guerra eterna entre humanos y máquinas.
 
-**Alberto Tabernero Valle**
+El jugador puede enfrentarse a:
 
-## Tecnologías
+- 🤖 **Una IA avanzada en modo campaña**
+- 🌐 **Otros jugadores en tiempo real (1vs1) mediante WebSockets**
 
-![Angular](https://img.shields.io/badge/Angular-19-red?logo=angular&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue?logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-blue?logo=tailwind-css&logoColor=white)
+El título ofrece:
 
-El frontend está desarrollado con:
+- Tableros dinámicos
+- Ataques especiales
+- Chat integrado
+- Animaciones
+- Progresión completa del perfil
+- Tienda online con créditos virtuales
 
-- **Angular 19**  
-- **Tailwind CSS 4** para estilos y diseño responsivo  
-- **RxJS** para programación reactiva  
-- **STOMP / SockJS** para comunicación en tiempo real  
-- **SweetAlert2** para alertas y notificaciones visuales  
+El proyecto está dividido en:
 
-Otras dependencias y herramientas incluyen PostCSS, Zone.js y TypeScript 5.
+- **Backend**: Spring Boot 3.5 + WebSockets + MongoDB
+- **Frontend**: Angular 19 + Tailwind + Signals + RxJS
 
-## Características principales
+---
 
-- Interfaz moderna y responsive  
-- Turnos y disparos gestionados en tiempo real  
-- Animaciones y efectos de audio  
-- Alertas interactivas con SweetAlert2  
-- Escalado y rotación de los submarinos en el tablero  
+# 🚀 Tecnologías Principales
 
-## Cómo jugar
+## 🛠 Backend
+- **Java 17**
+- **Spring Boot 3.5**
+- Spring Security + JWT
+- Spring WebSocket (STOMP)
+- Spring Data MongoDB
+- WebFlux
+- Jakarta Validation
+- Spring Mail
+- Maven
 
-1. Regístrate e inicia sesión.
-2. En el menu principal elige la opción de:
-    - Nueva partida (Modo Historia, player vs IA).
-    - Continuar (en construcción...).
-    - Online (en construcción...).
-    - Opciones (en construcción...).
+## 🎨 Frontend
+- **Angular 19**
+- Angular Signals
+- RxJS
+- Tailwind CSS 4
+- SweetAlert2
+- STOMP + SockJS
+- Audio + animaciones CSS
 
- 
+---
 
-## Instalación y uso
+# 🎮 Funcionalidades Principales
 
-1. Clona el repositorio del frontend:
+## 🔐 Autenticación y Seguridad
+- Registro con **doble factor de autenticación (2FA)**
+- Login con JWT
+- Recuperación de contraseña
+- Eliminación de cuenta
+- Protección de endpoints REST y WebSocket con roles
 
-   ```bash
-   git clone https://github.com/tu-usuario/dark-blue.git
-   cd dark-blue/dark-blue-front
+---
 
-2. Clona el repositorio del backend:
+## 🧑‍💻 Perfil del Jugador
+- Nivel y experiencia
+- Créditos virtuales
+- Estadísticas completas
+- Equipamiento, skins, inventario
+- Historial de partidas
 
-    ```bash
-   git clone https://github.com/tu-usuario/dark-blue.git
-   cd dark-blue/dark-blue-back
-   
-   ⚠️ Nota: Los archivos con credenciales y claves secretas no se publican en los repositorios por motivos de seguridad. Estos se guardan en el archivo application-secrets.properties, ubicado en la carpeta resources del backend, el cual no está versionado en GitHub.
-    #API GOOGLE PARA LOGIN CON CUENTA DE GOOGLE GOOGLE_CLIENT_ID=XXXXXXXXXX.apps.googleusercontent.com
-    GOOGLE_CLIENT_SECRET=XXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    #CREDENCIALES PARA ENVIAR EMAIL Y VALIDAR LA CUENTA GOOGLE_USERNAME=XXXXXXXX@gmail.com
-    GOOGLE_APP_PASS=contraseña_de_aplicación
+---
+
+## 🤖 Modo Campaña (Player vs IA)
+- IA inteligente con priorización de objetivos
+- Disparos progresivos
+- Uso de ataques especiales por la IA
+- Recompensas de créditos para el jugador
+- Tablero autogenerado con submarinos aleatorios
+
+---
+
+## 🌐 Modo Online 1 vs 1 en Tiempo Real
+- Sincronización mediante WebSockets (STOMP)
+- Turnos, impactos y fallos en tiempo real
+- Ataques especiales completamente sincronizados
+- Chat interactivo dentro de la partida
+- Sistema de abandono y compensación
+
+---
+
+## 🔫 Sistema de Ataques Especiales
+- **x2Shot** → doble disparo
+- **MultiShot** → varios impactos simultáneos
+- **LaserShot** → disparo en línea recta que revela/impacta casillas
+
+Incluye efectos visuales, animaciones y sonidos exclusivos.
+
+---
+
+## 💬 Chat Integrado
+- Mensajería instantánea en partidas online
+- Envío de logs del sistema al usuario
+
+---
+
+## 💰 Tienda Online
+- Compras con créditos virtuales y moneda real
+- Items: ataques especiales, skins, mejoras
+- Donaciones integradas
+
+---
+
+## 🗃️ Persistencia Completa en MongoDB
+Colecciones utilizadas:
+
+- `users`
+- `games`
+- `perfiles`
+- `items`
+
+---
+
+# 🧱 Arquitectura del Proyecto
+
+## 📦 Colecciones MongoDB
+| Colección | Contenido |
+|----------|-----------|
+| **users** | credenciales, 2FA, recuperación, email |
+| **games** | partidas online y campaña |
+| **perfiles** | estadísticas, nivel, inventario |
+| **items** | artículos de tienda |
+
+---
+
+## 🧩 Controladores REST principales
+
+| Controlador | Funcionalidad |
+|-------------|---------------|
+| `/auth`     | Registro, login, 2FA, recuperación |
+| `/game`     | Partidas campaña y online |
+| `/perfil`   | Perfil, XP, skins |
+| `/shop`     | Tienda virtual |
+| Otros       | Utilidades internas |
+
+---
+
+## 📡 WebSocket Topics
+- `/topic/game/{gameId}`
+
+---
+## 🎨 Multimedia, Recursos y Licencias
+
+### El proyecto utiliza:
+
+ 🖼️ Recursos gráficos y sonidos
+
+1.[x] Imágenes libres de derechos obtenidas de Pixabay
+2.[x] Pistas de audio libres de derechos obtenidas de Pixabay
+3.[x] Edición personalizada realizada por el desarrollador
+4.[x] Generación de materiales mediante IA:
+5.[x] Gemini 
+6.[x] ChatGPT
+
+🔊 Efectos de sonido
+
+1.[x] Archivos propios
+
+2.[x] Recursos libres de derechos
+
+Todos los materiales cumplen las licencias correspondientes.
+---
+# 🖥️ Instalación y Uso
+
+## 📌 Frontend
+
+```bash
+git clone https://github.com/tu_usuario/dark-blue.git
+cd dark-blue/dark-blue-front
+npm install
+ng serve
+
+```
+--- 
+### 💙 ¡Gracias por probar Dark Blue: Mar de Acero!
+---
+### 👨‍💻 Autor:
+### Alberto Tabernero Valle
+
+Desarrollador Fullstack (junior) 15/12/2025
+
+### 🔗 Contacto
+
+📧 Email: atabernerovalle@gmail.com
+
+💼 LinkedIn: https://www.linkedin.com/in/tu-perfil
+
+🐙 GitHub: https://github.com/albeany
+
+--- 
