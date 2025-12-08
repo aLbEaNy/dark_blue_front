@@ -29,7 +29,7 @@ export class ShopComponent implements OnInit {
     console.log('comprando--------->', item);
     let buyContinue = false;
     const currency = item.typeCoin === 'coin' ? '🪙' : '€';
-    await Swal.fire({
+    const result =await Swal.fire({
       title: 'Vas a comprar...',
       html: `
               <p class="text-lg text-[#39ff14]">
@@ -57,7 +57,10 @@ export class ShopComponent implements OnInit {
       cancelButtonText: 'Cancelar',
       showCancelButton: true,
     });
-
+    if (!result.isConfirmed) {
+    console.log('Compra cancelada');
+    return;
+  }
     switch (item.typeCoin) {
       case 'coin':
         if (Number(this.perfil().stats.coins) < item.price) {
