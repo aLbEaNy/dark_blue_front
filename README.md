@@ -2,7 +2,6 @@
 # **Dark Blue: Mar de Acero**
 ### *Batallas de submarinos en un futuro distópico — campaña vs IA y modo online 1v1 en tiempo real*
 ---
-
 ## 🧭 Descripción del Proyecto
 
 **Dark Blue: Mar de Acero** es un videojuego web inspirado en el clásico *Hundir la Flota*, reinventado y ambientado en un futuro distópico dominado por una guerra eterna entre humanos y máquinas.
