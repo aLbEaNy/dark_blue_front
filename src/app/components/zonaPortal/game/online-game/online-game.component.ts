@@ -325,31 +325,33 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
               // otros especiales...
             }
           }
-        //   await sleep(2800);
+          if (special !== 'x2Shot'){
+            await sleep(2800);
+            // ⭐ SI YA NO HAY MÁS ESPECIALES ACTIVOS, CAMBIAR TURNO
+          const g = structuredClone(this.gameService.gameDTO()!);
+          
+          // quién ejecutó el especial es "player"
+          const nextTurn = player === "player1" ? "player2" : "player1";
+  
+          // si NO quedan especiales activos del jugador actual → cambio de turno
+          const specials =
+            player === "player1"
+              ? g.specialPlayer1
+              : g.specialPlayer2;
+  
+          // si ambos slots están desactivados → ya NO tiene especiales en cola
+          if (!specials!.activeSpecial1 && !specials!.activeSpecial2) {
+            console.log("SPECIAL terminado → cambio de turno forzado a", nextTurn);
+            g.turn = nextTurn;
+  
+            // 🔥 fuerza actualización visual
+            const board = this.gameService.isMyTurn() && this.gameService.me() === 'player1' ? g.boardPlayer1 : g.boardPlayer2;
+            this.gameService.setGame(g);
+            this.gameService.getCurrentBoard.set(board);
+            await this.gameService.updateGame(g);
+          }
 
-        //   // ⭐ SI YA NO HAY MÁS ESPECIALES ACTIVOS, CAMBIAR TURNO
-        // const g = structuredClone(this.gameService.gameDTO()!);
-        
-        // // quién ejecutó el especial es "player"
-        // const nextTurn = player === "player1" ? "player2" : "player1";
-
-        // // si NO quedan especiales activos del jugador actual → cambio de turno
-        // const specials =
-        //   player === "player1"
-        //     ? g.specialPlayer1
-        //     : g.specialPlayer2;
-
-        // // si ambos slots están desactivados → ya NO tiene especiales en cola
-        // if (!specials!.activeSpecial1 && !specials!.activeSpecial2) {
-        //   console.log("SPECIAL terminado → cambio de turno forzado a", nextTurn);
-        //   g.turn = nextTurn;
-
-        //   // 🔥 fuerza actualización visual
-        //   const board = this.gameService.isMyTurn() && this.gameService.me() === 'player1' ? g.boardPlayer1 : g.boardPlayer2;
-        //   this.gameService.setGame(g);
-        //   this.gameService.getCurrentBoard.set(board);
-        //   await this.gameService.updateGame(g);
-        // }
+          }
 
         }
 
