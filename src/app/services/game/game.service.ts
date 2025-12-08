@@ -68,9 +68,14 @@ export class GameService {
     this.storage.set('gameDTO', game); // persistencia en local
   }
 
-  updateGame(game: Game) {
+  updateGame(game: Game, changeTurn: boolean = false) {
     return firstValueFrom(
       this.http.post<IRestMessage>(`${this.baseUrl}/game/update`, game)
+    );
+  }
+  changeTurn(gameId: string){
+    return firstValueFrom(
+      this.http.get<boolean>(`${this.baseUrl}/game/changeTurn/${gameId}`)
     );
   }
   shoot(gameId: string, me: string, pos: string) { 

@@ -5,52 +5,34 @@ import { AIService } from './ai.service';
 import { AudioService } from '../audio/audio.service';
 import Game from '../../models/Game';
 import { sleep } from '../../utils/board-utils';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SpecialExecutorService {
-
   gameService = inject(GameService);
   aiService = inject(AIService);
   audioService = inject(AudioService);
   webSocketService = inject(WebSocketService);
+  private http = inject(HttpClient);
+  private baseUrl = window.__env.backendUrl;
 
-
-  async executeMultiShot(game: Game, isOnline: boolean) {
-    let board = this.gameService.me() === 'player1' ? game.boardPlayer2 : game.boardPlayer1;
-    for (let i = 0; i < 5; i++) {
-      if (isOnline) {
-        this.aiService.fire(board);
-      } else {
-        // disparo local offline      
-      }
-
-
-
-    }
-
-      
-
-  
-  }
-
-  async executeLaserShot(game: Game, isOnline: boolean) {
-
-    let board = game.boardPlayer2;
-    const positions = this.aiService.getLaserPositions(board);
-
-    for (const pos of positions) {
-      await sleep(70);
-
-      //board = isOnline
-        // ? await this.webSocketService.firePosition(pos)
-        // : this.aiService.fire(board, pos);
-      this.aiService.fire(board, pos);
-
-      game = { ...game, boardPlayer2: board };
-      this.gameService.setGame(game);
-      this.gameService.shotsInBoard2.set([...board.shots]);
+  async executeSpecial(game: Game, special: string, isOnline: boolean) {
+    let board =
+      this.gameService.me() === 'player1'
+        ? game.boardPlayer2
+        : game.boardPlayer1;
+    let nickname =
+      this.gameService.me() === 'player1' ? game.player2 : game.player1;
+    const fireRequest = { board, special, gameId: game.gameId, nickname };
+    if (isOnline) {
+      await firstValueFrom(
+        this.http.post(`${this.baseUrl}/game/ai/fire`, fireRequest)
+      );
+    } else {
+      // disparo local offline
     }
   }
 }
