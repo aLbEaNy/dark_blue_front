@@ -32,22 +32,20 @@ export class MenuComponent {
 
   dispararTorpedo(page: string) {
     if (this.activePage()) return; // evita doble click mientras hay animación
-
     this.activePage.set(page);
-
     // Sonido torpedo
     this.audioService.stop('hoverSound');
     this.audioService.play('torpedoSound','/audio/torpedoSound.mp3');
 
+    if(page === 'NEWGAME'){
+      let _game = this.gameService.gameDTO()!;
+      _game.gameId ='';
+      _game.online = false;
+      this.gameService.setGame(_game);
+    }
     // Cambiar de vista después de 1.2s
-      setTimeout(() => {
-         if(page === 'NEWGAME'){
-          let _game = this.gameService.gameDTO()!;
-          _game.gameId ='';
-          _game.online = false;
-          this.gameService.setGame(_game);
-        }
-        this.pageChange.emit(page);
+    setTimeout(() => {
+        this.pageChange.emit(page); 
       }, 1200);
   }
 }
