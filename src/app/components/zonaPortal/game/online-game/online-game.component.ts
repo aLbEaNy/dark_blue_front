@@ -125,7 +125,8 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         if (_msgSocket.type === 'AI_SHOTS') {
           for (const shot of _msgSocket.shots!) {
             const _game = structuredClone(this.gameService.gameDTO()!);
-            const num = this.gameService.isMyTurn() && this.gameService.me() === 'player1'
+            const num =
+              this.gameService.isMyTurn() && this.gameService.me() === 'player1'
                 ? 2
                 : 1;
 
@@ -163,9 +164,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
               }
             }
 
-            // 🔥 fuerza cambio de referencia y redibujo  
+            // 🔥 fuerza cambio de referencia y redibujo
             this.gameService.setGame(_game);
-             this.gameService.getCurrentBoard.set(board);
+            this.gameService.getCurrentBoard.set(board);
             this.updateBoard.set(true);
           }
           const _game = structuredClone(this.gameService.gameDTO()!);
@@ -325,34 +326,37 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
               // otros especiales...
             }
           }
-          if (special !== 'x2Shot'){
+          if (special !== 'x2Shot') {
             await sleep(2800);
             // ⭐ SI YA NO HAY MÁS ESPECIALES ACTIVOS, CAMBIAR TURNO
-          const g = structuredClone(this.gameService.gameDTO()!);
-          
-          // quién ejecutó el especial es "player"
-          const nextTurn = player === "player1" ? "player2" : "player1";
-  
-          // si NO quedan especiales activos del jugador actual → cambio de turno
-          const specials =
-            player === "player1"
-              ? g.specialPlayer1
-              : g.specialPlayer2;
-  
-          // si ambos slots están desactivados → ya NO tiene especiales en cola
-          if (!specials!.activeSpecial1 && !specials!.activeSpecial2) {
-            console.log("SPECIAL terminado → cambio de turno forzado a", nextTurn);
-            g.turn = nextTurn;
-  
-            // 🔥 fuerza actualización visual
-            const board = this.gameService.isMyTurn() && this.gameService.me() === 'player1' ? g.boardPlayer1 : g.boardPlayer2;
-            this.gameService.setGame(g);
-            this.gameService.getCurrentBoard.set(board);
-            await this.gameService.updateGame(g);
-          }
+            const g = structuredClone(this.gameService.gameDTO()!);
 
-          }
+            // quién ejecutó el especial es "player"
+            const nextTurn = player === 'player1' ? 'player2' : 'player1';
 
+            // si NO quedan especiales activos del jugador actual → cambio de turno
+            const specials =
+              player === 'player1' ? g.specialPlayer1 : g.specialPlayer2;
+
+            // si ambos slots están desactivados → ya NO tiene especiales en cola
+            if (!specials!.activeSpecial1 && !specials!.activeSpecial2) {
+              console.log(
+                'SPECIAL terminado → cambio de turno forzado a',
+                nextTurn
+              );
+              g.turn = nextTurn;
+
+              // 🔥 fuerza actualización visual
+              const board =
+                this.gameService.isMyTurn() &&
+                this.gameService.me() === 'player1'
+                  ? g.boardPlayer1
+                  : g.boardPlayer2;
+              this.gameService.setGame(g);
+              this.gameService.getCurrentBoard.set(board);
+              await this.gameService.updateGame(g);
+            }
+          }
         }
 
         if (
@@ -433,6 +437,9 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
       const _game = this.gameService.gameDTO()!;
       const me = this.gameService.me(); //winner
       const reward = '500';
+      this.audioService.stopAll();
+      this.audioService.play('win', '/audio/win.mp3');
+      this.audioService.play('coins', '/audio/coins.mp3');
       await Swal.fire({
         title: '¡VICTORIA!',
         html: `
@@ -465,6 +472,20 @@ export class OnlineGameComponent implements OnInit, OnDestroy {
         buttonsStyling: false,
         confirmButtonText: 'Aceptar',
       });
+
+      this.audioService.play(
+        'menu2',
+        `${this.baseUrl}/media/audio/menu2.mp3?t=${Math.random()}`, //para evitar cache
+        true,
+        0.2
+      );
+      // Actualizar stats y borrar gameDTO
+      let _perfil = this.perfil();
+      (_perfil.stats.wins as number) += 1;
+      (_perfil.stats.coins as number) += parseInt(reward);
+      this.perfilService.setPerfil(_perfil);
+      this.perfilService.updatePerfil(_perfil);
+      this.storage.remove('gameDTO');
       this.pageChange.emit('MENU');
     }
   }
